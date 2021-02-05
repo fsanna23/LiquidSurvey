@@ -1,23 +1,92 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useState } from "react";
+import NavBar from "./components/NavBar";
+import MainPage from "./components/MainPage";
+import NewSurvey from "./components/NewSurvey";
+import pages from "./components/pages";
+import Drawer from "@material-ui/core/Drawer";
+import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
+import { appStyle } from "./styles";
+import TrendingUpIcon from "@material-ui/icons/TrendingUp";
+import DescriptionIcon from "@material-ui/icons/Description";
+
+const useStyles = appStyle;
+
+const surveyz = [
+  { title: "Prova 1" },
+  { title: "Prova 2" },
+  { title: "Prova 3" },
+];
 
 function App() {
+  const classes = useStyles();
+  const [page, setPage] = useState(pages.MAIN);
+  const [showDrawer, setShowDrawer] = useState(false);
+
+  const switchDrawer = (value) => {
+    setShowDrawer(value);
+  };
+
+  const checkPage = () => {
+    switch (page) {
+      case pages.MAIN:
+        return <MainPage surveys={surveyz} setPage={setPage} />;
+      case pages.NEWSURVEY:
+        return <NewSurvey />;
+    }
+  };
+
+  const renderDrawer = () => {
+    const renderIcon = (index) => {
+      switch (index) {
+        case 0:
+          return <DescriptionIcon />;
+        case 1:
+          return <TrendingUpIcon />;
+      }
+    };
+    const onItemClick = (index) => {
+      switch (index) {
+        case 0:
+          setPage(pages.MAIN);
+          setShowDrawer(false);
+          return;
+        default:
+          return;
+      }
+    };
+    return (
+      <div className={classes.drawer}>
+        <List>
+          {["Surveys", "Statistics"].map((text, index) => (
+            <ListItem
+              button
+              key={text}
+              onClick={() => {
+                onItemClick(index);
+              }}
+            >
+              <ListItemIcon>{renderIcon(index)}</ListItemIcon>
+              <ListItemText primary={text} />
+            </ListItem>
+          ))}
+        </List>
+      </div>
+    );
+  };
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+    <div>
+      <NavBar setDrawer={switchDrawer} />
+      {checkPage()}
+      <Drawer
+        anchor="left"
+        open={showDrawer}
+        onClose={() => {
+          switchDrawer(false);
+        }}
+      >
+        {renderDrawer()}
+      </Drawer>
     </div>
   );
 }
