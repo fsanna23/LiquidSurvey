@@ -84,6 +84,11 @@ export const newQuestionStyle = makeStyles((theme) => ({
     fontSize: 15,
     width: "50%",
   },
+  questionDescription: {
+    fontSize: 12,
+    width: "70%",
+    marginTop: theme.spacing(2),
+  },
   questionType: {
     marginLeft: theme.spacing(10),
     width: "30%",
@@ -112,6 +117,12 @@ export const newQuestionStyle = makeStyles((theme) => ({
   cardActions: {
     marginLeft: theme.spacing(2),
     float: "right",
+  },
+  imgContent: {
+    width: "50%",
+    height: "50%",
+    display: "block",
+    margin: theme.spacing(2),
   },
 }));
 export const newImageStyle = makeStyles((theme) => ({

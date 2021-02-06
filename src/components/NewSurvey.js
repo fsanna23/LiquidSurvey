@@ -7,6 +7,7 @@ import React, {
 } from "react";
 import { Grid, Box, Input, IconButton, Tooltip } from "@material-ui/core";
 import NewQuestion from "./NewQuestion";
+import ImageInputBtn from "./ImageInputBtn";
 // Dialog
 import {
   Button,
@@ -49,7 +50,7 @@ function NewSurvey(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [, updateState] = useState();
   const forceUpdate = useCallback(() => updateState({}), []);
-  const fileInput = useRef(null);
+  //REMOVE const fileInput = useRef(null);
 
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
@@ -93,14 +94,13 @@ function NewSurvey(props) {
   };
 
   /*  Simulates the click on the input file */
-  const onAddImage = () => {
+  /*const onAddImage = () => {
     fileInput.current.click();
-  };
+  };*/
 
   /*  Changes the image and creates a new content, adding it to the state */
-  const onChangeImage = (e) => {
-    const myImg = e.target.files[0];
-    const newImage = { id: counter + 1, type: content_type.IMAGE, img: myImg };
+  const onChangeImage = (img) => {
+    const newImage = { id: counter + 1, type: content_type.IMAGE, img: img };
     counter++;
     let newContent = content;
     newContent.push(newImage);
@@ -274,23 +274,7 @@ function NewSurvey(props) {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Insert image">
-                        <IconButton
-                          className={classes.manageSurveyBoxIcon}
-                          onClick={onAddImage}
-                        >
-                          <InsertPhotoIcon />
-                          <input
-                            style={{
-                              display: "none",
-                              top: "0px",
-                              right: "0px",
-                            }}
-                            type="file"
-                            accept=".jpeg, .jpg, .png"
-                            ref={fileInput}
-                            onChange={onChangeImage}
-                          />
-                        </IconButton>
+                        <ImageInputBtn changeImage={onChangeImage} />
                       </Tooltip>
                       <Tooltip title="Embed video">
                         <IconButton

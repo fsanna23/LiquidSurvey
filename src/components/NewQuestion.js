@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useCallback } from "react";
 import QuestionTypes from "./questionTypes";
 // Material
 import {
@@ -30,10 +30,12 @@ import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 import { Draggable } from "react-beautiful-dnd";
 //Style
 import { newQuestionStyle } from "../styles";
+import ImageInputBtn from "./ImageInputBtn";
 const useStyles = newQuestionStyle;
 
 function NewQuestion(props) {
   const classes = useStyles();
+  const [, updateState] = useState();
   const [mandatory, setMandatory] = useState(false);
   const [question, setQuestion] = useState({
     title: props.content && props.content.title ? props.content.title : "",
@@ -43,6 +45,12 @@ function NewQuestion(props) {
         : QuestionTypes.SHORT_TEXT,
   });
   const [images, setImages] = useState([]);
+  const [desc, setDesc] = useState({
+    descText: "",
+    descStatus: false,
+  });
+
+  const forceUpdate = useCallback(() => updateState({}), []);
 
   const handleMandatory = () => {
     setMandatory(!mandatory);
@@ -51,6 +59,10 @@ function NewQuestion(props) {
   const onChangeType = (e) => {
     console.log(e.target.value);
     setQuestion({ ...question, type: e.target.value });
+  };
+
+  const onToggleDescription = () => {
+    setDesc({ ...desc, descStatus: !desc.descStatus });
   };
 
   const renderSelectValue = (value) => {
@@ -62,27 +74,44 @@ function NewQuestion(props) {
     );
   };
 
+  const renderDescription = () => {
+    if (!desc.descStatus) return;
+    return (
+      <Input
+        placeholder="Question description"
+        inputProps={{ "aria-label": "description" }}
+        className={classes.questionDescription}
+      />
+    );
+  };
+
+  const renderImages = () => {
+    if (!Array.isArray(images)) return;
+    return (
+      <div>
+        {images.map((image, index) => (
+          <img
+            src={URL.createObjectURL(image)}
+            alt={"image-" + index}
+            key={index}
+            className={classes.imgContent}
+          />
+        ))}
+      </div>
+    );
+  };
+
   const onRemoveQuestion = () => {
     props.removeQuestion(props.index);
   };
 
-  /*  Simulates the click on the input file */
-  const onAddImage = () => {
-    fileInput.current.click();
-  };
-
-  /*  Changes the image and creates a new content, adding it to the state */
-  const onChangeImage = (e) => {
-    const myImg = e.target.files[0];
-    const newImage = { id: counter + 1, type: content_type.IMAGE, img: myImg };
-    counter++;
-    let newContent = content;
-    newContent.push(newImage);
-    setContent(newContent);
-    /*The dnd library doesn't let the UI update when some data changes
-    with respect to Draggable items, therefore a forced update is needed. */
+  const onAddImage = (img) => {
+    let newImages = images;
+    newImages.push(img);
+    setImages(newImages);
+    console.log(img);
+    // If doesn't update, use forceUpdate
     forceUpdate();
-    // TODO upload to server
   };
 
   return (
@@ -143,6 +172,8 @@ function NewQuestion(props) {
                   <ListItemText primary={QuestionTypes.CHECKBOX} />
                 </MenuItem>
               </Select>
+              {renderDescription()}
+              {renderImages()}
               {/* RENDER QUESTION TYPES */}
             </CardContent>
             <Divider variant="middle" />
@@ -160,25 +191,20 @@ function NewQuestion(props) {
                 labelPlacement="start"
               />
               <Divider orientation="vertical" flexItem />
-              <Tooltip title="Attach image" placement="bottom">
+              <Tooltip
+                title={(desc.descStatus ? "Hide" : "Show") + " description"}
+                placement="bottom"
+              >
                 <IconButton
                   onClick={() => {
-                    onAddImage();
+                    onToggleDescription();
                   }}
                 >
-                  <InsertPhotoIcon />
-                  <input
-                    style={{
-                      display: "none",
-                      top: "0px",
-                      right: "0px",
-                    }}
-                    type="file"
-                    accept=".jpeg, .jpg, .png"
-                    ref={fileInput}
-                    onChange={onChangeImage}
-                  />
+                  <ShortTextIcon />
                 </IconButton>
+              </Tooltip>
+              <Tooltip title="Attach image" placement="bottom">
+                <ImageInputBtn changeImage={onAddImage} />
               </Tooltip>
               <Tooltip title="Delete question" placement="bottom">
                 <IconButton
