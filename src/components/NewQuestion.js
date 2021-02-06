@@ -23,9 +23,9 @@ import ShortTextIcon from "@material-ui/icons/ShortText";
 import SubjectIcon from "@material-ui/icons/Subject";
 import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
-import MoreIcon from "@material-ui/icons/MoreVert";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
+import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 // DragAndDrop
 import { Draggable } from "react-beautiful-dnd";
 //Style
@@ -140,7 +140,12 @@ function NewQuestion(props) {
                 labelPlacement="start"
               />
               <Divider orientation="vertical" flexItem />
-              <Tooltip title="Delete question" placement="right">
+              <Tooltip title="Attach image" placement="bottom">
+                <IconButton onClick={() => {}}>
+                  <InsertPhotoIcon />
+                </IconButton>
+              </Tooltip>
+              <Tooltip title="Delete question" placement="bottom">
                 <IconButton
                   onClick={() => {
                     onRemoveQuestion();

@@ -28,6 +28,7 @@ import VideoCallIcon from "@material-ui/icons/VideoCall";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import { render } from "@testing-library/react";
 import NewImage from "./NewImage";
+import NewTextField from "./NewTextField";
 const useStyles = newSurveyStyle;
 
 let counter = 2;
@@ -119,11 +120,21 @@ function NewSurvey(props) {
   };
 
   const onAddVideo = (url) => {
-    console.log(url);
     const newVideo = { id: counter + 1, type: content_type.VIDEO, url: url };
     counter++;
     let newContent = content;
     newContent.push(newVideo);
+    setContent(newContent);
+    /*The dnd library doesn't let the UI update when some data changes
+    with respect to Draggable items, therefore a forced update is needed. */
+    forceUpdate();
+  };
+
+  const onAddTextField = () => {
+    const newTextField = { id: counter + 1, type: content_type.TEXT };
+    counter++;
+    let newContent = content;
+    newContent.push(newTextField);
     setContent(newContent);
     /*The dnd library doesn't let the UI update when some data changes
     with respect to Draggable items, therefore a forced update is needed. */
@@ -179,6 +190,15 @@ function NewSurvey(props) {
               index={index}
               url={thumbnail}
               removeImage={onRemoveContent}
+            />
+          );
+        case content_type.TEXT:
+          return (
+            <NewTextField
+              key={cont.id}
+              id={cont.id}
+              index={index}
+              removeTextField={onRemoveContent}
             />
           );
       }
@@ -281,7 +301,10 @@ function NewSurvey(props) {
                         </IconButton>
                       </Tooltip>
                       <Tooltip title="Add text field">
-                        <IconButton className={classes.manageSurveyBoxIcon}>
+                        <IconButton
+                          className={classes.manageSurveyBoxIcon}
+                          onClick={onAddTextField}
+                        >
                           <TextFieldsIcon />
                         </IconButton>
                       </Tooltip>

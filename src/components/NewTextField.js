@@ -47,20 +47,19 @@ function NewTextField(props) {
                 <DragHandleIcon className={classes.dragHandleIcon} />
               </Box>
               <Input
-                placeholder={props.url ? "Video title" : "Image title"}
-                inputProps={{ "aria-label": "description" }}
-                className={classes.imageTitle}
+                placeholder="Title"
+                inputProps={{ "aria-label": "title" }}
+                className={classes.textTitle}
               />
-              <img
-                ref={imgRef}
-                src={checkImageType()}
-                alt={"img" + props.id}
-                className={classes.imgContent}
+              <Input
+                placeholder="Description"
+                inputProps={{ "aria-label": "description" }}
+                className={classes.textDescription}
               />
             </CardContent>
             <Divider variant="middle" />
             <CardActions className={classes.cardActions}>
-              <Tooltip title="Delete question" placement="right">
+              <Tooltip title="Delete question" placement="bottom">
                 <IconButton
                   onClick={() => {
                     onRemoveContent();

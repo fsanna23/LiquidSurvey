@@ -70,7 +70,7 @@ function NewImage(props) {
             </CardContent>
             <Divider variant="middle" />
             <CardActions className={classes.cardActions}>
-              <Tooltip title="Delete question" placement="right">
+              <Tooltip title="Delete question" placement="bottom">
                 <IconButton
                   onClick={() => {
                     onRemoveContent();

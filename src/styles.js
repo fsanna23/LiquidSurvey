@@ -204,6 +204,7 @@ export const newTextFieldStyle = makeStyles((theme) => ({
   textDescription: {
     fontSize: 12,
     width: "70%",
+    marginTop: theme.spacing(2),
   },
   cardRoot: {
     minWidth: 275,
