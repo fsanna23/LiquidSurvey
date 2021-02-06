@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import QuestionTypes from "./questionTypes";
 // Material
 import {
@@ -40,8 +40,9 @@ function NewQuestion(props) {
     type:
       props.content && props.content.type && props.content.type !== "QUESTION"
         ? props.content.type
-        : "",
+        : QuestionTypes.SHORT_TEXT,
   });
+  const [images, setImages] = useState([]);
 
   const handleMandatory = () => {
     setMandatory(!mandatory);
@@ -63,6 +64,25 @@ function NewQuestion(props) {
 
   const onRemoveQuestion = () => {
     props.removeQuestion(props.index);
+  };
+
+  /*  Simulates the click on the input file */
+  const onAddImage = () => {
+    fileInput.current.click();
+  };
+
+  /*  Changes the image and creates a new content, adding it to the state */
+  const onChangeImage = (e) => {
+    const myImg = e.target.files[0];
+    const newImage = { id: counter + 1, type: content_type.IMAGE, img: myImg };
+    counter++;
+    let newContent = content;
+    newContent.push(newImage);
+    setContent(newContent);
+    /*The dnd library doesn't let the UI update when some data changes
+    with respect to Draggable items, therefore a forced update is needed. */
+    forceUpdate();
+    // TODO upload to server
   };
 
   return (
@@ -141,8 +161,23 @@ function NewQuestion(props) {
               />
               <Divider orientation="vertical" flexItem />
               <Tooltip title="Attach image" placement="bottom">
-                <IconButton onClick={() => {}}>
+                <IconButton
+                  onClick={() => {
+                    onAddImage();
+                  }}
+                >
                   <InsertPhotoIcon />
+                  <input
+                    style={{
+                      display: "none",
+                      top: "0px",
+                      right: "0px",
+                    }}
+                    type="file"
+                    accept=".jpeg, .jpg, .png"
+                    ref={fileInput}
+                    onChange={onChangeImage}
+                  />
                 </IconButton>
               </Tooltip>
               <Tooltip title="Delete question" placement="bottom">
