@@ -41,9 +41,13 @@ const ImageInputBtn = React.forwardRef((props, ref) => {
           right: "0px",
         }}
         type="file"
-        accept=".jpeg, .jpg, .png"
+        accept="image/*"
         ref={fileInput}
         onChange={onChangeImage}
+        onClick={(event) => {
+          // Used to let the user select the same file if needed
+          event.target.value = null;
+        }}
       />
     </IconButton>
   );

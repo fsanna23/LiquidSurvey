@@ -86,7 +86,12 @@ function NewQuestion(props) {
   };
 
   const renderImages = () => {
-    if (!Array.isArray(images)) return;
+    if (!Array.isArray(images)) {
+      console.log("Image is not array");
+      return;
+    }
+    console.log("Image is array");
+    console.log("The array has length: " + images.length);
     return (
       <div>
         {images.map((image, index) => (
@@ -106,11 +111,11 @@ function NewQuestion(props) {
   };
 
   const onAddImage = (img) => {
+    console.log("Adding image");
     let newImages = images;
     newImages.push(img);
     setImages(newImages);
     console.log(img);
-    // If doesn't update, use forceUpdate
     forceUpdate();
   };
 
