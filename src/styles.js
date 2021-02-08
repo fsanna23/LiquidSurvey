@@ -74,6 +74,17 @@ export const newSurveyStyle = makeStyles((theme) => ({
   manageSurveyBoxIcon: {
     margin: "2px",
   },
+  bottomButtonsContainer: {
+    alignItems: "center",
+    justify: "center",
+    marginTop: theme.spacing(4),
+  },
+  bottomButton: {
+    alignSelf: "center",
+    right: "-35%",
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
 }));
 export const newQuestionStyle = makeStyles((theme) => ({
   boxCardRoot: {
@@ -88,6 +99,7 @@ export const newQuestionStyle = makeStyles((theme) => ({
     fontSize: 12,
     width: "70%",
     marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
   },
   questionType: {
     marginLeft: theme.spacing(10),
@@ -239,5 +251,21 @@ export const newTextFieldStyle = makeStyles((theme) => ({
   cardActions: {
     marginLeft: theme.spacing(2),
     float: "right",
+  },
+}));
+export const multipleChoiceQuestionStyle = makeStyles((theme) => ({
+  fieldContainer: {
+    marginTop: theme.spacing(1),
+  },
+  textField: {
+    width: "40%",
+  },
+  addOptionBtn: {
+    marginTop: theme.spacing(1),
+  },
+  removeOptionBtn: {
+    marginTop: theme.spacing(2),
+    marginLeft: theme.spacing(1),
+    color: "red",
   },
 }));

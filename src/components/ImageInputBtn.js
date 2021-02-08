@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { Fragment, useRef } from "react";
 import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 import { IconButton } from "@material-ui/core";
 import { newSurveyStyle } from "../styles";
@@ -25,15 +25,17 @@ const ImageInputBtn = React.forwardRef((props, ref) => {
   };
 
   return (
-    <IconButton
-      className={classes.manageSurveyBoxIcon}
-      onClick={() => {
-        onAddImage();
-      }}
-      ref={ref}
-      {...props}
-    >
-      <InsertPhotoIcon />
+    <Fragment>
+      <IconButton
+        className={classes.manageSurveyBoxIcon}
+        onClick={() => {
+          onAddImage();
+        }}
+        ref={ref}
+        {...props}
+      >
+        <InsertPhotoIcon />
+      </IconButton>
       <input
         style={{
           display: "none",
@@ -49,7 +51,7 @@ const ImageInputBtn = React.forwardRef((props, ref) => {
           event.target.value = null;
         }}
       />
-    </IconButton>
+    </Fragment>
   );
 });
 

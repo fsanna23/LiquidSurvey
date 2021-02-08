@@ -1,5 +1,6 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useCallback, Fragment, useContext } from "react";
 import QuestionTypes from "./questionTypes";
+import { UpdateContext } from "./NewSurvey";
 // Material
 import {
   Box,
@@ -31,11 +32,13 @@ import { Draggable } from "react-beautiful-dnd";
 //Style
 import { newQuestionStyle } from "../styles";
 import ImageInputBtn from "./ImageInputBtn";
+import questionTypes from "./questionTypes";
+import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 const useStyles = newQuestionStyle;
 
 function NewQuestion(props) {
   const classes = useStyles();
-  const [, updateState] = useState();
+  // const [, updateState] = useState();
   const [mandatory, setMandatory] = useState(false);
   const [question, setQuestion] = useState({
     title: props.content && props.content.title ? props.content.title : "",
@@ -50,7 +53,8 @@ function NewQuestion(props) {
     descStatus: false,
   });
 
-  const forceUpdate = useCallback(() => updateState({}), []);
+  // const forceUpdate = useCallback(() => updateState({}), []);
+  const forceUpdate = useContext(UpdateContext);
 
   const handleMandatory = () => {
     setMandatory(!mandatory);
@@ -87,11 +91,8 @@ function NewQuestion(props) {
 
   const renderImages = () => {
     if (!Array.isArray(images)) {
-      console.log("Image is not array");
       return;
     }
-    console.log("Image is array");
-    console.log("The array has length: " + images.length);
     return (
       <div>
         {images.map((image, index) => (
@@ -117,6 +118,15 @@ function NewQuestion(props) {
     setImages(newImages);
     console.log(img);
     forceUpdate();
+  };
+
+  const renderQuestion = () => {
+    switch (question.type) {
+      case questionTypes.MULTIPLE_CHOICE:
+        return <MultipleChoiceQuestion />;
+      default:
+        return <Fragment />;
+    }
   };
 
   return (
@@ -179,7 +189,7 @@ function NewQuestion(props) {
               </Select>
               {renderDescription()}
               {renderImages()}
-              {/* RENDER QUESTION TYPES */}
+              {renderQuestion()}
             </CardContent>
             <Divider variant="middle" />
             <CardActions className={classes.cardActions}>
