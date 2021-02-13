@@ -1,36 +1,29 @@
-import React, { useContext, useState } from "react";
-import { UpdateContext } from "./NewSurvey";
+import React, { useState } from "react";
 import { TextField, Button } from "@material-ui/core";
 import { multipleChoiceQuestionStyle } from "../styles";
 const useStyles = multipleChoiceQuestionStyle;
 
 function MultipleChoiceQuestion(props) {
   const classes = useStyles();
-  const [values, setValues] = useState(["", ""]);
-  const forceUpdate = useContext(UpdateContext);
+  let choices = [...props.choices];
+
+  const onChangeValue = (e, index) => {
+    choices[index] = e.target.value;
+    props.update(choices);
+  };
+
+  const onRemoveOption = (index) => {
+    choices = choices.filter((el, ix) => ix !== index);
+    props.update(choices);
+  };
 
   const onAddOption = () => {
-    let newValues = values;
-    newValues.push("");
-    setValues(newValues);
-    forceUpdate();
+    choices = [...choices, ""];
+    props.update(choices);
   };
 
   const renderOptions = () => {
-    const onChangeValue = (e, index) => {
-      let newValues = values;
-      newValues[index] = e.target.value;
-      setValues(newValues);
-      forceUpdate();
-    };
-
-    const onRemoveOption = (index) => {
-      let newValues = values.filter((value, idx) => idx !== index);
-      setValues(newValues);
-      forceUpdate();
-    };
-
-    return values.map((value, index) => {
+    return props.choices.map((value, index) => {
       return (
         <div key={index}>
           <TextField

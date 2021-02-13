@@ -8,14 +8,11 @@ import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
 import { appStyle } from "./styles";
 import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import DescriptionIcon from "@material-ui/icons/Description";
+import { mySimpleSurvey, mySurvey } from "./tmpSurveys";
 
 const useStyles = appStyle;
 
-const surveyz = [
-  { title: "Prova 1" },
-  { title: "Prova 2" },
-  { title: "Prova 3" },
-];
+const surveyz = [mySurvey, mySimpleSurvey];
 
 function App() {
   const classes = useStyles();
@@ -31,7 +28,7 @@ function App() {
       case pages.MAIN:
         return <MainPage surveys={surveyz} setPage={setPage} />;
       case pages.NEWSURVEY:
-        return <NewSurvey />;
+        return <NewSurvey setPage={setPage} />;
     }
   };
 

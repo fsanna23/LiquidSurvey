@@ -127,14 +127,37 @@ export const newQuestionStyle = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
   },
   cardActions: {
+    display: "flex",
+  },
+  cardActionsRight: {
     marginLeft: theme.spacing(2),
-    float: "right",
+    justifyContent: "end",
+    display: "flex",
+  },
+  cardActionsLeft: {
+    marginLeft: theme.spacing(2),
+    justifyContent: "flex-end",
+    flex: "1",
+  },
+  cardActionsDivider: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  imgContainer: {
+    display: "flex",
   },
   imgContent: {
     width: "50%",
     height: "50%",
-    display: "block",
+    display: "inline-block",
     margin: theme.spacing(2),
+  },
+  removeImgBtn: {
+    display: "flex",
+    height: "50%",
+    color: "red",
+    justifySelf: "center",
+    alignSelf: "center",
   },
 }));
 export const newImageStyle = makeStyles((theme) => ({
@@ -166,8 +189,21 @@ export const newImageStyle = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   cardActions: {
+    display: "flex",
+  },
+  cardActionsRight: {
     marginLeft: theme.spacing(2),
-    float: "right",
+    justifyContent: "end",
+    display: "flex",
+  },
+  cardActionsLeft: {
+    marginLeft: theme.spacing(2),
+    justifyContent: "flex-end",
+    flex: "1",
+  },
+  cardActionsDivider: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
   imgContent: {
     width: "50%",
@@ -249,8 +285,21 @@ export const newTextFieldStyle = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
   cardActions: {
+    display: "flex",
+  },
+  cardActionsRight: {
     marginLeft: theme.spacing(2),
-    float: "right",
+    justifyContent: "end",
+    display: "flex",
+  },
+  cardActionsLeft: {
+    marginLeft: theme.spacing(2),
+    justifyContent: "flex-end",
+    flex: "1",
+  },
+  cardActionsDivider: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
   },
 }));
 export const multipleChoiceQuestionStyle = makeStyles((theme) => ({

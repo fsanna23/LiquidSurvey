@@ -1,7 +1,8 @@
-import React, { useState, useCallback, Fragment } from "react";
+import React, { useState, Fragment } from "react";
 import { Grid, Box, Input, IconButton, Tooltip } from "@material-ui/core";
 import NewQuestion from "./NewQuestion";
 import ImageInputBtn from "./ImageInputBtn";
+import pages from "./pages";
 // Dialog
 import {
   Button,
@@ -16,17 +17,12 @@ import {
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 // Styles
 import { newSurveyStyle } from "../styles";
-import DeleteIcon from "@material-ui/icons/Delete";
 import AddIcon from "@material-ui/icons/Add";
-import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 import VideoCallIcon from "@material-ui/icons/VideoCall";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
-import { render } from "@testing-library/react";
 import NewImage from "./NewImage";
 import NewTextField from "./NewTextField";
 const useStyles = newSurveyStyle;
-
-let counter = 2;
 
 const content_type = {
   QUESTION: "QUESTION",
@@ -35,21 +31,24 @@ const content_type = {
   TEXT: "TEXT",
 };
 
-export const UpdateContext = React.createContext(undefined);
-
 function NewSurvey(props) {
   const classes = useStyles();
+  const [surveyData, setSurveyData] = useState({
+    title: "",
+    description: "",
+  });
   const [content, setContent] = useState([
-    { id: 1, type: content_type.QUESTION },
-    { id: 2, type: content_type.QUESTION },
+    { id: 1, type: content_type.QUESTION, data: {} },
+    { id: 2, type: content_type.QUESTION, data: {} },
   ]);
   const [openDialog, setOpenDialog] = useState(false);
-  const [, updateState] = useState();
-  const forceUpdate = useCallback(() => updateState({}), []);
-  //REMOVE const fileInput = useRef(null);
 
+  /*  Updates the state when the drag ends */
   const onDragEnd = (result) => {
     const { destination, source, draggableId } = result;
+    console.log("The destination is ", destination);
+    console.log("The source is ", source);
+    console.log("The draggableId is ", draggableId);
     if (!destination) return;
     if (
       destination.droppableId === source.droppableId &&
@@ -65,39 +64,35 @@ function NewSurvey(props) {
   };
 
   const onAddQuestion = () => {
-    const newQuestion = { id: counter + 1, type: content_type.QUESTION };
-    counter++;
-    let newContent = content;
-    newContent.push(newQuestion);
-    setContent(newContent);
-    /*The dnd library doesn't let the UI update when some data changes
-    with respect to Draggable items, therefore a forced update is needed. */
-    forceUpdate();
+    const newQuestion = {
+      id: content.length + 1,
+      type: content_type.QUESTION,
+      data: {},
+    };
+    setContent([...content, newQuestion]);
   };
 
   const onRemoveContent = (index) => {
     let newContent = content.filter((item, itemIndex) => {
       return index !== itemIndex;
     });
+    let counter = 1;
+    for (let cont of newContent) {
+      cont.id = counter;
+      counter++;
+    }
     setContent(newContent);
-    forceUpdate();
   };
-
-  /*  Simulates the click on the input file */
-  /*const onAddImage = () => {
-    fileInput.current.click();
-  };*/
 
   /*  Changes the image and creates a new content, adding it to the state */
   const onChangeImage = (img) => {
-    const newImage = { id: counter + 1, type: content_type.IMAGE, img: img };
-    counter++;
-    let newContent = content;
-    newContent.push(newImage);
-    setContent(newContent);
-    /*The dnd library doesn't let the UI update when some data changes
-    with respect to Draggable items, therefore a forced update is needed. */
-    forceUpdate();
+    const newImage = {
+      id: content.length + 1,
+      type: content_type.IMAGE,
+      data: { img: img },
+    };
+    setContent([...content, newImage]);
+
     // TODO upload to server
   };
 
@@ -110,28 +105,49 @@ function NewSurvey(props) {
   };
 
   const onAddVideo = (url) => {
-    const newVideo = { id: counter + 1, type: content_type.VIDEO, url: url };
-    counter++;
-    let newContent = content;
-    newContent.push(newVideo);
-    setContent(newContent);
-    /*The dnd library doesn't let the UI update when some data changes
-    with respect to Draggable items, therefore a forced update is needed. */
-    forceUpdate();
+    const newVideo = {
+      id: content.length + 1,
+      type: content_type.VIDEO,
+      data: { url: url },
+    };
+    setContent([...content, newVideo]);
   };
 
   const onAddTextField = () => {
-    const newTextField = { id: counter + 1, type: content_type.TEXT };
-    counter++;
-    let newContent = content;
-    newContent.push(newTextField);
+    const newTextField = {
+      id: content.length + 1,
+      type: content_type.TEXT,
+      data: {},
+    };
+    setContent([...content, newTextField]);
+  };
+
+  const onSaveSurvey = () => {
+    /*  TODO: save survey data */
+    console.log("The content is");
+    console.log(content);
+  };
+
+  const onChangeSurveyTitle = (e) => {
+    setSurveyData({ ...surveyData, title: e.target.value });
+  };
+
+  const onChangeSurveyDescription = (e) => {
+    setSurveyData({ ...surveyData, description: e.target.value });
+  };
+
+  /*  This function is good for any of the content types. */
+  const updateContent = (index, updates) => {
+    let newContent = [...content];
+    newContent[index] = {
+      ...content[index],
+      data: { ...content[index].data, ...updates },
+    };
     setContent(newContent);
-    /*The dnd library doesn't let the UI update when some data changes
-    with respect to Draggable items, therefore a forced update is needed. */
-    forceUpdate();
   };
 
   const renderContent = () => {
+    /* TODO: consider move video parsing into a specific component */
     const parseVideoID = (url) => {
       const regexResult = url.match(/^[\s\S]*watch\?v=([\s\S]*)[\s\S]*$/);
       const separatorIndex = regexResult[1].indexOf("&");
@@ -144,6 +160,9 @@ function NewSurvey(props) {
       return `http://img.youtube.com/vi/${videoID}/0.jpg`;
     };
 
+    console.log("Rendering the content, which is:");
+    console.log(content);
+
     return content.map((cont, index) => {
       switch (cont.type) {
         case content_type.QUESTION:
@@ -154,6 +173,7 @@ function NewSurvey(props) {
               id={cont.id}
               index={index}
               removeQuestion={onRemoveContent}
+              update={updateContent}
             />
           );
         case content_type.IMAGE:
@@ -162,22 +182,25 @@ function NewSurvey(props) {
               key={cont.id}
               id={cont.id}
               index={index}
-              image={cont.img}
+              image={cont.data.img}
               removeImage={onRemoveContent}
+              update={updateContent}
             />
           );
         case content_type.VIDEO:
           /* NOTE: there's no meaning in showing the embedded video in
              the survey editor, therefore we get the video thumbnail and
              show that as an image. */
-          const thumbnail = getVideoThumbnail(parseVideoID(cont.url));
+          const thumbnail = getVideoThumbnail(parseVideoID(cont.data.url));
           return (
             <NewImage
               key={cont.id}
               id={cont.id}
               index={index}
               url={thumbnail}
+              videoUrl={cont.data.url}
               removeImage={onRemoveContent}
+              update={updateContent}
             />
           );
         case content_type.TEXT:
@@ -187,6 +210,7 @@ function NewSurvey(props) {
               id={cont.id}
               index={index}
               removeTextField={onRemoveContent}
+              update={updateContent}
             />
           );
       }
@@ -194,128 +218,136 @@ function NewSurvey(props) {
   };
 
   return (
-    <UpdateContext.Provider value={forceUpdate}>
-      <Grid
-        id="newsurveycontainer"
-        container
-        direction="column"
-        justify="center"
-        alignItems="center"
-        className={classes.surveyGrid}
-      >
-        <Box width="60%" className={classes.surveyForm} id="firstboxcontainer">
-          <Box width="100%">
-            <form style={{ width: "100%" }}>
-              <Grid
-                container
-                direction="column"
-                justify="center"
-                alignItems="center"
-                id="secondgridcontainer"
-              >
-                <Box width="70%" className={classes.titleInputBox}>
-                  <Input
-                    placeholder="Your survey title"
-                    inputProps={{ "aria-label": "description" }}
-                    className={classes.titleInput}
-                    fullWidth
-                  />
-                </Box>
-                <Box width="50%" className={classes.titleInputBox}>
-                  <Input
-                    placeholder="Your survey description"
-                    inputProps={{ "aria-label": "description" }}
-                    className={classes.descInput}
-                    fullWidth
-                  />
-                </Box>
-              </Grid>
-              <DragDropContext onDragEnd={onDragEnd}>
-                <Droppable droppableId="cardarea">
-                  {(provided) => (
-                    <Grid
-                      container
-                      ref={provided.innerRef}
-                      {...provided.droppableProps}
-                      direction="column"
-                      justify="center"
-                      alignItems="center"
-                      id="secondgridcontainer"
-                      className={classes.questionsContainerGrid}
-                    >
-                      {renderContent()}
-                      {provided.placeholder}
-                      <Box
-                        component="span"
-                        id="managesurveybox"
-                        width="210px"
-                        height="50px"
-                        className={classes.manageSurveyBox}
-                      >
-                        <Tooltip title="Add question">
-                          <IconButton
-                            className={classes.manageSurveyBoxIcon}
-                            onClick={() => {
-                              onAddQuestion();
-                            }}
-                          >
-                            <AddIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Insert image">
-                          <ImageInputBtn changeImage={onChangeImage} />
-                        </Tooltip>
-                        <Tooltip title="Embed video">
-                          <IconButton
-                            className={classes.manageSurveyBoxIcon}
-                            onClick={onOpenEmbedVideoDialog}
-                          >
-                            <VideoCallIcon />
-                          </IconButton>
-                        </Tooltip>
-                        <Tooltip title="Add text field">
-                          <IconButton
-                            className={classes.manageSurveyBoxIcon}
-                            onClick={onAddTextField}
-                          >
-                            <TextFieldsIcon />
-                          </IconButton>
-                        </Tooltip>
-                      </Box>
-                    </Grid>
-                  )}
-                </Droppable>
-              </DragDropContext>
-            </form>
-            <Grid item className={classes.bottomButtonsContainer}>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.bottomButton}
-              >
-                Back to home page
-              </Button>
-              <Button
-                variant="contained"
-                color="primary"
-                className={classes.bottomButton}
-              >
-                Save survey
-              </Button>
+    <Grid
+      id="newsurveycontainer"
+      container
+      direction="column"
+      justify="center"
+      alignItems="center"
+      className={classes.surveyGrid}
+    >
+      <Box width="60%" className={classes.surveyForm} id="firstboxcontainer">
+        <Box width="100%">
+          <form style={{ width: "100%" }}>
+            <Grid
+              container
+              direction="column"
+              justify="center"
+              alignItems="center"
+              id="secondgridcontainer"
+            >
+              <Box width="70%" className={classes.titleInputBox}>
+                <Input
+                  placeholder="Your survey title"
+                  inputProps={{ "aria-label": "description" }}
+                  className={classes.titleInput}
+                  fullWidth
+                  value={surveyData.title}
+                  onChange={onChangeSurveyTitle}
+                />
+              </Box>
+              <Box width="50%" className={classes.titleInputBox}>
+                <Input
+                  placeholder="Your survey description"
+                  inputProps={{ "aria-label": "description" }}
+                  className={classes.descInput}
+                  fullWidth
+                  value={surveyData.description}
+                  onChange={onChangeSurveyDescription}
+                />
+              </Box>
             </Grid>
-          </Box>
+            <DragDropContext onDragEnd={onDragEnd}>
+              <Droppable droppableId="cardarea">
+                {(provided) => (
+                  <Grid
+                    container
+                    ref={provided.innerRef}
+                    {...provided.droppableProps}
+                    direction="column"
+                    justify="center"
+                    alignItems="center"
+                    id="secondgridcontainer"
+                    className={classes.questionsContainerGrid}
+                  >
+                    {renderContent()}
+                    {provided.placeholder}
+                    <Box
+                      component="span"
+                      id="managesurveybox"
+                      width="210px"
+                      height="50px"
+                      className={classes.manageSurveyBox}
+                    >
+                      <Tooltip title="Add question">
+                        <IconButton
+                          className={classes.manageSurveyBoxIcon}
+                          onClick={() => {
+                            onAddQuestion();
+                          }}
+                        >
+                          <AddIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Insert image">
+                        <ImageInputBtn changeImage={onChangeImage} />
+                      </Tooltip>
+                      <Tooltip title="Embed video">
+                        <IconButton
+                          className={classes.manageSurveyBoxIcon}
+                          onClick={onOpenEmbedVideoDialog}
+                        >
+                          <VideoCallIcon />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Add text field">
+                        <IconButton
+                          className={classes.manageSurveyBoxIcon}
+                          onClick={onAddTextField}
+                        >
+                          <TextFieldsIcon />
+                        </IconButton>
+                      </Tooltip>
+                    </Box>
+                  </Grid>
+                )}
+              </Droppable>
+            </DragDropContext>
+          </form>
+          <Grid item className={classes.bottomButtonsContainer}>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.bottomButton}
+              onClick={() => {
+                props.setPage(pages.MAIN);
+              }}
+            >
+              Back to home page
+            </Button>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.bottomButton}
+              onClick={() => {
+                onSaveSurvey();
+              }}
+            >
+              Save survey
+            </Button>
+          </Grid>
         </Box>
-        {openDialog === true ? (
-          <EmbedVideoDialog
-            open={openDialog}
-            handleClose={onCloseEmbedVideoDialog}
-            handleSubmit={onAddVideo}
-          />
-        ) : (
-          <Fragment />
-        )}
-      </Grid>
-    </UpdateContext.Provider>
+      </Box>
+      {openDialog === true ? (
+        <EmbedVideoDialog
+          open={openDialog}
+          handleClose={onCloseEmbedVideoDialog}
+          handleSubmit={onAddVideo}
+        />
+      ) : (
+        <Fragment />
+      )}
+    </Grid>
   );
 }
 

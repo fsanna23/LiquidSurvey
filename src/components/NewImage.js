@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useState, useRef } from "react";
 // Material
 import {
   Box,
@@ -9,6 +9,8 @@ import {
   Input,
   Divider,
   Tooltip,
+  FormControlLabel,
+  Switch,
 } from "@material-ui/core";
 // Draggable
 import { Draggable } from "react-beautiful-dnd";
@@ -23,16 +25,25 @@ function NewImage(props) {
   const classes = useStyles();
   const imgRef = useRef(null);
 
+  const [title, setTitle] = useState("");
+
   const onRemoveContent = () => {
     props.removeImage(props.index);
+  };
+
+  const onChangeTitle = (e) => {
+    setTitle(e.target.value);
+    props.update(props.index, { title: e.target.value });
   };
 
   const checkImageType = () => {
     if (props.url) {
       return props.url;
-    }
-    if (props.image) {
+    } else if (props.image) {
       return URL.createObjectURL(props.image);
+    } else {
+      console.log(props);
+      return props.url;
     }
   };
 
@@ -60,6 +71,8 @@ function NewImage(props) {
                 placeholder={props.url ? "Video title" : "Image title"}
                 inputProps={{ "aria-label": "description" }}
                 className={classes.imageTitle}
+                value={title}
+                onChange={onChangeTitle}
               />
               <img
                 ref={imgRef}
@@ -70,15 +83,21 @@ function NewImage(props) {
             </CardContent>
             <Divider variant="middle" />
             <CardActions className={classes.cardActions}>
-              <Tooltip title="Delete question" placement="bottom">
-                <IconButton
-                  onClick={() => {
-                    onRemoveContent();
-                  }}
-                >
-                  <DeleteIcon />
-                </IconButton>
-              </Tooltip>
+              <div
+                id={"left-side-actions" + props.index}
+                className={classes.cardActionsLeft}
+              ></div>
+              <div className={classes.cardActionsRight}>
+                <Tooltip title="Delete question" placement="bottom">
+                  <IconButton
+                    onClick={() => {
+                      onRemoveContent();
+                    }}
+                  >
+                    <DeleteIcon />
+                  </IconButton>
+                </Tooltip>
+              </div>
             </CardActions>
           </Card>
         </Box>
