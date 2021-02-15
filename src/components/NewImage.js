@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, Fragment } from "react";
 // Material
 import {
   Box,
@@ -33,7 +33,7 @@ function NewImage(props) {
 
   const onChangeTitle = (e) => {
     setTitle(e.target.value);
-    props.update(props.index, { title: e.target.value });
+    props.update({ title: e.target.value });
   };
 
   const checkImageType = () => {
@@ -83,10 +83,9 @@ function NewImage(props) {
             </CardContent>
             <Divider variant="middle" />
             <CardActions className={classes.cardActions}>
-              <div
-                id={"left-side-actions" + props.index}
-                className={classes.cardActionsLeft}
-              ></div>
+              <div className={classes.cardActionsLeft}>
+                <Fragment />
+              </div>
               <div className={classes.cardActionsRight}>
                 <Tooltip title="Delete question" placement="bottom">
                   <IconButton

@@ -46,7 +46,10 @@ function NewQuestion(props) {
         ? props.content.type
         : QuestionTypes.SHORT_TEXT,
     description: "",
-    choices: ["", ""],
+    choices: [
+      { id: 1, value: "" },
+      { id: 2, value: "" },
+    ],
   });
   const [images, setImages] = useState([]);
   const [desc, setDesc] = useState({
@@ -56,7 +59,7 @@ function NewQuestion(props) {
 
   /* Used to send the title, the type and the mandatory value to the parent */
   useEffect(() => {
-    props.update(props.index, {
+    props.update({
       title: question.title,
       type: question.type,
       isMandatory: mandatory,
@@ -65,17 +68,17 @@ function NewQuestion(props) {
 
   const handleMandatory = () => {
     setMandatory(!mandatory);
-    props.update(props.index, { isMandatory: !mandatory });
+    props.update({ isMandatory: !mandatory });
   };
 
   const onChangeTitle = (e) => {
     setQuestion({ ...question, title: e.target.value });
-    props.update(props.index, { title: e.target.value });
+    props.update({ title: e.target.value });
   };
 
   const onChangeType = (e) => {
     setQuestion({ ...question, type: e.target.value });
-    props.update(props.index, { type: e.target.value });
+    props.update({ type: e.target.value });
   };
 
   const onToggleDescription = () => {
@@ -84,7 +87,7 @@ function NewQuestion(props) {
 
   const onChangeDescription = (e) => {
     setQuestion({ ...question, description: e.target.value });
-    props.update(props.index, { description: e.target.value });
+    props.update({ description: e.target.value });
   };
 
   const renderSelectValue = (value) => {
@@ -153,7 +156,7 @@ function NewQuestion(props) {
 
   const onUpdateChoices = (choices) => {
     setQuestion({ ...question, choices: choices });
-    props.update(props.index, { choices: choices });
+    props.update({ choices: choices });
   };
 
   const renderQuestion = () => {

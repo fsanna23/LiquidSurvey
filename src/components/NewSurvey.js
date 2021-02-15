@@ -1,4 +1,4 @@
-import React, { useState, Fragment } from "react";
+import React, { useState, useEffect, Fragment } from "react";
 import { Grid, Box, Input, IconButton, Tooltip } from "@material-ui/core";
 import NewQuestion from "./NewQuestion";
 import ImageInputBtn from "./ImageInputBtn";
@@ -20,6 +20,7 @@ import { newSurveyStyle } from "../styles";
 import AddIcon from "@material-ui/icons/Add";
 import VideoCallIcon from "@material-ui/icons/VideoCall";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
+import PostAddIcon from "@material-ui/icons/PostAdd";
 import NewImage from "./NewImage";
 import NewTextField from "./NewTextField";
 const useStyles = newSurveyStyle;
@@ -37,9 +38,14 @@ function NewSurvey(props) {
     title: "",
     description: "",
   });
-  const [content, setContent] = useState([
-    { id: 1, type: content_type.QUESTION, data: {} },
-    { id: 2, type: content_type.QUESTION, data: {} },
+  const [sections, setSections] = useState([
+    {
+      id: 1,
+      content: [
+        { id: 1, type: content_type.QUESTION, data: {} },
+        { id: 2, type: content_type.QUESTION, data: {} },
+      ],
+    },
   ]);
   const [openDialog, setOpenDialog] = useState(false);
 
@@ -55,77 +61,56 @@ function NewSurvey(props) {
       destination.index === source.index
     )
       return;
+
+    let newSections = [...sections]; // array of sections
+    let sourcePage = sections.find(
+      (c) => c.id.toString() === source.droppableId
+    ); // section with ID and content
+    const sourcePageIndex = sections.indexOf(sourcePage);
+    /* Alternative sourcePageIndex -->
+    const sourcePageIndex = sections.findIndex(
+      (c) => c.id.toString() === source.droppableId
+    );
+    */
+    const movedContent = sourcePage.content.find(
+      (c) => c.id.toString() === draggableId
+    ); // content that has to be moved
+
+    // Remove the content from the source page
+    sourcePage.content.splice(source.index, 1);
+
+    // If the content is moved in the same section that it was before
+    if (source.droppableId === destination.droppableId) {
+      // Insert the content in the new position of the same section
+      sourcePage.content.splice(destination.index, 0, movedContent);
+      // Update
+      newSections[sourcePageIndex] = sourcePage;
+      setSections(newSections);
+      return;
+    }
+
+    let destinationPage = sections.find(
+      (c) => c.id.toString() === destination.droppableId
+    );
+    const destinationPageIndex = sections.indexOf(destinationPage);
+    destinationPage.content.splice(destination.index, 0, movedContent);
+    newSections[sourcePageIndex] = sourcePage;
+    newSections[destinationPageIndex] = destinationPage;
+    setSections(newSections);
+
+    /* OLD
     let newState = content;
     const movedContent = content.find((c) => c.id.toString() === draggableId);
 
     newState.splice(source.index, 1);
     newState.splice(destination.index, 0, movedContent);
-    setContent(newState);
-  };
-
-  const onAddQuestion = () => {
-    const newQuestion = {
-      id: content.length + 1,
-      type: content_type.QUESTION,
-      data: {},
-    };
-    setContent([...content, newQuestion]);
-  };
-
-  const onRemoveContent = (index) => {
-    let newContent = content.filter((item, itemIndex) => {
-      return index !== itemIndex;
-    });
-    let counter = 1;
-    for (let cont of newContent) {
-      cont.id = counter;
-      counter++;
-    }
-    setContent(newContent);
-  };
-
-  /*  Changes the image and creates a new content, adding it to the state */
-  const onChangeImage = (img) => {
-    const newImage = {
-      id: content.length + 1,
-      type: content_type.IMAGE,
-      data: { img: img },
-    };
-    setContent([...content, newImage]);
-
-    // TODO upload to server
-  };
-
-  const onOpenEmbedVideoDialog = () => {
-    setOpenDialog(true);
-  };
-
-  const onCloseEmbedVideoDialog = () => {
-    setOpenDialog(false);
-  };
-
-  const onAddVideo = (url) => {
-    const newVideo = {
-      id: content.length + 1,
-      type: content_type.VIDEO,
-      data: { url: url },
-    };
-    setContent([...content, newVideo]);
-  };
-
-  const onAddTextField = () => {
-    const newTextField = {
-      id: content.length + 1,
-      type: content_type.TEXT,
-      data: {},
-    };
-    setContent([...content, newTextField]);
+    setContent(newState);*/
   };
 
   const onSaveSurvey = () => {
     /*  TODO: save survey data */
     console.log("The content is");
-    console.log(content);
+    console.log(sections);
   };
 
   const onChangeSurveyTitle = (e) => {
@@ -136,84 +121,263 @@ function NewSurvey(props) {
     setSurveyData({ ...surveyData, description: e.target.value });
   };
 
-  /*  This function is good for any of the content types. */
-  const updateContent = (index, updates) => {
-    let newContent = [...content];
-    newContent[index] = {
-      ...content[index],
-      data: { ...content[index].data, ...updates },
-    };
-    setContent(newContent);
-  };
+  const renderSections = () => {
+    return sections.map((section, sectionIndex) => {
+      const addContent = (newContent) => {
+        let newSections = [...sections];
+        newSections[sectionIndex].content = [
+          ...newSections[sectionIndex].content,
+          newContent,
+        ];
+        setSections(newSections);
+      };
 
-  const renderContent = () => {
-    /* TODO: consider move video parsing into a specific component */
-    const parseVideoID = (url) => {
-      const regexResult = url.match(/^[\s\S]*watch\?v=([\s\S]*)[\s\S]*$/);
-      const separatorIndex = regexResult[1].indexOf("&");
-      if (separatorIndex !== -1)
-        return regexResult[1].substring(0, separatorIndex);
-      return regexResult[1];
-    };
+      const onAddQuestion = () => {
+        const newQuestion = {
+          id: section.content.length + 1,
+          type: content_type.QUESTION,
+          data: {},
+        };
+        addContent(newQuestion);
+      };
 
-    const getVideoThumbnail = (videoID) => {
-      return `http://img.youtube.com/vi/${videoID}/0.jpg`;
-    };
+      const onAddImage = (img) => {
+        const newImage = {
+          id: section.content.length + 1,
+          type: content_type.IMAGE,
+          data: { img: img },
+        };
+        addContent(newImage);
 
-    console.log("Rendering the content, which is:");
-    console.log(content);
+        // TODO upload to server
+      };
 
-    return content.map((cont, index) => {
-      switch (cont.type) {
-        case content_type.QUESTION:
-          return (
-            <NewQuestion
-              key={cont.id}
-              content={cont}
-              id={cont.id}
-              index={index}
-              removeQuestion={onRemoveContent}
-              update={updateContent}
-            />
-          );
-        case content_type.IMAGE:
-          return (
-            <NewImage
-              key={cont.id}
-              id={cont.id}
-              index={index}
-              image={cont.data.img}
-              removeImage={onRemoveContent}
-              update={updateContent}
-            />
-          );
-        case content_type.VIDEO:
-          /* NOTE: there's no meaning in showing the embedded video in
-             the survey editor, therefore we get the video thumbnail and
-             show that as an image. */
-          const thumbnail = getVideoThumbnail(parseVideoID(cont.data.url));
-          return (
-            <NewImage
-              key={cont.id}
-              id={cont.id}
-              index={index}
-              url={thumbnail}
-              videoUrl={cont.data.url}
-              removeImage={onRemoveContent}
-              update={updateContent}
-            />
-          );
-        case content_type.TEXT:
-          return (
-            <NewTextField
-              key={cont.id}
-              id={cont.id}
-              index={index}
-              removeTextField={onRemoveContent}
-              update={updateContent}
-            />
-          );
-      }
+      const onAddTextField = () => {
+        const newTextField = {
+          id: section.content.length + 1,
+          type: content_type.TEXT,
+          data: {},
+        };
+        addContent(newTextField);
+      };
+
+      const onOpenEmbedVideoDialog = () => {
+        setOpenDialog(true);
+      };
+
+      const onCloseEmbedVideoDialog = () => {
+        setOpenDialog(false);
+      };
+
+      const onAddVideo = (url) => {
+        const newVideo = {
+          id: section.content.length + 1,
+          type: content_type.VIDEO,
+          data: { url: url },
+        };
+        addContent(newVideo);
+      };
+
+      const onAddSection = () => {
+        const newSection = {
+          id: section.id,
+          content: [
+            {
+              id: section.content.length + 1,
+              type: content_type.QUESTION,
+              data: {},
+            },
+          ],
+        };
+        let newSections = [...sections];
+        let counter = section.id + 1;
+        for (let s of newSections) {
+          if (s.id >= section.id) {
+            s.id = counter;
+            counter++;
+          }
+        }
+        newSections.splice(sectionIndex, 0, newSection);
+        setSections(newSections);
+      };
+
+      const renderContent = (pageContent) => {
+        /* TODO: consider move video parsing into a specific component */
+        const parseVideoID = (url) => {
+          const regexResult = url.match(/^[\s\S]*watch\?v=([\s\S]*)[\s\S]*$/);
+          const separatorIndex = regexResult[1].indexOf("&");
+          if (separatorIndex !== -1)
+            return regexResult[1].substring(0, separatorIndex);
+          return regexResult[1];
+        };
+
+        const getVideoThumbnail = (videoID) => {
+          return `http://img.youtube.com/vi/${videoID}/0.jpg`;
+        };
+
+        return pageContent.map((cont, contentIndex) => {
+          const updateSection = (newContent) => {
+            let newSections = [...sections];
+            newSections[sectionIndex].content[contentIndex] = newContent;
+            setSections(newSections);
+          };
+
+          const removeContent = () => {
+            let newContent = section.content.filter(
+              (item, itemIndex) => contentIndex !== itemIndex
+            );
+            let counter = 1;
+            for (let c of newContent) {
+              c.id = counter;
+              counter++;
+            }
+            updateSection(newContent);
+          };
+
+          const updateContent = (updates) => {
+            let newContent = { ...cont };
+            newContent.data = { ...cont.data, ...updates };
+            updateSection(newContent);
+          };
+
+          switch (cont.type) {
+            case content_type.QUESTION:
+              return (
+                <NewQuestion
+                  key={cont.id}
+                  content={cont.data}
+                  id={cont.id}
+                  index={contentIndex}
+                  removeQuestion={removeContent}
+                  update={updateContent}
+                />
+              );
+            case content_type.IMAGE:
+              return (
+                <NewImage
+                  key={cont.id}
+                  id={cont.id}
+                  index={contentIndex}
+                  image={cont.data.img}
+                  removeImage={removeContent}
+                  update={updateContent}
+                />
+              );
+            case content_type.VIDEO:
+              /* NOTE: there's no meaning in showing the embedded video in
+                 the survey editor, therefore we get the video thumbnail and
+                 show that as an image. */
+              const thumbnail = getVideoThumbnail(parseVideoID(cont.data.url));
+              return (
+                <NewImage
+                  key={cont.id}
+                  id={cont.id}
+                  index={contentIndex}
+                  url={thumbnail}
+                  videoUrl={cont.data.url}
+                  removeImage={removeContent}
+                  update={updateContent}
+                />
+              );
+            case content_type.TEXT:
+              return (
+                <NewTextField
+                  key={cont.id}
+                  id={cont.id}
+                  index={contentIndex}
+                  removeTextField={removeContent}
+                  update={updateContent}
+                />
+              );
+          }
+        });
+      };
+
+      return (
+        <Droppable
+          key={"droppable-" + section.id}
+          droppableId={section.id.toString()}
+        >
+          {(provided) => (
+            <Grid
+              container
+              ref={provided.innerRef}
+              {...provided.droppableProps}
+              direction="column"
+              justify="center"
+              alignItems="center"
+              id={"droppablegridcontainer-" + section.id}
+              className={
+                sections.length === 1
+                  ? classes.questionsContainerGridHidden
+                  : classes.questionsContainerGrid
+              }
+            >
+              {sections.length === 1 ? (
+                <Fragment />
+              ) : (
+                <Box>{"Section " + section.id}</Box>
+              )}
+              {renderContent(section.content)}
+              {provided.placeholder}
+              <Box
+                component="span"
+                id={"managesurveybox-" + section.id}
+                width="258px"
+                height="50px"
+                className={classes.manageSurveyBox}
+              >
+                <Tooltip title="Add question">
+                  <IconButton
+                    className={classes.manageSurveyBoxIcon}
+                    onClick={() => {
+                      onAddQuestion();
+                    }}
+                  >
+                    <AddIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Insert image">
+                  <ImageInputBtn changeImage={onAddImage} />
+                </Tooltip>
+                <Tooltip title="Embed video">
+                  <IconButton
+                    className={classes.manageSurveyBoxIcon}
+                    onClick={onOpenEmbedVideoDialog}
+                  >
+                    <VideoCallIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Add text field">
+                  <IconButton
+                    className={classes.manageSurveyBoxIcon}
+                    onClick={onAddTextField}
+                  >
+                    <TextFieldsIcon />
+                  </IconButton>
+                </Tooltip>
+                <Tooltip title="Add section">
+                  <IconButton
+                    className={classes.manageSurveyBoxIcon}
+                    onClick={onAddSection}
+                  >
+                    <PostAddIcon />
+                  </IconButton>
+                </Tooltip>
+              </Box>
+              {openDialog === true ? (
+                <EmbedVideoDialog
+                  open={openDialog}
+                  handleClose={onCloseEmbedVideoDialog}
+                  handleSubmit={onAddVideo}
+                />
+              ) : (
+                <Fragment />
+              )}
+            </Grid>
+          )}
+        </Droppable>
+      );
     });
   };
 
@@ -258,60 +422,7 @@ function NewSurvey(props) {
               </Box>
             </Grid>
             <DragDropContext onDragEnd={onDragEnd}>
-              <Droppable droppableId="cardarea">
-                {(provided) => (
-                  <Grid
-                    container
-                    ref={provided.innerRef}
-                    {...provided.droppableProps}
-                    direction="column"
-                    justify="center"
-                    alignItems="center"
-                    id="secondgridcontainer"
-                    className={classes.questionsContainerGrid}
-                  >
-                    {renderContent()}
-                    {provided.placeholder}
-                    <Box
-                      component="span"
-                      id="managesurveybox"
-                      width="210px"
-                      height="50px"
-                      className={classes.manageSurveyBox}
-                    >
-                      <Tooltip title="Add question">
-                        <IconButton
-                          className={classes.manageSurveyBoxIcon}
-                          onClick={() => {
-                            onAddQuestion();
-                          }}
-                        >
-                          <AddIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Insert image">
-                        <ImageInputBtn changeImage={onChangeImage} />
-                      </Tooltip>
-                      <Tooltip title="Embed video">
-                        <IconButton
-                          className={classes.manageSurveyBoxIcon}
-                          onClick={onOpenEmbedVideoDialog}
-                        >
-                          <VideoCallIcon />
-                        </IconButton>
-                      </Tooltip>
-                      <Tooltip title="Add text field">
-                        <IconButton
-                          className={classes.manageSurveyBoxIcon}
-                          onClick={onAddTextField}
-                        >
-                          <TextFieldsIcon />
-                        </IconButton>
-                      </Tooltip>
-                    </Box>
-                  </Grid>
-                )}
-              </Droppable>
+              {renderSections()}
             </DragDropContext>
           </form>
           <Grid item className={classes.bottomButtonsContainer}>
@@ -338,7 +449,7 @@ function NewSurvey(props) {
           </Grid>
         </Box>
       </Box>
-      {openDialog === true ? (
+      {/*{openDialog === true ? (
         <EmbedVideoDialog
           open={openDialog}
           handleClose={onCloseEmbedVideoDialog}
@@ -346,7 +457,7 @@ function NewSurvey(props) {
         />
       ) : (
         <Fragment />
-      )}
+      )}*/}
     </Grid>
   );
 }

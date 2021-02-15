@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { Fragment, useState } from "react";
 // Material
 import {
   Box,
@@ -39,12 +39,12 @@ function NewTextField(props) {
 
   const onChangeTitle = (e) => {
     setState({ ...state, title: e.target.value });
-    props.update(props.index, { title: e.target.value });
+    props.update({ title: e.target.value });
   };
 
   const onChangeDescription = (e) => {
     setState({ ...state, description: e.target.value });
-    props.update(props.index, { description: e.target.value });
+    props.update({ description: e.target.value });
   };
 
   return (
@@ -84,20 +84,8 @@ function NewTextField(props) {
             </CardContent>
             <Divider variant="middle" />
             <CardActions className={classes.cardActions}>
-              <div
-                id={"left-side-actions" + props.index}
-                className={classes.cardActionsLeft}
-              >
-                <Tooltip title="Move up" placement="bottom">
-                  <IconButton onClick={() => {}}>
-                    <ArrowUpward />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Move down" placement="bottom">
-                  <IconButton onClick={() => {}}>
-                    <ArrowDownward />
-                  </IconButton>
-                </Tooltip>
+              <div className={classes.cardActionsLeft}>
+                <Fragment />
               </div>
               <div className={classes.cardActionsRight}>
                 <Tooltip title="Delete question" placement="bottom">

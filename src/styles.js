@@ -66,10 +66,16 @@ export const newSurveyStyle = makeStyles((theme) => ({
   },
   questionsContainerGrid: {
     marginTop: theme.spacing(2),
+    border: "2px solid red",
+    borderRadius: "10px",
+  },
+  questionsContainerGridHidden: {
+    marginTop: theme.spacing(2),
   },
   manageSurveyBox: {
     border: "0.4px solid black",
     borderRadius: "10px",
+    marginBottom: theme.spacing(2),
   },
   manageSurveyBoxIcon: {
     margin: "2px",

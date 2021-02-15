@@ -8,7 +8,7 @@ function MultipleChoiceQuestion(props) {
   let choices = [...props.choices];
 
   const onChangeValue = (e, index) => {
-    choices[index] = e.target.value;
+    choices[index].value = e.target.value;
     props.update(choices);
   };
 
@@ -18,17 +18,17 @@ function MultipleChoiceQuestion(props) {
   };
 
   const onAddOption = () => {
-    choices = [...choices, ""];
+    choices = [...choices, { id: choices.length + 1, value: "" }];
     props.update(choices);
   };
 
   const renderOptions = () => {
-    return props.choices.map((value, index) => {
+    return props.choices.map((choice, index) => {
       return (
-        <div key={index}>
+        <div key={"choice-" + choice.id}>
           <TextField
             label={"Option " + (index + 1)}
-            value={value}
+            value={choice.value}
             className={classes.textField}
             onChange={(e) => {
               onChangeValue(e, index);
