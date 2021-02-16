@@ -12,6 +12,7 @@ import {
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Typography,
 } from "@material-ui/core";
 // DragAndDrop
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
@@ -21,6 +22,7 @@ import AddIcon from "@material-ui/icons/Add";
 import VideoCallIcon from "@material-ui/icons/VideoCall";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import PostAddIcon from "@material-ui/icons/PostAdd";
+import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import NewImage from "./NewImage";
 import NewTextField from "./NewTextField";
 const useStyles = newSurveyStyle;
@@ -94,8 +96,20 @@ function NewSurvey(props) {
     );
     const destinationPageIndex = sections.indexOf(destinationPage);
     destinationPage.content.splice(destination.index, 0, movedContent);
-    newSections[sourcePageIndex] = sourcePage;
+    // If the source section has no more content, remove it
     newSections[destinationPageIndex] = destinationPage;
+    if (sourcePage.content.length === 0) {
+      newSections.splice(sourcePageIndex, 1);
+      let counter = sourcePage.id;
+      for (let s of newSections) {
+        if (s.id > sourcePage.id) {
+          s.id = counter;
+          counter++;
+        }
+      }
+    } else {
+      newSections[sourcePageIndex] = sourcePage;
+    }
     setSections(newSections);
 
     /* OLD
@@ -198,6 +212,19 @@ function NewSurvey(props) {
           }
         }
         newSections.splice(sectionIndex, 0, newSection);
+        setSections(newSections);
+      };
+
+      const onRemoveSection = () => {
+        let newSections = sections.filter((s, i) => i !== sectionIndex);
+        let counter = section.id;
+        for (let s of newSections) {
+          if (s.id > section.id) {
+            s.id = counter;
+            counter++;
+          }
+        }
+        console.log("The new sectins are", newSections);
         setSections(newSections);
       };
 
@@ -316,16 +343,22 @@ function NewSurvey(props) {
               {sections.length === 1 ? (
                 <Fragment />
               ) : (
-                <Box>{"Section " + section.id}</Box>
+                <Box className={classes.sectionNameContainer}>
+                  <Typography variant="h6">
+                    {"Section " + section.id}
+                  </Typography>
+                </Box>
               )}
               {renderContent(section.content)}
               {provided.placeholder}
               <Box
                 component="span"
                 id={"managesurveybox-" + section.id}
-                width="258px"
-                height="50px"
-                className={classes.manageSurveyBox}
+                className={
+                  sections.length === 1
+                    ? classes.manageSurveyBox
+                    : classes.manageSurveyBoxSection
+                }
               >
                 <Tooltip title="Add question">
                   <IconButton
@@ -364,6 +397,18 @@ function NewSurvey(props) {
                     <PostAddIcon />
                   </IconButton>
                 </Tooltip>
+                {sections.length !== 1 ? (
+                  <Tooltip title="Remove section">
+                    <IconButton
+                      className={classes.manageSurveyBoxIcon}
+                      onClick={onRemoveSection}
+                    >
+                      <DeleteSweepIcon />
+                    </IconButton>
+                  </Tooltip>
+                ) : (
+                  <Fragment />
+                )}
               </Box>
               {openDialog === true ? (
                 <EmbedVideoDialog

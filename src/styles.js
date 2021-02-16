@@ -54,6 +54,15 @@ export const newSurveyStyle = makeStyles((theme) => ({
   surveyForm: {
     marginTop: theme.spacing(2),
   },
+  sectionNameContainer: {
+    padding: theme.spacing(1),
+    borderBottom: "2px solid red",
+    borderLeft: "2px solid red",
+    borderRight: "2px solid red",
+    borderBottomLeftRadius: "2px",
+    borderBottomRightRadius: "2px",
+    marginBottom: theme.spacing(1),
+  },
   titleInput: {
     fontSize: 40,
   },
@@ -76,6 +85,15 @@ export const newSurveyStyle = makeStyles((theme) => ({
     border: "0.4px solid black",
     borderRadius: "10px",
     marginBottom: theme.spacing(2),
+    height: "50px",
+    width: "258px",
+  },
+  manageSurveyBoxSection: {
+    border: "0.4px solid black",
+    borderRadius: "10px",
+    marginBottom: theme.spacing(2),
+    height: "50px",
+    width: "310px",
   },
   manageSurveyBoxIcon: {
     margin: "2px",

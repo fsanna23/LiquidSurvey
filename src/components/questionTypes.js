@@ -3,6 +3,8 @@ const questionTypes = {
   PARAGRAPH: "Paragraph",
   MULTIPLE_CHOICE: "Multiple Choice",
   CHECKBOX: "CheckBox",
+  LINEAR_SCALE: "Linear Scale",
+  RANKING: "Ranking",
 };
 
 export default questionTypes;

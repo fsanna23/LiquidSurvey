@@ -25,6 +25,8 @@ import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import DeleteIcon from "@material-ui/icons/Delete";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
+import LinearScaleIcon from "@material-ui/icons/LinearScale";
+import ImportExportIcon from "@material-ui/icons/ImportExport";
 // DragAndDrop
 import { Draggable } from "react-beautiful-dnd";
 //Style
@@ -164,7 +166,6 @@ function NewQuestion(props) {
       case questionTypes.MULTIPLE_CHOICE:
         return (
           <MultipleChoiceQuestion
-            index={props.index}
             update={onUpdateChoices}
             choices={question.choices}
           />
@@ -232,6 +233,18 @@ function NewQuestion(props) {
                     <CheckBoxIcon />
                   </ListItemIcon>
                   <ListItemText primary={QuestionTypes.CHECKBOX} />
+                </MenuItem>
+                <MenuItem value={QuestionTypes.LINEAR_SCALE}>
+                  <ListItemIcon>
+                    <LinearScaleIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={QuestionTypes.LINEAR_SCALE} />
+                </MenuItem>
+                <MenuItem value={QuestionTypes.RANKING}>
+                  <ListItemIcon>
+                    <ImportExportIcon />
+                  </ListItemIcon>
+                  <ListItemText primary={QuestionTypes.RANKING} />
                 </MenuItem>
               </Select>
               {renderDescription()}
