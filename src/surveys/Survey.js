@@ -6,18 +6,18 @@ const SHORT_ANSWER_LENGTH = 40;
  *  the scope of the survey and other.
  */
 export class Survey {
-  constructor(title, description, content) {
+  constructor(title, description, pages) {
     this.id = null;
     if (typeof title !== "string") throw new Error("Title is not a string");
     if (typeof description !== "string")
       throw new Error("Description is not a string");
     this.title = title;
     this.description = description;
-    if (!Array.isArray(content))
-      throw new Error("You must pass an array of content");
-    if (!this._checkValidQuestions(content))
-      throw new Error("You must pass only SurveyContent objects");
-    this.content = content;
+    if (!Array.isArray(pages))
+      throw new Error("You must pass an array of pages");
+    if (!this._checkValidPages(pages))
+      throw new Error("You must pass only SurveyPages objects");
+    this.pages = pages;
   }
 
   setId(id) {
@@ -25,6 +25,24 @@ export class Survey {
     this.id = id;
   }
 
+  _checkValidPages(pages) {
+    pages.forEach((page) => {
+      if (!page instanceof SurveyPage) {
+        return false;
+      }
+    });
+    return true;
+  }
+}
+
+export class SurveyPage {
+  constructor(content) {
+    if (!Array.isArray(content))
+      throw new Error("You must pass an array of content");
+    if (!this._checkValidQuestions(content))
+      throw new Error("You must pass only SurveyContent objects");
+    this.content = content;
+  }
   _checkValidQuestions(content) {
     content.forEach((cnt) => {
       if (!cnt instanceof SurveyContent) {
@@ -39,7 +57,7 @@ export class Survey {
  * Survey content (can be a question, an image,
  * an embedded video or a text with a description)
  */
-export class SurveyContent {
+class SurveyContent {
   constructor(title) {
     this.id = null;
     if (typeof title !== "string") throw new Error("Title is not a string");
@@ -83,7 +101,7 @@ export class Text extends SurveyContent {
  *  Base question class, it contains attributes common to all
  *  the question types, which extend this class.
  */
-export class Question extends SurveyContent {
+class Question extends SurveyContent {
   constructor(title, isMandatory) {
     super(title);
     this.id = null;
@@ -120,7 +138,7 @@ export class Question extends SurveyContent {
 /**
  *  Single answer questions like a short answer or a text field
  */
-export class SingleQuestion extends Question {
+class SingleQuestion extends Question {
   constructor(title, isMandatory) {
     super(title, isMandatory);
     this.answer = null;
@@ -174,7 +192,7 @@ export class Paragraph extends SingleQuestion {
 /**
  *  Question that lets the user choose from more than one option
  */
-export class MultipleQuestion extends Question {
+class MultipleQuestion extends Question {
   constructor(title, isMandatory, choices) {
     super(title, isMandatory);
     if (!Array.isArray(choices)) {
@@ -217,6 +235,29 @@ export class MultipleChoice extends MultipleQuestion {
 }
 
 /**
+ * Question where the users has to rank a list of values
+ */
+export class Ranking extends MultipleQuestion {
+  checkAnswers() {
+    if (!Array.isArray(this.answers))
+      throw new Error("The answer is not an array");
+    for (let answer of this.answers) {
+      if (typeof answer !== "number") return false;
+    }
+    return true;
+  }
+
+  toJson() {
+    return {
+      title: this.title,
+      isMandatory: this.isMandatory,
+      type: "Ranking",
+      choices: this.choices,
+    };
+  }
+}
+
+/**
  *  Multiple answers type where the user can select more than
  *  one option
  */
@@ -238,6 +279,63 @@ export class CheckBox extends MultipleQuestion {
       title: this.title,
       isMandatory: this.isMandatory,
       type: "CheckBox",
+      choices: this.choices,
+    };
+  }
+}
+
+/**
+ * Questions of LinearScale type. The user has a slider that
+ * he can move between a defined interval space. Each option has
+ * a numerical value.
+ */
+export class LinearScale extends Question {
+  constructor(title, isMandatory, values, labels) {
+    super(title, isMandatory);
+    this.checkAndSetValues(values);
+    this.checkAndSetLabels(labels);
+    this.answers = null;
+  }
+
+  checkAndSetValues(values) {
+    if (!!values.minValue || typeof values.minValue !== "number") {
+      throw new Error(
+        "You have to pass a numerical value for the minimum value of the scale inside the key minValue"
+      );
+    }
+    if (!!values.maxValue || typeof values.maxValue !== "number") {
+      throw new Error(
+        "You have to pass a numerical value for the maximum value of the scale inside the key maxValue"
+      );
+    }
+    this.values = values;
+  }
+
+  checkAndSetLabels(labels) {
+    if (!!labels.minValueLabel || typeof labels.minValueLabel !== "string") {
+      throw new Error(
+        "You have to pass a string label for the minimum value of the scale inside the key minValueLabel"
+      );
+    }
+    if (!!labels.maxValueLabel || typeof labels.maxValueLabel !== "string") {
+      throw new Error(
+        "You have to pass a string label for the maximum value of the scale inside the key maxValueLabel"
+      );
+    }
+    this.labels = labels;
+  }
+
+  checkAnswers() {
+    return typeof this.answer === "number"
+      ? true
+      : new Error("The answer is not a number");
+  }
+
+  toJson() {
+    return {
+      title: this.title,
+      isMandatory: this.isMandatory,
+      type: "Multiple Choice",
       choices: this.choices,
     };
   }

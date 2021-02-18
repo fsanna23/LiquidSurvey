@@ -41,6 +41,9 @@ function MainPage(props) {
             </CardContent>
             <CardActions className={classes.cardActions}>
               <Button variant="contained" color="default" size="small">
+                Edit
+              </Button>
+              <Button variant="contained" color="default" size="small">
                 Open
               </Button>
               <IconButton className={classes.moreButton} onClick={handleClick}>

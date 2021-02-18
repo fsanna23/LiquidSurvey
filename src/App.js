@@ -12,10 +12,12 @@ import { mySimpleSurvey, mySurvey } from "./tmpSurveys";
 
 const useStyles = appStyle;
 
+// Initial surveys
 const surveyz = [mySurvey, mySimpleSurvey];
 
 function App() {
   const classes = useStyles();
+  const [surveys, setSurveys] = useState(surveyz);
   const [page, setPage] = useState(pages.MAIN);
   const [showDrawer, setShowDrawer] = useState(false);
 
@@ -23,12 +25,16 @@ function App() {
     setShowDrawer(value);
   };
 
+  const addSurvey = (newSurvey) => {
+    setSurveys([...surveys, newSurvey]);
+  };
+
   const checkPage = () => {
     switch (page) {
       case pages.MAIN:
-        return <MainPage surveys={surveyz} setPage={setPage} />;
+        return <MainPage surveys={surveys} setPage={setPage} />;
       case pages.NEWSURVEY:
-        return <NewSurvey setPage={setPage} />;
+        return <NewSurvey setPage={setPage} addSurvey={addSurvey} />;
     }
   };
 

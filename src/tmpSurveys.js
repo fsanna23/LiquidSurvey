@@ -4,6 +4,7 @@ import {
   MultipleChoice,
   CheckBox,
   Survey,
+  SurveyPage,
 } from "./surveys/Survey";
 
 let firstQuestion = new ShortAnswer("My Title", true);
@@ -19,12 +20,16 @@ let fourthQuestion = new CheckBox("My Checkbox Title", true, [
   "thirdCBChoice",
   "fourthCBChoice",
 ]);
-let mySurvey = new Survey("Prova1", "Desc1", [
+
+let firstPage = new SurveyPage([
   firstQuestion,
   secondQuestion,
   thirdQuestion,
   fourthQuestion,
 ]);
-let mySimpleSurvey = new Survey("Prova2", "Desc2", [firstQuestion]);
+let secondPage = new SurveyPage([firstQuestion]);
+
+let mySurvey = new Survey("Prova1", "Desc1", [firstPage]);
+let mySimpleSurvey = new Survey("Prova2", "Desc2", [secondPage]);
 
 export { mySimpleSurvey, mySurvey };

@@ -34,7 +34,19 @@ import { newQuestionStyle } from "../styles";
 import ImageInputBtn from "./ImageInputBtn";
 import questionTypes from "./questionTypes";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
+import LinearScaleQuestion from "./LinearScaleQuestion";
 const useStyles = newQuestionStyle;
+
+const initialData = {
+  choices: [
+    { id: 1, value: "" },
+    { id: 2, value: "" },
+  ],
+  minValue: 1,
+  maxValue: 5,
+  minValueLabel: "",
+  maxValueLabel: "",
+};
 
 function NewQuestion(props) {
   const classes = useStyles();
@@ -47,11 +59,21 @@ function NewQuestion(props) {
       props.content && props.content.type && props.content.type !== "QUESTION"
         ? props.content.type
         : QuestionTypes.SHORT_TEXT,
-    description: "",
-    choices: [
-      { id: 1, value: "" },
-      { id: 2, value: "" },
-    ],
+    description: props.content.description ? props.content.description : "",
+    choices: props.content.choices
+      ? props.content.choices
+      : [
+          { id: 1, value: "" },
+          { id: 2, value: "" },
+        ],
+    minValue: props.content.minValue ? props.content.minValue : 1,
+    maxValue: props.content.maxValue ? props.content.maxValue : 5,
+    minValueLabel: props.content.minValueLabel
+      ? props.content.minValueLabel
+      : "",
+    maxValueLabel: props.content.maxValueLabel
+      ? props.content.maxValueLabel
+      : "",
   });
   const [images, setImages] = useState([]);
   const [desc, setDesc] = useState({
@@ -59,9 +81,11 @@ function NewQuestion(props) {
     descStatus: false,
   });
 
+  const updateQuestion = props.update;
+
   /* Used to send the title, the type and the mandatory value to the parent */
   useEffect(() => {
-    props.update({
+    updateQuestion({
       title: question.title,
       type: question.type,
       isMandatory: mandatory,
@@ -80,6 +104,7 @@ function NewQuestion(props) {
 
   const onChangeType = (e) => {
     setQuestion({ ...question, type: e.target.value });
+    // TODO reset initial data
     props.update({ type: e.target.value });
   };
 
@@ -161,9 +186,49 @@ function NewQuestion(props) {
     props.update({ choices: choices });
   };
 
+  const onUpdateMinLinearValue = (value) => {
+    setQuestion({ ...question, minValue: value });
+    props.update({ minValue: value });
+  };
+
+  const onUpdateMaxLinearValue = (value) => {
+    setQuestion({ ...question, maxValue: value });
+    props.update({ maxValue: value });
+  };
+
+  const onUpdateMinLinearLabel = (label) => {
+    setQuestion({ ...question, minValueLabel: label });
+    props.update({ minValueLabel: label });
+  };
+
+  const onUpdateMaxLinearLabel = (label) => {
+    setQuestion({ ...question, maxValueLabel: label });
+    props.update({ maxValueLabel: label });
+  };
+
   const renderQuestion = () => {
     switch (question.type) {
       case questionTypes.MULTIPLE_CHOICE:
+        return (
+          <MultipleChoiceQuestion
+            update={onUpdateChoices}
+            choices={question.choices}
+          />
+        );
+      case questionTypes.LINEAR_SCALE:
+        return (
+          <LinearScaleQuestion
+            minValue={question.minValue}
+            maxValue={question.maxValue}
+            minValueLabel={question.minValueLabel}
+            maxValueLabel={question.maxValueLabel}
+            updateMinValue={onUpdateMinLinearValue}
+            updateMaxValue={onUpdateMaxLinearValue}
+            updateMinValueLabel={onUpdateMinLinearLabel}
+            updateMaxValueLabel={onUpdateMaxLinearLabel}
+          />
+        );
+      case questionTypes.RANKING:
         return (
           <MultipleChoiceQuestion
             update={onUpdateChoices}

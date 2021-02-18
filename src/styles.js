@@ -29,7 +29,7 @@ export const mainPageStyle = makeStyles((theme) => ({
   moreButton: {
     position: "relative",
     bottom: theme.spacing(0),
-    right: theme.spacing(-15),
+    right: theme.spacing(-6),
   },
   pos: {
     marginBottom: 12,
@@ -340,5 +340,31 @@ export const multipleChoiceQuestionStyle = makeStyles((theme) => ({
     marginTop: theme.spacing(2),
     marginLeft: theme.spacing(1),
     color: "red",
+  },
+}));
+export const linearScaleQuestionStyle = makeStyles((theme) => ({
+  fieldContainer: {
+    marginTop: theme.spacing(1),
+  },
+  textField: {
+    width: "40%",
+  },
+  rangeSelectContainer: {
+    display: "block",
+    paddingTop: theme.spacing(2),
+  },
+  rangeSelectItem: {
+    float: "left",
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
+  },
+  labelChangeContainer: {
+    display: "block",
+    clear: "both",
+    paddingTop: theme.spacing(2),
+  },
+  labelChangeItem: {
+    display: "block",
+    marginTop: theme.spacing(1),
   },
 }));

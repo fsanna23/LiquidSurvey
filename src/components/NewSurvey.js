@@ -125,6 +125,13 @@ function NewSurvey(props) {
     /*  TODO: save survey data */
     console.log("The content is");
     console.log(sections);
+    let finalJSON = {
+      title: surveyData.title,
+      description: surveyData.description,
+      pages: sections,
+    };
+    console.log(finalJSON);
+    //props.addSurvey(finalJSON);
   };
 
   const onChangeSurveyTitle = (e) => {
@@ -197,7 +204,7 @@ function NewSurvey(props) {
           id: section.id,
           content: [
             {
-              id: section.content.length + 1,
+              id: 1,
               type: content_type.QUESTION,
               data: {},
             },
@@ -212,6 +219,7 @@ function NewSurvey(props) {
           }
         }
         newSections.splice(sectionIndex, 0, newSection);
+        console.log("Added a new section, the sections now are: ", newSections);
         setSections(newSections);
       };
 
@@ -243,28 +251,34 @@ function NewSurvey(props) {
         };
 
         return pageContent.map((cont, contentIndex) => {
-          const updateSection = (newContent) => {
-            let newSections = [...sections];
-            newSections[sectionIndex].content[contentIndex] = newContent;
-            setSections(newSections);
-          };
-
           const removeContent = () => {
+            if (sections.length === 1 && section.content.length === 1) {
+              alert("You must have at least one content in your survey!");
+              return;
+            }
             let newContent = section.content.filter(
               (item, itemIndex) => contentIndex !== itemIndex
             );
-            let counter = 1;
-            for (let c of newContent) {
-              c.id = counter;
-              counter++;
+            if (newContent.length !== 0) {
+              let counter = 1;
+              for (let c of newContent) {
+                c.id = counter;
+                counter++;
+              }
+              let newSections = [...sections];
+              newSections[sectionIndex].content = newContent;
+              setSections(newSections);
+            } else {
+              onRemoveSection();
             }
-            updateSection(newContent);
           };
 
           const updateContent = (updates) => {
             let newContent = { ...cont };
             newContent.data = { ...cont.data, ...updates };
-            updateSection(newContent);
+            let newSections = [...sections];
+            newSections[sectionIndex].content[contentIndex] = newContent;
+            setSections(newSections);
           };
 
           switch (cont.type) {
