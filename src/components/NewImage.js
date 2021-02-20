@@ -17,6 +17,8 @@ import { Draggable } from "react-beautiful-dnd";
 // Icons
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import DeleteIcon from "@material-ui/icons/Delete";
+import ArrowUpward from "@material-ui/icons/ArrowUpward";
+import ArrowDownward from "@material-ui/icons/ArrowDownward";
 // Style
 import { newImageStyle } from "../styles";
 const useStyles = newImageStyle;
@@ -48,60 +50,62 @@ function NewImage(props) {
   };
 
   return (
-    <Draggable draggableId={props.id.toString()} index={props.index}>
-      {(provided) => (
-        <Box
-          width={800}
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-          className={classes.boxCardRoot}
-        >
-          <Card className={classes.cardRoot} variant="outlined">
-            <CardContent className={classes.cardContent}>
-              <Box
-                id="handleBox"
-                display="flex"
-                justifyContent="center"
-                className={classes.dragHandle}
-                {...provided.dragHandleProps}
+    <Box width={800} className={classes.boxCardRoot}>
+      <Card className={classes.cardRoot} variant="outlined">
+        <CardContent className={classes.cardContent}>
+          <Input
+            placeholder={props.url ? "Video title" : "Image title"}
+            inputProps={{ "aria-label": "description" }}
+            className={classes.imageTitle}
+            value={title}
+            onChange={onChangeTitle}
+          />
+          <img
+            ref={imgRef}
+            src={checkImageType()}
+            alt={"img" + props.id}
+            className={classes.imgContent}
+          />
+        </CardContent>
+        <Divider variant="middle" />
+        <CardActions className={classes.cardActions}>
+          <div
+            id={"left-side-actions" + props.index}
+            className={classes.cardActionsLeft}
+          >
+            <Tooltip title="Move up" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  props.move.up();
+                }}
               >
-                <DragHandleIcon className={classes.dragHandleIcon} />
-              </Box>
-              <Input
-                placeholder={props.url ? "Video title" : "Image title"}
-                inputProps={{ "aria-label": "description" }}
-                className={classes.imageTitle}
-                value={title}
-                onChange={onChangeTitle}
-              />
-              <img
-                ref={imgRef}
-                src={checkImageType()}
-                alt={"img" + props.id}
-                className={classes.imgContent}
-              />
-            </CardContent>
-            <Divider variant="middle" />
-            <CardActions className={classes.cardActions}>
-              <div className={classes.cardActionsLeft}>
-                <Fragment />
-              </div>
-              <div className={classes.cardActionsRight}>
-                <Tooltip title="Delete question" placement="bottom">
-                  <IconButton
-                    onClick={() => {
-                      onRemoveContent();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            </CardActions>
-          </Card>
-        </Box>
-      )}
-    </Draggable>
+                <ArrowUpward />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Move down" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  props.move.down();
+                }}
+              >
+                <ArrowDownward />
+              </IconButton>
+            </Tooltip>
+          </div>
+          <div className={classes.cardActionsRight}>
+            <Tooltip title="Delete question" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  onRemoveContent();
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </CardActions>
+      </Card>
+    </Box>
   );
 }
 

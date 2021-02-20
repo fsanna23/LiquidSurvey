@@ -1,19 +1,23 @@
-import React, { useState, useEffect, Fragment } from "react";
-import { Grid, Box, Input, IconButton, Tooltip } from "@material-ui/core";
-import NewQuestion from "./NewQuestion";
-import ImageInputBtn from "./ImageInputBtn";
-import pages from "./pages";
+import React, { Fragment, useEffect, useState } from "react";
 // Dialog
 import {
+  Box,
   Button,
-  TextField,
   Dialog,
   DialogActions,
   DialogContent,
   DialogContentText,
   DialogTitle,
+  Grid,
+  IconButton,
+  Input,
+  TextField,
+  Tooltip,
   Typography,
 } from "@material-ui/core";
+import NewQuestion from "./NewQuestion";
+import ImageInputBtn from "./ImageInputBtn";
+import pages from "./pages";
 // DragAndDrop
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 // Styles
@@ -25,6 +29,7 @@ import PostAddIcon from "@material-ui/icons/PostAdd";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 import NewImage from "./NewImage";
 import NewTextField from "./NewTextField";
+
 const useStyles = newSurveyStyle;
 
 const content_type = {
@@ -42,14 +47,27 @@ function NewSurvey(props) {
   });
   const [sections, setSections] = useState([
     {
-      id: 1,
+      pageId: 1,
       content: [
-        { id: 1, type: content_type.QUESTION, data: {} },
-        { id: 2, type: content_type.QUESTION, data: {} },
+        { contentId: 1, type: content_type.QUESTION, data: {} },
+        { contentId: 2, type: content_type.QUESTION, data: {} },
       ],
     },
   ]);
   const [openDialog, setOpenDialog] = useState(false);
+  const [sectionIdCounter, setSectionIdCounter] = useState(2);
+  const [contentIdCounter, setContentIdCounter] = useState(3);
+
+  // Removes the sections that have a content length equal to zero
+  /*useEffect(() => {
+    let newSections = [];
+    for (let section of sections) {
+      if (section.content.length !== 0) {
+        newSections.push(section);
+      }
+    }
+    setSections(newSections);
+  }, [sections]);*/
 
   /*  Updates the state when the drag ends */
   const onDragEnd = (result) => {
@@ -66,7 +84,7 @@ function NewSurvey(props) {
 
     let newSections = [...sections]; // array of sections
     let sourcePage = sections.find(
-      (c) => c.id.toString() === source.droppableId
+      (c) => c.contentId.toString() === source.droppableId
     ); // section with ID and content
     const sourcePageIndex = sections.indexOf(sourcePage);
     /* Alternative sourcePageIndex -->
@@ -75,7 +93,7 @@ function NewSurvey(props) {
     );
     */
     const movedContent = sourcePage.content.find(
-      (c) => c.id.toString() === draggableId
+      (c) => c.contentId.toString() === draggableId
     ); // content that has to be moved
 
     // Remove the content from the source page
@@ -92,7 +110,7 @@ function NewSurvey(props) {
     }
 
     let destinationPage = sections.find(
-      (c) => c.id.toString() === destination.droppableId
+      (c) => c.pageId.toString() === destination.droppableId
     );
     const destinationPageIndex = sections.indexOf(destinationPage);
     destinationPage.content.splice(destination.index, 0, movedContent);
@@ -100,10 +118,10 @@ function NewSurvey(props) {
     newSections[destinationPageIndex] = destinationPage;
     if (sourcePage.content.length === 0) {
       newSections.splice(sourcePageIndex, 1);
-      let counter = sourcePage.id;
+      let counter = sourcePage.pageId;
       for (let s of newSections) {
-        if (s.id > sourcePage.id) {
-          s.id = counter;
+        if (s.pageId > sourcePage.pageId) {
+          s.pageId = counter;
           counter++;
         }
       }
@@ -142,6 +160,18 @@ function NewSurvey(props) {
     setSurveyData({ ...surveyData, description: e.target.value });
   };
 
+  const increaseSectionCounter = () => {
+    const newSectionId = sectionIdCounter;
+    setSectionIdCounter(newSectionId + 1);
+    return newSectionId;
+  };
+
+  const increaseContentCounter = () => {
+    const newContentId = contentIdCounter;
+    setContentIdCounter(newContentId + 1);
+    return newContentId;
+  };
+
   const renderSections = () => {
     return sections.map((section, sectionIndex) => {
       const addContent = (newContent) => {
@@ -154,8 +184,9 @@ function NewSurvey(props) {
       };
 
       const onAddQuestion = () => {
+        const newContentId = increaseContentCounter();
         const newQuestion = {
-          id: section.content.length + 1,
+          contentId: newContentId,
           type: content_type.QUESTION,
           data: {},
         };
@@ -163,8 +194,9 @@ function NewSurvey(props) {
       };
 
       const onAddImage = (img) => {
+        const newContentId = increaseContentCounter();
         const newImage = {
-          id: section.content.length + 1,
+          contentId: newContentId,
           type: content_type.IMAGE,
           data: { img: img },
         };
@@ -174,8 +206,9 @@ function NewSurvey(props) {
       };
 
       const onAddTextField = () => {
+        const newContentId = increaseContentCounter();
         const newTextField = {
-          id: section.content.length + 1,
+          contentId: newContentId,
           type: content_type.TEXT,
           data: {},
         };
@@ -191,8 +224,9 @@ function NewSurvey(props) {
       };
 
       const onAddVideo = (url) => {
+        const newContentId = increaseContentCounter();
         const newVideo = {
-          id: section.content.length + 1,
+          contentId: newContentId,
           type: content_type.VIDEO,
           data: { url: url },
         };
@@ -200,24 +234,30 @@ function NewSurvey(props) {
       };
 
       const onAddSection = () => {
+        const newContentId = increaseContentCounter();
+
+        const newSectionId = increaseSectionCounter();
+
         const newSection = {
-          id: section.id,
+          pageId: newSectionId,
           content: [
             {
-              id: 1,
+              contentId: newContentId,
               type: content_type.QUESTION,
-              data: {},
+              data: {
+                title: "",
+              },
             },
           ],
         };
         let newSections = [...sections];
-        let counter = section.id + 1;
+        /*let counter = section.id + 1;
         for (let s of newSections) {
           if (s.id >= section.id) {
             s.id = counter;
             counter++;
           }
-        }
+        }*/
         newSections.splice(sectionIndex, 0, newSection);
         console.log("Added a new section, the sections now are: ", newSections);
         setSections(newSections);
@@ -225,13 +265,13 @@ function NewSurvey(props) {
 
       const onRemoveSection = () => {
         let newSections = sections.filter((s, i) => i !== sectionIndex);
-        let counter = section.id;
+        /*let counter = section.id;
         for (let s of newSections) {
           if (s.id > section.id) {
             s.id = counter;
             counter++;
           }
-        }
+        }*/
         console.log("The new sectins are", newSections);
         setSections(newSections);
       };
@@ -260,11 +300,11 @@ function NewSurvey(props) {
               (item, itemIndex) => contentIndex !== itemIndex
             );
             if (newContent.length !== 0) {
-              let counter = 1;
+              /*let counter = 1;
               for (let c of newContent) {
                 c.id = counter;
                 counter++;
-              }
+              }*/
               let newSections = [...sections];
               newSections[sectionIndex].content = newContent;
               setSections(newSections);
@@ -281,26 +321,80 @@ function NewSurvey(props) {
             setSections(newSections);
           };
 
+          const moveContentUp = () => {
+            if (contentIndex === 0) {
+              if (sectionIndex !== 0) {
+                // Move to the section before the current one
+                let destContent = sections[sectionIndex - 1].content;
+                //cont.id = destContent.length + 1;
+                destContent = [...destContent, cont];
+                section.content.splice(contentIndex, 1);
+                let newSections = [...sections];
+                newSections[sectionIndex].content = section.content;
+                newSections[sectionIndex - 1].content = destContent;
+                setSections(newSections);
+                if (section.content.length === 0) onRemoveSection();
+              }
+            } else {
+              // Move up on the same section
+              let newContent = [...sections[sectionIndex].content];
+              newContent.splice(contentIndex, 1);
+              newContent.splice(contentIndex - 1, 0, cont);
+              let newSections = [...sections];
+              newSections[sectionIndex].content = newContent;
+              setSections(newSections);
+            }
+          };
+
+          const moveContentDown = () => {
+            if (contentIndex === section.content.length - 1) {
+              if (sectionIndex !== sections.length - 1) {
+                // Move to the section after the current one
+                let destContent = sections[sectionIndex + 1].content;
+                destContent = [cont, ...destContent];
+                section.content.splice(contentIndex, 1);
+                let newSections = [...sections];
+                newSections[sectionIndex].content = section.content;
+                newSections[sectionIndex + 1].content = destContent;
+                setSections(newSections);
+                if (section.content.length === 0) onRemoveSection();
+              }
+            } else {
+              // Move down on the same section
+              let newContent = [...sections[sectionIndex].content];
+              newContent.splice(contentIndex, 1);
+              newContent.splice(contentIndex + 1, 0, cont);
+              let newSections = [...sections];
+              newSections[sectionIndex].content = newContent;
+              setSections(newSections);
+            }
+          };
+
+          const move = { up: moveContentUp, down: moveContentDown };
+
           switch (cont.type) {
             case content_type.QUESTION:
               return (
                 <NewQuestion
-                  key={cont.id}
+                  key={cont.contentId}
                   content={cont.data}
-                  id={cont.id}
+                  id={cont.contentId}
                   index={contentIndex}
+                  section={sectionIndex}
                   removeQuestion={removeContent}
+                  move={move}
                   update={updateContent}
                 />
               );
             case content_type.IMAGE:
               return (
                 <NewImage
-                  key={cont.id}
-                  id={cont.id}
+                  key={cont.contentId}
+                  id={cont.contentId}
                   index={contentIndex}
                   image={cont.data.img}
                   removeImage={removeContent}
+                  move={move}
                   update={updateContent}
                 />
               );
@@ -311,22 +405,24 @@ function NewSurvey(props) {
               const thumbnail = getVideoThumbnail(parseVideoID(cont.data.url));
               return (
                 <NewImage
-                  key={cont.id}
-                  id={cont.id}
+                  key={cont.contentId}
+                  id={cont.contentId}
                   index={contentIndex}
                   url={thumbnail}
                   videoUrl={cont.data.url}
                   removeImage={removeContent}
+                  move={move}
                   update={updateContent}
                 />
               );
             case content_type.TEXT:
               return (
                 <NewTextField
-                  key={cont.id}
-                  id={cont.id}
+                  key={cont.contentId}
+                  id={cont.contentId}
                   index={contentIndex}
                   removeTextField={removeContent}
+                  move={move}
                   update={updateContent}
                 />
               );
@@ -335,107 +431,97 @@ function NewSurvey(props) {
       };
 
       return (
-        <Droppable
-          key={"droppable-" + section.id}
-          droppableId={section.id.toString()}
+        <Grid
+          container
+          direction="column"
+          justify="center"
+          alignItems="center"
+          id={"droppablegridcontainer-" + section.pageId}
+          className={
+            sections.length === 1
+              ? classes.questionsContainerGridHidden
+              : classes.questionsContainerGrid
+          }
         >
-          {(provided) => (
-            <Grid
-              container
-              ref={provided.innerRef}
-              {...provided.droppableProps}
-              direction="column"
-              justify="center"
-              alignItems="center"
-              id={"droppablegridcontainer-" + section.id}
-              className={
-                sections.length === 1
-                  ? classes.questionsContainerGridHidden
-                  : classes.questionsContainerGrid
-              }
-            >
-              {sections.length === 1 ? (
-                <Fragment />
-              ) : (
-                <Box className={classes.sectionNameContainer}>
-                  <Typography variant="h6">
-                    {"Section " + section.id}
-                  </Typography>
-                </Box>
-              )}
-              {renderContent(section.content)}
-              {provided.placeholder}
-              <Box
-                component="span"
-                id={"managesurveybox-" + section.id}
-                className={
-                  sections.length === 1
-                    ? classes.manageSurveyBox
-                    : classes.manageSurveyBoxSection
-                }
-              >
-                <Tooltip title="Add question">
-                  <IconButton
-                    className={classes.manageSurveyBoxIcon}
-                    onClick={() => {
-                      onAddQuestion();
-                    }}
-                  >
-                    <AddIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Insert image">
-                  <ImageInputBtn changeImage={onAddImage} />
-                </Tooltip>
-                <Tooltip title="Embed video">
-                  <IconButton
-                    className={classes.manageSurveyBoxIcon}
-                    onClick={onOpenEmbedVideoDialog}
-                  >
-                    <VideoCallIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Add text field">
-                  <IconButton
-                    className={classes.manageSurveyBoxIcon}
-                    onClick={onAddTextField}
-                  >
-                    <TextFieldsIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Add section">
-                  <IconButton
-                    className={classes.manageSurveyBoxIcon}
-                    onClick={onAddSection}
-                  >
-                    <PostAddIcon />
-                  </IconButton>
-                </Tooltip>
-                {sections.length !== 1 ? (
-                  <Tooltip title="Remove section">
-                    <IconButton
-                      className={classes.manageSurveyBoxIcon}
-                      onClick={onRemoveSection}
-                    >
-                      <DeleteSweepIcon />
-                    </IconButton>
-                  </Tooltip>
-                ) : (
-                  <Fragment />
-                )}
-              </Box>
-              {openDialog === true ? (
-                <EmbedVideoDialog
-                  open={openDialog}
-                  handleClose={onCloseEmbedVideoDialog}
-                  handleSubmit={onAddVideo}
-                />
-              ) : (
-                <Fragment />
-              )}
-            </Grid>
+          {sections.length === 1 ? (
+            <Fragment />
+          ) : (
+            <Box className={classes.sectionNameContainer}>
+              <Typography variant="h6">
+                {"Section " + (sectionIndex + 1)}
+              </Typography>
+            </Box>
           )}
-        </Droppable>
+          {renderContent(section.content)}
+          <Box
+            component="span"
+            id={"managesurveybox-" + section.pageId}
+            className={
+              sections.length === 1
+                ? classes.manageSurveyBox
+                : classes.manageSurveyBoxSection
+            }
+          >
+            <Tooltip title="Add question">
+              <IconButton
+                className={classes.manageSurveyBoxIcon}
+                onClick={() => {
+                  onAddQuestion();
+                }}
+              >
+                <AddIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Insert image">
+              <ImageInputBtn changeImage={onAddImage} />
+            </Tooltip>
+            <Tooltip title="Embed video">
+              <IconButton
+                className={classes.manageSurveyBoxIcon}
+                onClick={onOpenEmbedVideoDialog}
+              >
+                <VideoCallIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add text field">
+              <IconButton
+                className={classes.manageSurveyBoxIcon}
+                onClick={onAddTextField}
+              >
+                <TextFieldsIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add section">
+              <IconButton
+                className={classes.manageSurveyBoxIcon}
+                onClick={onAddSection}
+              >
+                <PostAddIcon />
+              </IconButton>
+            </Tooltip>
+            {sections.length !== 1 ? (
+              <Tooltip title="Remove section">
+                <IconButton
+                  className={classes.manageSurveyBoxIcon}
+                  onClick={onRemoveSection}
+                >
+                  <DeleteSweepIcon />
+                </IconButton>
+              </Tooltip>
+            ) : (
+              <Fragment />
+            )}
+          </Box>
+          {openDialog === true ? (
+            <EmbedVideoDialog
+              open={openDialog}
+              handleClose={onCloseEmbedVideoDialog}
+              handleSubmit={onAddVideo}
+            />
+          ) : (
+            <Fragment />
+          )}
+        </Grid>
       );
     });
   };
@@ -480,9 +566,7 @@ function NewSurvey(props) {
                 />
               </Box>
             </Grid>
-            <DragDropContext onDragEnd={onDragEnd}>
-              {renderSections()}
-            </DragDropContext>
+            {renderSections()}
           </form>
           <Grid item className={classes.bottomButtonsContainer}>
             <Button

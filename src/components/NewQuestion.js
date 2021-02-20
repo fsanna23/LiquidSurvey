@@ -27,6 +27,8 @@ import DeleteIcon from "@material-ui/icons/Delete";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import LinearScaleIcon from "@material-ui/icons/LinearScale";
 import ImportExportIcon from "@material-ui/icons/ImportExport";
+import ArrowUpward from "@material-ui/icons/ArrowUpward";
+import ArrowDownward from "@material-ui/icons/ArrowDownward";
 // DragAndDrop
 import { Draggable } from "react-beautiful-dnd";
 //Style
@@ -85,6 +87,12 @@ function NewQuestion(props) {
 
   /* Used to send the title, the type and the mandatory value to the parent */
   useEffect(() => {
+    console.log(
+      "Now updating this contentIndex: ",
+      props.index,
+      "in this section index: ",
+      props.section
+    );
     updateQuestion({
       title: question.title,
       type: question.type,
@@ -241,134 +249,136 @@ function NewQuestion(props) {
   };
 
   return (
-    <Draggable draggableId={props.id.toString()} index={props.index}>
-      {(provided) => (
-        <Box
-          width={800}
-          {...provided.draggableProps}
-          ref={provided.innerRef}
-          className={classes.boxCardRoot}
-        >
-          <Card className={classes.cardRoot} variant="outlined">
-            <CardContent className={classes.cardContent}>
-              <Box
-                id="handleBox"
-                display="flex"
-                justifyContent="center"
-                className={classes.dragHandle}
-                {...provided.dragHandleProps}
+    <Box width={800} className={classes.boxCardRoot}>
+      <Card className={classes.cardRoot} variant="outlined">
+        <CardContent className={classes.cardContent}>
+          <Input
+            placeholder="Question title"
+            inputProps={{ "aria-label": "description" }}
+            className={classes.questionTitle}
+            onChange={onChangeTitle}
+            value={question.title}
+          />
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={question.type}
+            renderValue={renderSelectValue}
+            className={classes.questionType}
+            onChange={onChangeType}
+          >
+            <MenuItem value={QuestionTypes.SHORT_TEXT}>
+              <ListItemIcon>
+                <ShortTextIcon />
+              </ListItemIcon>
+              <ListItemText primary={QuestionTypes.SHORT_TEXT} />
+            </MenuItem>
+            <MenuItem value={QuestionTypes.PARAGRAPH}>
+              <ListItemIcon>
+                <SubjectIcon />
+              </ListItemIcon>
+              <ListItemText primary={QuestionTypes.PARAGRAPH} />
+            </MenuItem>
+            <MenuItem value={QuestionTypes.MULTIPLE_CHOICE}>
+              <ListItemIcon>
+                <RadioButtonCheckedIcon />
+              </ListItemIcon>
+              <ListItemText primary={QuestionTypes.MULTIPLE_CHOICE} />
+            </MenuItem>
+            <MenuItem value={QuestionTypes.CHECKBOX}>
+              <ListItemIcon>
+                <CheckBoxIcon />
+              </ListItemIcon>
+              <ListItemText primary={QuestionTypes.CHECKBOX} />
+            </MenuItem>
+            <MenuItem value={QuestionTypes.LINEAR_SCALE}>
+              <ListItemIcon>
+                <LinearScaleIcon />
+              </ListItemIcon>
+              <ListItemText primary={QuestionTypes.LINEAR_SCALE} />
+            </MenuItem>
+            <MenuItem value={QuestionTypes.RANKING}>
+              <ListItemIcon>
+                <ImportExportIcon />
+              </ListItemIcon>
+              <ListItemText primary={QuestionTypes.RANKING} />
+            </MenuItem>
+          </Select>
+          {renderDescription()}
+          {renderImages()}
+          {renderQuestion()}
+        </CardContent>
+        <Divider variant="middle" />
+        <CardActions className={classes.cardActions}>
+          <div
+            id={"left-side-actions" + props.id + props.index}
+            className={classes.cardActionsLeft}
+          >
+            <Tooltip title="Move up" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  props.move.up();
+                }}
               >
-                <DragHandleIcon className={classes.dragHandleIcon} />
-              </Box>
-              <Input
-                placeholder="Question title"
-                inputProps={{ "aria-label": "description" }}
-                className={classes.questionTitle}
-                onChange={onChangeTitle}
-                value={question.title}
-              />
-              <Select
-                labelId="demo-simple-select-label"
-                id="demo-simple-select"
-                value={question.type}
-                renderValue={renderSelectValue}
-                className={classes.questionType}
-                onChange={onChangeType}
+                <ArrowUpward />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Move down" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  props.move.down();
+                }}
               >
-                <MenuItem value={QuestionTypes.SHORT_TEXT}>
-                  <ListItemIcon>
-                    <ShortTextIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={QuestionTypes.SHORT_TEXT} />
-                </MenuItem>
-                <MenuItem value={QuestionTypes.PARAGRAPH}>
-                  <ListItemIcon>
-                    <SubjectIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={QuestionTypes.PARAGRAPH} />
-                </MenuItem>
-                <MenuItem value={QuestionTypes.MULTIPLE_CHOICE}>
-                  <ListItemIcon>
-                    <RadioButtonCheckedIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={QuestionTypes.MULTIPLE_CHOICE} />
-                </MenuItem>
-                <MenuItem value={QuestionTypes.CHECKBOX}>
-                  <ListItemIcon>
-                    <CheckBoxIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={QuestionTypes.CHECKBOX} />
-                </MenuItem>
-                <MenuItem value={QuestionTypes.LINEAR_SCALE}>
-                  <ListItemIcon>
-                    <LinearScaleIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={QuestionTypes.LINEAR_SCALE} />
-                </MenuItem>
-                <MenuItem value={QuestionTypes.RANKING}>
-                  <ListItemIcon>
-                    <ImportExportIcon />
-                  </ListItemIcon>
-                  <ListItemText primary={QuestionTypes.RANKING} />
-                </MenuItem>
-              </Select>
-              {renderDescription()}
-              {renderImages()}
-              {renderQuestion()}
-            </CardContent>
-            <Divider variant="middle" />
-            <CardActions className={classes.cardActions}>
-              <div className={classes.cardActionsLeft}>
-                <Fragment />
-              </div>
-              <div className={classes.cardActionsRight}>
-                <FormControlLabel
-                  control={
-                    <Switch
-                      checked={mandatory}
-                      onChange={handleMandatory}
-                      name="checkedA"
-                      color="primary"
-                    />
-                  }
-                  label="Mandatory"
-                  labelPlacement="start"
+                <ArrowDownward />
+              </IconButton>
+            </Tooltip>
+          </div>
+          <div className={classes.cardActionsRight}>
+            <FormControlLabel
+              control={
+                <Switch
+                  checked={mandatory}
+                  onChange={handleMandatory}
+                  name="checkedA"
+                  color="primary"
                 />
-                <Divider
-                  orientation="vertical"
-                  flexItem
-                  className={classes.cardActionsDivider}
-                />
-                <Tooltip
-                  title={(desc.descStatus ? "Hide" : "Show") + " description"}
-                  placement="bottom"
-                >
-                  <IconButton
-                    onClick={() => {
-                      onToggleDescription();
-                    }}
-                  >
-                    <ShortTextIcon />
-                  </IconButton>
-                </Tooltip>
-                <Tooltip title="Attach image" placement="bottom">
-                  <ImageInputBtn changeImage={onAddImage} />
-                </Tooltip>
-                <Tooltip title="Delete question" placement="bottom">
-                  <IconButton
-                    onClick={() => {
-                      onRemoveQuestion();
-                    }}
-                  >
-                    <DeleteIcon />
-                  </IconButton>
-                </Tooltip>
-              </div>
-            </CardActions>
-          </Card>
-        </Box>
-      )}
-    </Draggable>
+              }
+              label="Mandatory"
+              labelPlacement="start"
+            />
+            <Divider
+              orientation="vertical"
+              flexItem
+              className={classes.cardActionsDivider}
+            />
+            <Tooltip
+              title={(desc.descStatus ? "Hide" : "Show") + " description"}
+              placement="bottom"
+            >
+              <IconButton
+                onClick={() => {
+                  onToggleDescription();
+                }}
+              >
+                <ShortTextIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Attach image" placement="bottom">
+              <ImageInputBtn changeImage={onAddImage} />
+            </Tooltip>
+            <Tooltip title="Delete question" placement="bottom">
+              <IconButton
+                onClick={() => {
+                  onRemoveQuestion();
+                }}
+              >
+                <DeleteIcon />
+              </IconButton>
+            </Tooltip>
+          </div>
+        </CardActions>
+      </Card>
+    </Box>
   );
 }
 
