@@ -140,6 +140,28 @@ function NewSurvey(props) {
   };
 
   const onSaveSurvey = () => {
+    const changeImages = (json) => {
+      json.pages.forEach((page) => {
+        page.content.forEach((cont) => {
+          if (cont.type === content_type.QUESTION) {
+            if (
+              cont.data.images &&
+              Array.isArray(cont.data.images) &&
+              cont.data.images.length !== 0
+            ) {
+              cont.data.images.map((img) => {
+                return img.name;
+              });
+            }
+          }
+          if (cont.type === content_type.IMAGE) {
+            cont.data.img = cont.data.img.name;
+          }
+        });
+      });
+      return json;
+    };
+
     /*  TODO: save survey data */
     console.log("The content is");
     console.log(sections);
@@ -149,7 +171,7 @@ function NewSurvey(props) {
       pages: sections,
     };
     console.log(finalJSON);
-    props.addSurvey(finalJSON);
+    props.addSurvey(changeImages(finalJSON));
     props.setPage(pages.MAIN);
   };
 

@@ -29,6 +29,11 @@ function MainPage(props) {
     setAnchorEl(null);
   };
 
+  const onViewSurvey = (survey) => {
+    props.selectSurvey([survey]);
+    props.setPage(pages.VIEWSURVEY);
+  };
+
   const displaySurveys = () => {
     return props.surveys.map((survey) => {
       return (
@@ -43,7 +48,14 @@ function MainPage(props) {
               <Button variant="contained" color="default" size="small">
                 Edit
               </Button>
-              <Button variant="contained" color="default" size="small">
+              <Button
+                variant="contained"
+                color="default"
+                size="small"
+                onClick={() => {
+                  onViewSurvey(survey);
+                }}
+              >
                 Open
               </Button>
               <IconButton className={classes.moreButton} onClick={handleClick}>

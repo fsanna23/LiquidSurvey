@@ -149,7 +149,10 @@ function NewQuestion(props) {
 
   const renderImages = () => {
     const onRemoveImg = (index) => {
-      setImages(images.filter((el, ix) => ix !== index));
+      let newImages = [...images];
+      newImages = newImages.filter((el, ix) => ix !== index);
+      setImages(newImages);
+      props.update({ images: newImages });
     };
 
     if (!Array.isArray(images)) {
@@ -185,7 +188,9 @@ function NewQuestion(props) {
 
   const onAddImage = (img) => {
     console.log("Adding image");
-    setImages([...images, img]);
+    const newImages = [...images, img];
+    setImages(newImages);
+    props.update({ images: newImages });
     // forceUpdate();
   };
 

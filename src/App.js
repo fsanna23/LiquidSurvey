@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
 import NavBar from "./components/editor/NavBar";
 import MainPage from "./components/editor/MainPage";
 import NewSurvey from "./components/editor/NewSurvey";
+import View from "./components/view/View";
 import pages from "./components/pages";
 import Drawer from "@material-ui/core/Drawer";
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
@@ -9,6 +10,7 @@ import { appStyle } from "./editorStyles";
 import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import DescriptionIcon from "@material-ui/icons/Description";
 import { mySimpleSurvey, mySurvey } from "./tmpSurveys";
+import SelectedSurveyContext from "./SelectedSurveyContext";
 
 const useStyles = appStyle;
 
@@ -20,6 +22,7 @@ function App() {
   const [surveys, setSurveys] = useState(surveyz);
   const [page, setPage] = useState(pages.MAIN);
   const [showDrawer, setShowDrawer] = useState(false);
+  const [selectedSurvey, setSelectedSurvey] = useState({});
 
   const switchDrawer = (value) => {
     setShowDrawer(value);
@@ -32,9 +35,21 @@ function App() {
   const checkPage = () => {
     switch (page) {
       case pages.MAIN:
-        return <MainPage surveys={surveys} setPage={setPage} />;
+        return (
+          <MainPage
+            surveys={surveys}
+            setPage={setPage}
+            selectSurvey={setSelectedSurvey}
+          />
+        );
       case pages.NEWSURVEY:
         return <NewSurvey setPage={setPage} addSurvey={addSurvey} />;
+      case pages.VIEWSURVEY:
+        return (
+          <SelectedSurveyContext.Provider value={selectedSurvey}>
+            <View />
+          </SelectedSurveyContext.Provider>
+        );
     }
   };
 
