@@ -48,7 +48,7 @@ function NewSurvey(props) {
   const [sections, setSections] = useState([
     {
       pageId: 1,
-      content: [
+      contents: [
         { contentId: 1, type: content_type.QUESTION, data: {} },
         { contentId: 2, type: content_type.QUESTION, data: {} },
       ],
@@ -92,17 +92,17 @@ function NewSurvey(props) {
       (c) => c.id.toString() === source.droppableId
     );
     */
-    const movedContent = sourcePage.content.find(
+    const movedContent = sourcePage.contents.find(
       (c) => c.contentId.toString() === draggableId
     ); // content that has to be moved
 
     // Remove the content from the source page
-    sourcePage.content.splice(source.index, 1);
+    sourcePage.contents.splice(source.index, 1);
 
     // If the content is moved in the same section that it was before
     if (source.droppableId === destination.droppableId) {
       // Insert the content in the new position of the same section
-      sourcePage.content.splice(destination.index, 0, movedContent);
+      sourcePage.contents.splice(destination.index, 0, movedContent);
       // Update
       newSections[sourcePageIndex] = sourcePage;
       setSections(newSections);
@@ -113,10 +113,10 @@ function NewSurvey(props) {
       (c) => c.pageId.toString() === destination.droppableId
     );
     const destinationPageIndex = sections.indexOf(destinationPage);
-    destinationPage.content.splice(destination.index, 0, movedContent);
+    destinationPage.contents.splice(destination.index, 0, movedContent);
     // If the source section has no more content, remove it
     newSections[destinationPageIndex] = destinationPage;
-    if (sourcePage.content.length === 0) {
+    if (sourcePage.contents.length === 0) {
       newSections.splice(sourcePageIndex, 1);
       let counter = sourcePage.pageId;
       for (let s of newSections) {
@@ -142,7 +142,7 @@ function NewSurvey(props) {
   const onSaveSurvey = () => {
     const changeImages = (json) => {
       json.pages.forEach((page) => {
-        page.content.forEach((cont) => {
+        page.contents.forEach((cont) => {
           if (cont.type === content_type.QUESTION) {
             if (
               cont.data.images &&
@@ -199,8 +199,8 @@ function NewSurvey(props) {
     return sections.map((section, sectionIndex) => {
       const addContent = (newContent) => {
         let newSections = [...sections];
-        newSections[sectionIndex].content = [
-          ...newSections[sectionIndex].content,
+        newSections[sectionIndex].contents = [
+          ...newSections[sectionIndex].contents,
           newContent,
         ];
         setSections(newSections);
@@ -263,7 +263,7 @@ function NewSurvey(props) {
 
         const newSection = {
           pageId: newSectionId,
-          content: [
+          contents: [
             {
               contentId: newContentId,
               type: content_type.QUESTION,
@@ -315,11 +315,11 @@ function NewSurvey(props) {
 
         return pageContent.map((cont, contentIndex) => {
           const removeContent = () => {
-            if (sections.length === 1 && section.content.length === 1) {
+            if (sections.length === 1 && section.contents.length === 1) {
               alert("You must have at least one content in your survey!");
               return;
             }
-            let newContent = section.content.filter(
+            let newContent = section.contents.filter(
               (item, itemIndex) => contentIndex !== itemIndex
             );
             if (newContent.length !== 0) {
@@ -329,7 +329,7 @@ function NewSurvey(props) {
                 counter++;
               }*/
               let newSections = [...sections];
-              newSections[sectionIndex].content = newContent;
+              newSections[sectionIndex].contents = newContent;
               setSections(newSections);
             } else {
               onRemoveSection();
@@ -340,7 +340,7 @@ function NewSurvey(props) {
             let newContent = { ...cont };
             newContent.data = { ...cont.data, ...updates };
             let newSections = [...sections];
-            newSections[sectionIndex].content[contentIndex] = newContent;
+            newSections[sectionIndex].contents[contentIndex] = newContent;
             setSections(newSections);
           };
 
@@ -348,39 +348,39 @@ function NewSurvey(props) {
             if (contentIndex === 0) {
               if (sectionIndex !== 0) {
                 // Move to the section before the current one
-                let destContent = sections[sectionIndex - 1].content;
+                let destContent = sections[sectionIndex - 1].contents;
                 //cont.id = destContent.length + 1;
                 destContent = [...destContent, cont];
-                section.content.splice(contentIndex, 1);
+                section.contents.splice(contentIndex, 1);
                 let newSections = [...sections];
-                newSections[sectionIndex].content = section.content;
-                newSections[sectionIndex - 1].content = destContent;
+                newSections[sectionIndex].contents = section.contents;
+                newSections[sectionIndex - 1].contents = destContent;
                 setSections(newSections);
-                if (section.content.length === 0) onRemoveSection();
+                if (section.contents.length === 0) onRemoveSection();
               }
             } else {
               // Move up on the same section
-              let newContent = [...sections[sectionIndex].content];
+              let newContent = [...sections[sectionIndex].contents];
               newContent.splice(contentIndex, 1);
               newContent.splice(contentIndex - 1, 0, cont);
               let newSections = [...sections];
-              newSections[sectionIndex].content = newContent;
+              newSections[sectionIndex].contents = newContent;
               setSections(newSections);
             }
           };
 
           const moveContentDown = () => {
-            if (contentIndex === section.content.length - 1) {
+            if (contentIndex === section.contents.length - 1) {
               if (sectionIndex !== sections.length - 1) {
                 // Move to the section after the current one
-                let destContent = sections[sectionIndex + 1].content;
+                let destContent = sections[sectionIndex + 1].contents;
                 destContent = [cont, ...destContent];
-                section.content.splice(contentIndex, 1);
+                section.contents.splice(contentIndex, 1);
                 let newSections = [...sections];
-                newSections[sectionIndex].content = section.content;
-                newSections[sectionIndex + 1].content = destContent;
+                newSections[sectionIndex].contents = section.content;
+                newSections[sectionIndex + 1].contents = destContent;
                 setSections(newSections);
-                if (section.content.length === 0) onRemoveSection();
+                if (section.contents.length === 0) onRemoveSection();
               }
             } else {
               // Move down on the same section
@@ -388,7 +388,7 @@ function NewSurvey(props) {
               newContent.splice(contentIndex, 1);
               newContent.splice(contentIndex + 1, 0, cont);
               let newSections = [...sections];
-              newSections[sectionIndex].content = newContent;
+              newSections[sectionIndex].contents = newContent;
               setSections(newSections);
             }
           };
@@ -475,7 +475,7 @@ function NewSurvey(props) {
               </Typography>
             </Box>
           )}
-          {renderContent(section.content)}
+          {renderContent(section.contents)}
           <Box
             component="span"
             id={"managesurveybox-" + section.pageId}
