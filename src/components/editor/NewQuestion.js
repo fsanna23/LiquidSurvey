@@ -1,5 +1,5 @@
 import React, { useState, Fragment, useEffect } from "react";
-import QuestionTypes from "./questionTypes";
+import QuestionTypes from "../questionTypes";
 // Material
 import {
   Box,
@@ -32,9 +32,9 @@ import ArrowDownward from "@material-ui/icons/ArrowDownward";
 // DragAndDrop
 import { Draggable } from "react-beautiful-dnd";
 //Style
-import { newQuestionStyle } from "../styles";
+import { newQuestionStyle } from "../../editorStyles";
 import ImageInputBtn from "./ImageInputBtn";
-import questionTypes from "./questionTypes";
+import questionTypes from "../questionTypes";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion";
 import LinearScaleQuestion from "./LinearScaleQuestion";
 const useStyles = newQuestionStyle;

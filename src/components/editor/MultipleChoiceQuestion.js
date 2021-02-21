@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { TextField, Button } from "@material-ui/core";
-import { multipleChoiceQuestionStyle } from "../styles";
+import { multipleChoiceQuestionStyle } from "../../editorStyles";
 const useStyles = multipleChoiceQuestionStyle;
 
 function MultipleChoiceQuestion(props) {

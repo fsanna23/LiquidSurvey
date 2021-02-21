@@ -17,11 +17,11 @@ import {
 } from "@material-ui/core";
 import NewQuestion from "./NewQuestion";
 import ImageInputBtn from "./ImageInputBtn";
-import pages from "./pages";
+import pages from "../pages";
 // DragAndDrop
 import { DragDropContext, Droppable } from "react-beautiful-dnd";
 // Styles
-import { newSurveyStyle } from "../styles";
+import { newSurveyStyle } from "../../editorStyles";
 import AddIcon from "@material-ui/icons/Add";
 import VideoCallIcon from "@material-ui/icons/VideoCall";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
@@ -149,7 +149,8 @@ function NewSurvey(props) {
       pages: sections,
     };
     console.log(finalJSON);
-    //props.addSurvey(finalJSON);
+    props.addSurvey(finalJSON);
+    props.setPage(pages.MAIN);
   };
 
   const onChangeSurveyTitle = (e) => {

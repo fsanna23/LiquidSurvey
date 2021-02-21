@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@material-ui/core";
 import MenuIcon from "@material-ui/icons/Menu";
-import { appBarStyle } from "../styles";
+import { appBarStyle } from "../../editorStyles";
 
 const useStyles = appBarStyle;
 

@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { linearScaleQuestionStyle } from "../styles";
+import { linearScaleQuestionStyle } from "../../editorStyles";
 import {
   Typography,
   FormControl,

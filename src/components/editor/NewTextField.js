@@ -1,4 +1,4 @@
-import React, { useState, useRef, Fragment } from "react";
+import React, { Fragment, useState } from "react";
 // Material
 import {
   Box,
@@ -17,36 +17,34 @@ import { Draggable } from "react-beautiful-dnd";
 // Icons
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import DeleteIcon from "@material-ui/icons/Delete";
+// Style
+import { newTextFieldStyle } from "../../editorStyles";
 import ArrowUpward from "@material-ui/icons/ArrowUpward";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
-// Style
-import { newImageStyle } from "../styles";
-const useStyles = newImageStyle;
+import ShortTextIcon from "@material-ui/icons/ShortText";
+import ImageInputBtn from "./ImageInputBtn";
+const useStyles = newTextFieldStyle;
 
-function NewImage(props) {
+function NewTextField(props) {
   const classes = useStyles();
-  const imgRef = useRef(null);
 
-  const [title, setTitle] = useState("");
+  const [state, setState] = useState({
+    title: "",
+    description: "",
+  });
 
   const onRemoveContent = () => {
-    props.removeImage(props.index);
+    props.removeTextField(props.index);
   };
 
   const onChangeTitle = (e) => {
-    setTitle(e.target.value);
+    setState({ ...state, title: e.target.value });
     props.update({ title: e.target.value });
   };
 
-  const checkImageType = () => {
-    if (props.url) {
-      return props.url;
-    } else if (props.image) {
-      return URL.createObjectURL(props.image);
-    } else {
-      console.log(props);
-      return props.url;
-    }
+  const onChangeDescription = (e) => {
+    setState({ ...state, description: e.target.value });
+    props.update({ description: e.target.value });
   };
 
   return (
@@ -54,17 +52,18 @@ function NewImage(props) {
       <Card className={classes.cardRoot} variant="outlined">
         <CardContent className={classes.cardContent}>
           <Input
-            placeholder={props.url ? "Video title" : "Image title"}
-            inputProps={{ "aria-label": "description" }}
-            className={classes.imageTitle}
-            value={title}
+            placeholder="Title"
+            inputProps={{ "aria-label": "title" }}
+            className={classes.textTitle}
+            value={state.title}
             onChange={onChangeTitle}
           />
-          <img
-            ref={imgRef}
-            src={checkImageType()}
-            alt={"img" + props.id}
-            className={classes.imgContent}
+          <Input
+            placeholder="Description"
+            inputProps={{ "aria-label": "description" }}
+            className={classes.textDescription}
+            value={state.description}
+            onChange={onChangeDescription}
           />
         </CardContent>
         <Divider variant="middle" />
@@ -109,4 +108,4 @@ function NewImage(props) {
   );
 }
 
-export default NewImage;
+export default NewTextField;

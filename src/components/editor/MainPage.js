@@ -12,8 +12,8 @@ import {
   Typography,
 } from "@material-ui/core";
 import MoreIcon from "@material-ui/icons/MoreVert";
-import { mainPageStyle } from "../styles";
-import pages from "./pages";
+import { mainPageStyle } from "../../editorStyles";
+import pages from "../pages";
 
 const useStyles = mainPageStyle;
 

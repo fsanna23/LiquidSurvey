@@ -1,7 +1,7 @@
 import React, { Fragment, useRef } from "react";
 import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 import { IconButton } from "@material-ui/core";
-import { newSurveyStyle } from "../styles";
+import { newSurveyStyle } from "../../editorStyles";
 
 const useStyles = newSurveyStyle;
 

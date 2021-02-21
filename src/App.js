@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import NavBar from "./components/NavBar";
-import MainPage from "./components/MainPage";
-import NewSurvey from "./components/NewSurvey";
+import NavBar from "./components/editor/NavBar";
+import MainPage from "./components/editor/MainPage";
+import NewSurvey from "./components/editor/NewSurvey";
 import pages from "./components/pages";
 import Drawer from "@material-ui/core/Drawer";
 import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { appStyle } from "./styles";
+import { appStyle } from "./editorStyles";
 import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import DescriptionIcon from "@material-ui/icons/Description";
 import { mySimpleSurvey, mySurvey } from "./tmpSurveys";

@@ -7,7 +7,7 @@ import TextFieldsIcon from "@material-ui/icons/TextFields";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
 
-import { newSurveyStyle } from "../styles";
+import { newSurveyStyle } from "../../editorStyles";
 const useStyles = newSurveyStyle;
 
 function ManageSurveyButtons(props) {
