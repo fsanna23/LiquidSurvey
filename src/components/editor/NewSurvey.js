@@ -33,10 +33,10 @@ import NewTextField from "./NewTextField";
 const useStyles = newSurveyStyle;
 
 const content_type = {
-  QUESTION: "QUESTION",
-  IMAGE: "IMAGE",
-  VIDEO: "VIDEO",
-  TEXT: "TEXT",
+  QUESTION: "Question",
+  IMAGE: "Image",
+  VIDEO: "Video",
+  TEXT: "Text",
 };
 
 function NewSurvey(props) {
