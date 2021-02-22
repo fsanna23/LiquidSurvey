@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect } from "react";
 import { linearScaleQuestionStyle } from "../../editorStyles";
 import {
   Typography,
@@ -16,6 +16,10 @@ function LinearScaleQuestion(props) {
   let maxValue = props.maxValue;
   let minValueLabel = props.minValueLabel;
   let maxValueLabel = props.maxValueLabel;
+
+  useEffect(() => {
+    props.updateAll({ minValue, maxValue, minValueLabel, maxValueLabel });
+  }, []);
 
   const onChangeMinValue = (e) => {
     props.updateMinValue(e.target.value);

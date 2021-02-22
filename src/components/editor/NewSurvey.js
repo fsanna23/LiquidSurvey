@@ -339,6 +339,7 @@ function NewSurvey(props) {
           const updateContent = (updates) => {
             let newContent = { ...cont };
             newContent.data = { ...cont.data, ...updates };
+            console.log("The new content is now: ", newContent);
             let newSections = [...sections];
             newSections[sectionIndex].contents[contentIndex] = newContent;
             setSections(newSections);

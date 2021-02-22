@@ -229,6 +229,16 @@ function NewQuestion(props) {
           />
         );
       case questionTypes.LINEAR_SCALE:
+        const updateAll = (updates) => {
+          props.update(updates);
+        };
+
+        /*props.update({
+          minValue: question.minValue,
+          maxValue: question.maxValue,
+          minValueLabel: question.minValueLabel,
+          maxValueLabel: question.maxValueLabel,
+        });*/
         return (
           <LinearScaleQuestion
             minValue={question.minValue}
@@ -239,6 +249,7 @@ function NewQuestion(props) {
             updateMaxValue={onUpdateMaxLinearValue}
             updateMinValueLabel={onUpdateMinLinearLabel}
             updateMaxValueLabel={onUpdateMaxLinearLabel}
+            updateAll={updateAll}
           />
         );
       case questionTypes.RANKING:
