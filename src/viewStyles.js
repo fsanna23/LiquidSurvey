@@ -5,12 +5,10 @@ export const questionStyle = makeStyles((theme) => ({
 
 root: {
 	flexGrow: 1,
-    backgroundColor: "#D3EAFF",
     paddingTop: "50px",
-    paddingBottom: "50px",
-    marginLeft: 'auto',
-    marginRight: 'auto',
-    height: 300,
+    marginBotton: 0,
+    height: "100%",
+    overflow: "hidden",
 
 },
 

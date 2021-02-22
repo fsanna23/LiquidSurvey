@@ -63,7 +63,6 @@ function JsonLoader(props) {
   };
 
   const [anchorEl, setAnchorEl] = React.useState(null);
-
   const handleClick = (event) => {
     setAnchorEl(event.currentTarget);
   };
@@ -93,7 +92,8 @@ function JsonLoader(props) {
 
             <Grid className={classes.grid} container spacing={3}>
               <Grid item>
-                {question.data.images.map((img) => (
+                {/*Se l'array non è vuoto, allora lo scorre*/}
+                {question.data.images && question.data.images.map((img) => (
                   <Paper
                     variant="outlined"
                     className={classes.imagePaperContainer}
@@ -269,14 +269,12 @@ function JsonLoader(props) {
                   value={linearScaleSelectedValue}
                   onChange={handleLinearScaleChange}
                 >
+                    {console.log(question)}
                   {
                     //Number converte una stringa in un numero
 
                     [
-                      ...Array(
-                        Number(question.data.maxValue) +
-                          1 -
-                          Number(question.data.minValue)
+                      ...Array(Number(question.data.maxValue) + 1 - Number(question.data.minValue)
                       ),
                     ].map((s, i) => (
                       <FormControlLabel
@@ -376,17 +374,18 @@ function JsonLoader(props) {
       return renderImage(item);
     }
   };
+
   return (
     <div>
-      {/*Mappa il file .json*/}
+    {/*Mappa il file .json*/}
       {console.log("The json data is ", jsonData)}
       {jsonData.map((item) => (
         <div>
           {/*Renders the questionnaire's header*/}
           {renderHeader(item)}
-
+          
           {/*Loops over the contents array and for every element calls the contentSorter in order to call the correct function
-					that renders that specific content*/}
+          that renders that specific content*/}
           {item.pages[currentPage].contents.map((s) => {
             return <div>{contentSorter(s)}</div>;
           })}
@@ -410,7 +409,7 @@ function JsonLoader(props) {
               ""
             )}
             {/*If currentPage is equal to the last element of the 'pages' array it shows the 'Save' button that will save the survey,
-					if not, it will shows the 'Next' button until there is a next page (the array index starts from 0)*/}
+          if not, it will shows the 'Next' button until there is a next page (the array index starts from 0)*/}
             {currentPage === item.pages.length - 1 ? (
               <Button
                 className={classes.pagesSwitchButton}
@@ -432,7 +431,9 @@ function JsonLoader(props) {
           </Box>
         </div>
       ))}
+      
     </div>
+
   );
 }
 
