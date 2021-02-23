@@ -326,6 +326,52 @@ export const newTextFieldStyle = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
 }));
+export const newRandomNumberStyle = makeStyles((theme) => ({
+  boxCardRoot: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  placeholderTitle: {
+    fontSize: 15,
+    width: "50%",
+  },
+  cardRoot: {
+    minWidth: 275,
+    borderColor: theme.palette.primary.light,
+  },
+  dragHandle: {
+    alignContent: "center",
+    marginTop: -12,
+  },
+  dragHandleIcon: {
+    right: "100%",
+    justifySelf: "center",
+  },
+  cardTitle: {
+    color: "white",
+  },
+  cardContent: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  cardActions: {
+    display: "flex",
+  },
+  cardActionsRight: {
+    marginLeft: theme.spacing(2),
+    justifyContent: "end",
+    display: "flex",
+  },
+  cardActionsLeft: {
+    marginLeft: theme.spacing(2),
+    justifyContent: "flex-end",
+    flex: "1",
+  },
+  cardActionsDivider: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  }
+}));
 export const multipleChoiceQuestionStyle = makeStyles((theme) => ({
   fieldContainer: {
     marginTop: theme.spacing(1),
