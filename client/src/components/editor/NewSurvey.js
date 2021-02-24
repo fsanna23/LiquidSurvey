@@ -1,3 +1,4 @@
+/* eslint-disable default-case */
 import React, { Fragment, useEffect, useState } from "react";
 // Dialog
 import {
@@ -369,6 +370,20 @@ function NewSurvey(props) {
                 newSections[sectionIndex].contents = section.contents;
                 newSections[sectionIndex - 1].contents = destContent;
                 setSections(newSections);
+                // Check and change placeholders
+                if (cont.type === content_type.RANDOM_NUMBER) {
+                  let newRandomNumbers = [...randomNumbers];
+                  newRandomNumbers[
+                    sectionIndex
+                  ].placeholders = newRandomNumbers[
+                    sectionIndex
+                  ].placeholders.filter((ph) => ph.index !== contentIndex);
+                  newRandomNumbers[sectionIndex - 1].placeholders.push({
+                    index: destContent.length - 1,
+                    name: cont.name,
+                  });
+                  setRandomNumbers(newRandomNumbers);
+                }
                 if (section.contents.length === 0) onRemoveSection();
               }
             } else {
@@ -379,6 +394,16 @@ function NewSurvey(props) {
               let newSections = [...sections];
               newSections[sectionIndex].contents = newContent;
               setSections(newSections);
+              // Change placeholders
+              let newRandomNumbers = [...randomNumbers];
+              newRandomNumbers[sectionIndex].placeholders = newRandomNumbers[
+                sectionIndex
+              ].placeholders.map((ph) =>
+                ph.index !== contentIndex
+                  ? ph
+                  : { ...ph, index: contentIndex - 1 }
+              );
+              setRandomNumbers(newRandomNumbers);
             }
           };
 
@@ -393,6 +418,20 @@ function NewSurvey(props) {
                 newSections[sectionIndex].contents = section.content;
                 newSections[sectionIndex + 1].contents = destContent;
                 setSections(newSections);
+                // Check and change placeholders
+                if (cont.type === content_type.RANDOM_NUMBER) {
+                  let newRandomNumbers = [...randomNumbers];
+                  newRandomNumbers[
+                    sectionIndex
+                  ].placeholders = newRandomNumbers[
+                    sectionIndex
+                  ].placeholders.filter((ph) => ph.index !== contentIndex);
+                  newRandomNumbers[sectionIndex + 1].placeholders.push({
+                    index: 0,
+                    name: cont.name,
+                  });
+                  setRandomNumbers(newRandomNumbers);
+                }
                 if (section.contents.length === 0) onRemoveSection();
               }
             } else {
@@ -403,6 +442,16 @@ function NewSurvey(props) {
               let newSections = [...sections];
               newSections[sectionIndex].contents = newContent;
               setSections(newSections);
+              // Change placeholders
+              let newRandomNumbers = [...randomNumbers];
+              newRandomNumbers[sectionIndex].placeholders = newRandomNumbers[
+                sectionIndex
+              ].placeholders.map((ph) =>
+                ph.index !== contentIndex
+                  ? ph
+                  : { ...ph, index: contentIndex + 1 }
+              );
+              setRandomNumbers(newRandomNumbers);
             }
           };
 
