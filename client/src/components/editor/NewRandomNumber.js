@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   Box,
   Card,
@@ -21,22 +21,29 @@ import FormControl from "@material-ui/core/FormControl";
 const useStyles = newRandomNumberStyle;
 
 function NewRandomNumber(props) {
-  const [title, setTitle] = useState("");
+  const [name, setName] = useState("");
   const [minRange, setMinRange] = useState(0);
   const [maxRange, setMaxRange] = useState(100);
 
+  useEffect(() => {
+    props.update({ name, minRange, maxRange });
+  }, []);
+
   const classes = useStyles();
 
-  const onChangeTitle = (e) => {
-    setTitle(e.target.value);
+  const onChangeName = (e) => {
+    setName(e.target.value);
+    props.update({ name });
   };
 
   const onChangeMinRange = (e) => {
     setMinRange(e.target.value);
+    props.update({ minRange });
   };
 
   const onChangeMaxRange = (e) => {
     setMaxRange(e.target.value);
+    props.update({ maxRange });
   };
 
   const onRemoveContent = () => {
@@ -48,20 +55,20 @@ function NewRandomNumber(props) {
       <Card className={classes.cardRoot} variant="outlined">
         <CardContent className={classes.cardContent}>
           <Input
-            placeholder="Insert the name for your random number"
+            placeholder="Name for your random number"
             inputProps={{ "aria-label": "description" }}
             className={classes.placeholderTitle}
-            value={title}
-            onChange={onChangeTitle}
+            value={name}
+            onChange={onChangeName}
           />
-          <Typography variant="body1">
+          <Typography variant="body1" className={classes.rangeText}>
             Insert the values for the random generation range
           </Typography>
-          <FormControl>
+          <FormControl className={classes.rangeInput}>
             <InputLabel>Minimum range value</InputLabel>
             <Input type="number" value={minRange} onChange={onChangeMinRange} />
           </FormControl>
-          <FormControl>
+          <FormControl className={classes.rangeInput}>
             <InputLabel>Maximum range value</InputLabel>
             <Input type="number" value={maxRange} onChange={onChangeMaxRange} />
           </FormControl>

@@ -86,14 +86,14 @@ export const newSurveyStyle = makeStyles((theme) => ({
     borderRadius: "10px",
     marginBottom: theme.spacing(2),
     height: "50px",
-    width: "258px",
+    width: "263px",
   },
   manageSurveyBoxSection: {
     border: "0.4px solid black",
     borderRadius: "10px",
     marginBottom: theme.spacing(2),
     height: "50px",
-    width: "310px",
+    width: "316px",
   },
   manageSurveyBoxIcon: {
     margin: "2px",
@@ -192,6 +192,7 @@ export const newImageStyle = makeStyles((theme) => ({
   imageTitle: {
     fontSize: 15,
     width: "50%",
+    marginTop: theme.spacing(1),
   },
   cardRoot: {
     minWidth: 275,
@@ -233,6 +234,9 @@ export const newImageStyle = makeStyles((theme) => ({
     width: "50%",
     height: "50%",
     display: "block",
+    margin: theme.spacing(2),
+  },
+  selectAndChangeImgBtn: {
     margin: theme.spacing(2),
   },
 }));
@@ -334,6 +338,7 @@ export const newRandomNumberStyle = makeStyles((theme) => ({
   placeholderTitle: {
     fontSize: 15,
     width: "50%",
+    marginTop: theme.spacing(1),
   },
   cardRoot: {
     minWidth: 275,
@@ -347,10 +352,15 @@ export const newRandomNumberStyle = makeStyles((theme) => ({
     right: "100%",
     justifySelf: "center",
   },
-  cardTitle: {
-    color: "white",
-  },
   cardContent: {
+    marginLeft: theme.spacing(1),
+    marginRight: theme.spacing(1),
+  },
+  rangeText: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  rangeInput: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
@@ -370,7 +380,7 @@ export const newRandomNumberStyle = makeStyles((theme) => ({
   cardActionsDivider: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
-  }
+  },
 }));
 export const multipleChoiceQuestionStyle = makeStyles((theme) => ({
   fieldContainer: {

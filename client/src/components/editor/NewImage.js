@@ -11,6 +11,7 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  Button,
 } from "@material-ui/core";
 // Draggable
 import { Draggable } from "react-beautiful-dnd";
@@ -25,9 +26,10 @@ const useStyles = newImageStyle;
 
 function NewImage(props) {
   const classes = useStyles();
-  const imgRef = useRef(null);
+  const fileInput = useRef(null);
 
   const [title, setTitle] = useState("");
+  const [img, setImg] = useState(undefined);
 
   const onRemoveContent = () => {
     props.removeImage(props.index);
@@ -38,7 +40,17 @@ function NewImage(props) {
     props.update({ title: e.target.value });
   };
 
-  const checkImageType = () => {
+  const onClickSelectImg = () => {
+    fileInput.current.click();
+  };
+
+  const onChangeImage = (e) => {
+    const myImg = e.target.files[0];
+    setImg(myImg);
+    props.update({ img: myImg });
+  };
+
+  /* const checkImageType = () => {
     if (props.url) {
       return props.url;
     } else if (props.image) {
@@ -47,7 +59,7 @@ function NewImage(props) {
       console.log(props);
       return props.url;
     }
-  };
+  };*/
 
   return (
     <Box width={800} className={classes.boxCardRoot}>
@@ -60,12 +72,43 @@ function NewImage(props) {
             value={title}
             onChange={onChangeTitle}
           />
-          <img
-            ref={imgRef}
-            src={checkImageType()}
-            alt={"img" + props.id}
-            className={classes.imgContent}
-          />
+          {img !== undefined ? (
+            <img
+              //src={checkImageType()}
+              src={URL.createObjectURL(img)}
+              alt={"img" + props.id}
+              className={classes.imgContent}
+            />
+          ) : (
+            <Fragment />
+          )}
+          <div>
+            <Button
+              variant="contained"
+              color="primary"
+              className={classes.selectAndChangeImgBtn}
+              onClick={() => {
+                onClickSelectImg();
+              }}
+            >
+              {img === undefined ? "Select" : "Change"} image
+            </Button>
+            <input
+              style={{
+                display: "none",
+                top: "0px",
+                right: "0px",
+              }}
+              type="file"
+              accept="image/*"
+              ref={fileInput}
+              onChange={onChangeImage}
+              onClick={(event) => {
+                // Used to let the user select the same file if needed
+                event.target.value = null;
+              }}
+            />
+          </div>
         </CardContent>
         <Divider variant="middle" />
         <CardActions className={classes.cardActions}>

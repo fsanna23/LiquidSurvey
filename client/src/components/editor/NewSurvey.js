@@ -27,8 +27,12 @@ import VideoCallIcon from "@material-ui/icons/VideoCall";
 import TextFieldsIcon from "@material-ui/icons/TextFields";
 import PostAddIcon from "@material-ui/icons/PostAdd";
 import DeleteSweepIcon from "@material-ui/icons/DeleteSweep";
+import BookmarkIcon from "@material-ui/icons/Bookmark";
 import NewImage from "./NewImage";
 import NewTextField from "./NewTextField";
+import NewRandomNumber from "./NewRandomNumber";
+import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
+import PlaceholdersContext from "./PlaceholdersContext";
 
 const useStyles = newSurveyStyle;
 
@@ -37,6 +41,7 @@ const content_type = {
   IMAGE: "Image",
   VIDEO: "Video",
   TEXT: "Text",
+  RANDOM_NUMBER: "Random Number",
 };
 
 function NewSurvey(props) {
@@ -57,17 +62,9 @@ function NewSurvey(props) {
   const [openDialog, setOpenDialog] = useState(false);
   const [sectionIdCounter, setSectionIdCounter] = useState(2);
   const [contentIdCounter, setContentIdCounter] = useState(3);
-
-  // Removes the sections that have a content length equal to zero
-  /*useEffect(() => {
-    let newSections = [];
-    for (let section of sections) {
-      if (section.content.length !== 0) {
-        newSections.push(section);
-      }
-    }
-    setSections(newSections);
-  }, [sections]);*/
+  const [randomNumbers, setRandomNumbers] = useState([
+    { pageId: 1, placeholders: [] },
+  ]);
 
   /*  Updates the state when the drag ends */
   const onDragEnd = (result) => {
@@ -216,16 +213,14 @@ function NewSurvey(props) {
         addContent(newQuestion);
       };
 
-      const onAddImage = (img) => {
+      const onAddImage = () => {
         const newContentId = increaseContentCounter();
         const newImage = {
           contentId: newContentId,
           type: content_type.IMAGE,
-          data: { img: img },
+          data: {},
         };
         addContent(newImage);
-
-        // TODO upload to server
       };
 
       const onAddTextField = () => {
@@ -236,6 +231,23 @@ function NewSurvey(props) {
           data: {},
         };
         addContent(newTextField);
+      };
+
+      const onAddRandomNumber = () => {
+        const newContentId = increaseContentCounter();
+        const newRandomNumber = {
+          contentId: newContentId,
+          type: content_type.RANDOM_NUMBER,
+          data: {},
+        };
+        addContent(newRandomNumber);
+        let newRandomNumbers = [...randomNumbers];
+        let phIndex = section.contents.length;
+        newRandomNumbers[sectionIndex].placeholders.push({
+          index: phIndex,
+          name: "",
+        });
+        setRandomNumbers(newRandomNumbers);
       };
 
       const onOpenEmbedVideoDialog = () => {
@@ -450,6 +462,17 @@ function NewSurvey(props) {
                   update={updateContent}
                 />
               );
+            case content_type.RANDOM_NUMBER:
+              return (
+                <NewRandomNumber
+                  key={cont.contentId}
+                  id={cont.contentId}
+                  index={contentIndex}
+                  removeRandomNumber={removeContent}
+                  move={move}
+                  update={updateContent}
+                />
+              );
           }
         });
       };
@@ -497,8 +520,17 @@ function NewSurvey(props) {
               </IconButton>
             </Tooltip>
             <Tooltip title="Insert image">
-              <ImageInputBtn changeImage={onAddImage} />
+              {/* OLD <ImageInputBtn changeImage={onAddImage} />*/}
+              <IconButton
+                className={classes.manageSurveyBoxIcon}
+                onClick={() => {
+                  onAddImage();
+                }}
+              >
+                <InsertPhotoIcon />
+              </IconButton>
             </Tooltip>
+            {/* ADD LATER
             <Tooltip title="Embed video">
               <IconButton
                 className={classes.manageSurveyBoxIcon}
@@ -506,13 +538,21 @@ function NewSurvey(props) {
               >
                 <VideoCallIcon />
               </IconButton>
-            </Tooltip>
+            </Tooltip>*/}
             <Tooltip title="Add text field">
               <IconButton
                 className={classes.manageSurveyBoxIcon}
                 onClick={onAddTextField}
               >
                 <TextFieldsIcon />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Add random number">
+              <IconButton
+                className={classes.manageSurveyBoxIcon}
+                onClick={onAddRandomNumber}
+              >
+                <BookmarkIcon />
               </IconButton>
             </Tooltip>
             <Tooltip title="Add section">
