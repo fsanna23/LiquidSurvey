@@ -1,4 +1,4 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useEffect } from "react";
 import NavBar from "./components/editor/NavBar";
 import MainPage from "./components/editor/MainPage";
 import NewSurvey from "./components/editor/NewSurvey";
@@ -23,6 +23,15 @@ function App() {
   const [page, setPage] = useState(pages.MAIN);
   const [showDrawer, setShowDrawer] = useState(false);
   const [selectedSurvey, setSelectedSurvey] = useState({});
+
+  useEffect(() => {
+    fetch("http://localhost:9000/getImageList")
+      .then((response) => response.json())
+      .then((data) =>
+        // DO SOMETHING WITH DATA
+        console.log("Fetched data from the server, which is: ", data)
+      );
+  }, []);
 
   const switchDrawer = (value) => {
     setShowDrawer(value);
