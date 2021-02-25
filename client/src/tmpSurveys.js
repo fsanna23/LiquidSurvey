@@ -30,6 +30,30 @@ let firstPage = new SurveyPage([
 let secondPage = new SurveyPage([firstQuestion]);
 
 let mySurvey = new Survey("Prova1", "Desc1", [firstPage]);
-let mySimpleSurvey = new Survey("Prova2", "Desc2", [secondPage]);
+let mySimpleSurvey = {
+  title: "Random01",
+  description: "RandomDesc",
+  pages: [
+    {
+      pageId: 1,
+      contents: [
+        {
+          contentId: 1,
+          type: "Random Number",
+          data: { name: "Pippo", minRange: 0, maxRange: 100 },
+        },
+        {
+          contentId: 2,
+          type: "Image",
+          data: {
+            title: "ImagetitleProva",
+            randomName: "Pippo",
+            randomStatus: true,
+          },
+        },
+      ],
+    },
+  ],
+};
 
 export { mySimpleSurvey, mySurvey };
