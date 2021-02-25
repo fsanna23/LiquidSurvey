@@ -33,17 +33,17 @@ function NewRandomNumber(props) {
 
   const onChangeName = (e) => {
     setName(e.target.value);
-    props.update({ name });
+    props.update({ name: e.target.value });
   };
 
   const onChangeMinRange = (e) => {
     setMinRange(e.target.value);
-    props.update({ minRange });
+    props.update({ minRange: e.target.value });
   };
 
   const onChangeMaxRange = (e) => {
     setMaxRange(e.target.value);
-    props.update({ maxRange });
+    props.update({ maxRange: e.target.value });
   };
 
   const onRemoveContent = () => {

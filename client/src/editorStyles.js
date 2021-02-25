@@ -239,6 +239,9 @@ export const newImageStyle = makeStyles((theme) => ({
   selectAndChangeImgBtn: {
     margin: theme.spacing(2),
   },
+  randomNameSelector: {
+    margin: theme.spacing(2),
+  },
 }));
 export const newVideoStyle = makeStyles((theme) => ({
   boxCardRoot: {

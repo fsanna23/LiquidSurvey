@@ -1,4 +1,4 @@
-import React, { useState, useRef, Fragment } from "react";
+import React, { useState, useRef, Fragment, useEffect } from "react";
 // Material
 import {
   Box,
@@ -12,6 +12,10 @@ import {
   FormControlLabel,
   Switch,
   Button,
+  MenuItem,
+  ListItemIcon,
+  ListItemText,
+  Select,
 } from "@material-ui/core";
 // Draggable
 import { Draggable } from "react-beautiful-dnd";
@@ -22,14 +26,30 @@ import ArrowUpward from "@material-ui/icons/ArrowUpward";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 // Style
 import { newImageStyle } from "../../editorStyles";
+import QuestionTypes from "../questionTypes";
+import ShortTextIcon from "@material-ui/icons/ShortText";
+import SubjectIcon from "@material-ui/icons/Subject";
+import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
+import CheckBoxIcon from "@material-ui/icons/CheckBox";
+import LinearScaleIcon from "@material-ui/icons/LinearScale";
+import ImportExportIcon from "@material-ui/icons/ImportExport";
 const useStyles = newImageStyle;
 
 function NewImage(props) {
   const classes = useStyles();
   const fileInput = useRef(null);
+  const randomNumbersNames = props.randomNumbers;
 
   const [title, setTitle] = useState("");
   const [img, setImg] = useState(undefined);
+  const [randomize, setRandomize] = useState({
+    randomStatus: false,
+    randomName: "",
+  });
+
+  useEffect(() => {
+    console.log("The random numbers in NewImage are: ", randomNumbersNames);
+  }, []);
 
   const onRemoveContent = () => {
     props.removeImage(props.index);
@@ -50,6 +70,16 @@ function NewImage(props) {
     props.update({ img: myImg });
   };
 
+  const onChangeRandomStatus = () => {
+    setRandomize({ ...randomize, randomStatus: !randomize.randomStatus });
+    props.update({ randomStatus: !randomize.randomStatus });
+  };
+
+  const onChangeRandomName = (e) => {
+    setRandomize({ ...randomize, randomName: e.target.value });
+    props.update({ randomName: e.target.value });
+  };
+
   /* const checkImageType = () => {
     if (props.url) {
       return props.url;
@@ -60,6 +90,85 @@ function NewImage(props) {
       return props.url;
     }
   };*/
+
+  const renderRandomizeSelection = () => {
+    const showGallery = () => {};
+
+    const checkValue = () => {
+      let check = false;
+      if (randomNumbersNames.length !== 0) {
+        randomNumbersNames.forEach((name) => {
+          if (randomize.randomName === name) check = true;
+        });
+      }
+      return check;
+    };
+
+    return (
+      <Fragment>
+        {randomNumbersNames.length !== 0 ? (
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={checkValue() === true ? randomize.randomName : ""}
+            className={classes.randomNameSelector}
+            onChange={onChangeRandomName}
+            defaultValue=""
+          >
+            {randomNumbersNames.map((rn) => (
+              <MenuItem key={"selectvalue" + rn} value={rn}>
+                {rn}
+              </MenuItem>
+            ))}
+          </Select>
+        ) : null}
+      </Fragment>
+    );
+  };
+
+  const renderDefaultImage = () => {
+    return (
+      <Fragment>
+        {img !== undefined ? (
+          <img
+            //src={checkImageType()}
+            src={URL.createObjectURL(img)}
+            alt={"img" + props.id}
+            className={classes.imgContent}
+          />
+        ) : (
+          <Fragment />
+        )}
+        <div>
+          <Button
+            variant="contained"
+            color="primary"
+            className={classes.selectAndChangeImgBtn}
+            onClick={() => {
+              onClickSelectImg();
+            }}
+          >
+            {img === undefined ? "Select" : "Change"} image
+          </Button>
+          <input
+            style={{
+              display: "none",
+              top: "0px",
+              right: "0px",
+            }}
+            type="file"
+            accept="image/*"
+            ref={fileInput}
+            onChange={onChangeImage}
+            onClick={(event) => {
+              // Used to let the user select the same file if needed
+              event.target.value = null;
+            }}
+          />
+        </div>
+      </Fragment>
+    );
+  };
 
   return (
     <Box width={800} className={classes.boxCardRoot}>
@@ -72,43 +181,9 @@ function NewImage(props) {
             value={title}
             onChange={onChangeTitle}
           />
-          {img !== undefined ? (
-            <img
-              //src={checkImageType()}
-              src={URL.createObjectURL(img)}
-              alt={"img" + props.id}
-              className={classes.imgContent}
-            />
-          ) : (
-            <Fragment />
-          )}
-          <div>
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.selectAndChangeImgBtn}
-              onClick={() => {
-                onClickSelectImg();
-              }}
-            >
-              {img === undefined ? "Select" : "Change"} image
-            </Button>
-            <input
-              style={{
-                display: "none",
-                top: "0px",
-                right: "0px",
-              }}
-              type="file"
-              accept="image/*"
-              ref={fileInput}
-              onChange={onChangeImage}
-              onClick={(event) => {
-                // Used to let the user select the same file if needed
-                event.target.value = null;
-              }}
-            />
-          </div>
+          {randomize.randomStatus
+            ? renderRandomizeSelection()
+            : renderDefaultImage()}
         </CardContent>
         <Divider variant="middle" />
         <CardActions className={classes.cardActions}>
@@ -136,6 +211,26 @@ function NewImage(props) {
             </Tooltip>
           </div>
           <div className={classes.cardActionsRight}>
+            {props.randomNumbers.length !== 0 ? (
+              <Fragment>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={randomize.randomStatus}
+                      onChange={onChangeRandomStatus}
+                      color="primary"
+                    />
+                  }
+                  label="Randomize"
+                  labelPlacement="start"
+                />
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  className={classes.cardActionsDivider}
+                />
+              </Fragment>
+            ) : null}
             <Tooltip title="Delete question" placement="bottom">
               <IconButton
                 onClick={() => {

@@ -153,7 +153,9 @@ function NewSurvey(props) {
             }
           }
           if (cont.type === content_type.IMAGE) {
-            cont.data.img = cont.data.img.name;
+            if (!cont.data.randomStatus || cont.data.randomStatus === false) {
+              cont.data.img = cont.data.img.name;
+            }
           }
         });
       });
@@ -191,6 +193,19 @@ function NewSurvey(props) {
     const newContentId = contentIdCounter;
     setContentIdCounter(newContentId + 1);
     return newContentId;
+  };
+
+  const updateRandomNumbers = () => {
+    let newRandomNumbers = [];
+    sections.forEach((sec) => {
+      let phs = [];
+      sec.contents.forEach((c, cix) => {
+        if (c.type === content_type.RANDOM_NUMBER)
+          phs.push({ index: cix, name: c.data.name });
+      });
+      newRandomNumbers.push({ pageId: sec.pageId, placeholders: phs });
+    });
+    setRandomNumbers(newRandomNumbers);
   };
 
   const renderSections = () => {
@@ -242,13 +257,7 @@ function NewSurvey(props) {
           data: {},
         };
         addContent(newRandomNumber);
-        let newRandomNumbers = [...randomNumbers];
-        let phIndex = section.contents.length;
-        newRandomNumbers[sectionIndex].placeholders.push({
-          index: phIndex,
-          name: "",
-        });
-        setRandomNumbers(newRandomNumbers);
+        updateRandomNumbers();
       };
 
       const onOpenEmbedVideoDialog = () => {
@@ -310,6 +319,7 @@ function NewSurvey(props) {
         }*/
         console.log("The new sectins are", newSections);
         setSections(newSections);
+        updateRandomNumbers();
       };
 
       const renderContent = (pageContent) => {
@@ -347,15 +357,20 @@ function NewSurvey(props) {
             } else {
               onRemoveSection();
             }
+            updateRandomNumbers();
           };
 
           const updateContent = (updates) => {
             let newContent = { ...cont };
             newContent.data = { ...cont.data, ...updates };
-            console.log("The new content is now: ", newContent);
+            // console.log("The new content is now: ", newContent);
             let newSections = [...sections];
             newSections[sectionIndex].contents[contentIndex] = newContent;
-            setSections(newSections);
+            // Use a promise to make the state updates not batch together
+            Promise.resolve().then(() => {
+              setSections(newSections);
+              updateRandomNumbers();
+            });
           };
 
           const moveContentUp = () => {
@@ -370,20 +385,7 @@ function NewSurvey(props) {
                 newSections[sectionIndex].contents = section.contents;
                 newSections[sectionIndex - 1].contents = destContent;
                 setSections(newSections);
-                // Check and change placeholders
-                if (cont.type === content_type.RANDOM_NUMBER) {
-                  let newRandomNumbers = [...randomNumbers];
-                  newRandomNumbers[
-                    sectionIndex
-                  ].placeholders = newRandomNumbers[
-                    sectionIndex
-                  ].placeholders.filter((ph) => ph.index !== contentIndex);
-                  newRandomNumbers[sectionIndex - 1].placeholders.push({
-                    index: destContent.length - 1,
-                    name: cont.name,
-                  });
-                  setRandomNumbers(newRandomNumbers);
-                }
+                updateRandomNumbers();
                 if (section.contents.length === 0) onRemoveSection();
               }
             } else {
@@ -394,16 +396,7 @@ function NewSurvey(props) {
               let newSections = [...sections];
               newSections[sectionIndex].contents = newContent;
               setSections(newSections);
-              // Change placeholders
-              let newRandomNumbers = [...randomNumbers];
-              newRandomNumbers[sectionIndex].placeholders = newRandomNumbers[
-                sectionIndex
-              ].placeholders.map((ph) =>
-                ph.index !== contentIndex
-                  ? ph
-                  : { ...ph, index: contentIndex - 1 }
-              );
-              setRandomNumbers(newRandomNumbers);
+              updateRandomNumbers();
             }
           };
 
@@ -415,44 +408,44 @@ function NewSurvey(props) {
                 destContent = [cont, ...destContent];
                 section.contents.splice(contentIndex, 1);
                 let newSections = [...sections];
-                newSections[sectionIndex].contents = section.content;
+                newSections[sectionIndex].contents = section.contents;
                 newSections[sectionIndex + 1].contents = destContent;
                 setSections(newSections);
-                // Check and change placeholders
-                if (cont.type === content_type.RANDOM_NUMBER) {
-                  let newRandomNumbers = [...randomNumbers];
-                  newRandomNumbers[
-                    sectionIndex
-                  ].placeholders = newRandomNumbers[
-                    sectionIndex
-                  ].placeholders.filter((ph) => ph.index !== contentIndex);
-                  newRandomNumbers[sectionIndex + 1].placeholders.push({
-                    index: 0,
-                    name: cont.name,
-                  });
-                  setRandomNumbers(newRandomNumbers);
-                }
+                updateRandomNumbers();
                 if (section.contents.length === 0) onRemoveSection();
               }
             } else {
               // Move down on the same section
-              let newContent = [...sections[sectionIndex].content];
+              let newContent = [...sections[sectionIndex].contents];
               newContent.splice(contentIndex, 1);
               newContent.splice(contentIndex + 1, 0, cont);
               let newSections = [...sections];
               newSections[sectionIndex].contents = newContent;
               setSections(newSections);
-              // Change placeholders
-              let newRandomNumbers = [...randomNumbers];
-              newRandomNumbers[sectionIndex].placeholders = newRandomNumbers[
-                sectionIndex
-              ].placeholders.map((ph) =>
-                ph.index !== contentIndex
-                  ? ph
-                  : { ...ph, index: contentIndex + 1 }
-              );
-              setRandomNumbers(newRandomNumbers);
+              updateRandomNumbers();
             }
+          };
+
+          const previousPlaceholders = () => {
+            let previousPhArray = [];
+            randomNumbers.forEach((sec, secIx) => {
+              if (secIx < sectionIndex) {
+                sec.placeholders.forEach((ph) => previousPhArray.push(ph.name));
+              }
+              if (secIx === sectionIndex) {
+                sec.placeholders.forEach((ph) => {
+                  if (ph.index < contentIndex) {
+                    console.log(
+                      "Adding placeholder",
+                      ph,
+                      "to available placeholders for "
+                    );
+                    previousPhArray.push(ph.name);
+                  }
+                });
+              }
+            });
+            return previousPhArray;
           };
 
           const move = { up: moveContentUp, down: moveContentDown };
@@ -481,6 +474,7 @@ function NewSurvey(props) {
                   removeImage={removeContent}
                   move={move}
                   update={updateContent}
+                  randomNumbers={previousPlaceholders()}
                 />
               );
             case content_type.VIDEO:
@@ -525,6 +519,8 @@ function NewSurvey(props) {
           }
         });
       };
+
+      // const sectionPlaceholders = randomNumbers[sectionIndex].placeholders;
 
       return (
         <Grid
