@@ -35,15 +35,9 @@ import NewRandomNumber from "./NewRandomNumber";
 import InsertPhotoIcon from "@material-ui/icons/InsertPhoto";
 import PlaceholdersContext from "./PlaceholdersContext";
 
-const useStyles = newSurveyStyle;
+import content_type from "../../contentTypes";
 
-const content_type = {
-  QUESTION: "Question",
-  IMAGE: "Image",
-  VIDEO: "Video",
-  TEXT: "Text",
-  RANDOM_NUMBER: "Random Number",
-};
+const useStyles = newSurveyStyle;
 
 function NewSurvey(props) {
   const classes = useStyles();

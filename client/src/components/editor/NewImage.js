@@ -33,6 +33,8 @@ import RadioButtonCheckedIcon from "@material-ui/icons/RadioButtonChecked";
 import CheckBoxIcon from "@material-ui/icons/CheckBox";
 import LinearScaleIcon from "@material-ui/icons/LinearScale";
 import ImportExportIcon from "@material-ui/icons/ImportExport";
+import RandomGallery from "./RandomGallery";
+import content_type from "../../contentTypes";
 const useStyles = newImageStyle;
 
 function NewImage(props) {
@@ -92,8 +94,6 @@ function NewImage(props) {
   };*/
 
   const renderRandomizeSelection = () => {
-    const showGallery = () => {};
-
     const checkValue = () => {
       let check = false;
       if (randomNumbersNames.length !== 0) {
@@ -122,6 +122,7 @@ function NewImage(props) {
             ))}
           </Select>
         ) : null}
+        <RandomGallery randomType={content_type.IMAGE} />
       </Fragment>
     );
   };

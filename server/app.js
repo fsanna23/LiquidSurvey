@@ -7,6 +7,14 @@ const imageDir = __dirname + "/images/";
 const questionImageDir = imageDir + "question/";
 const explImageDir = imageDir + "explaination/";
 
+const content_type = {
+  QUESTION: "Question",
+  IMAGE: "Image",
+  VIDEO: "Video",
+  TEXT: "Text",
+  RANDOM_NUMBER: "Random Number",
+};
+
 const removeExtension = (filename) => {
   const splittedString = filename.split(".");
   return splittedString[0];
@@ -56,6 +64,70 @@ app.get("/getImage", (req, res) => {
     return;
   }
   res.status(500);
+});
+
+app.get("/getFirstContent", (req, res) => {
+  const { contentType } = req.query;
+  switch (contentType) {
+    case content_type.IMAGE: {
+      // Just getting "question" type images for now. Edit later
+      const questionFiles = fs.readdirSync(questionImageDir);
+      res
+        .set({ "Content-Type": "image/png" })
+        .sendFile(questionImageDir + questionFiles[0]);
+      return;
+    }
+    default: {
+      return;
+    }
+  }
+});
+
+app.get("/getPreviousContent", (req, res) => {
+  const { contentType, currentContent } = req.query;
+  console.log(currentContent.filename);
+  // TEMP
+  res.status(500);
+  return;
+  // END TEMP
+  switch (contentType) {
+    case content_type.IMAGE: {
+      // Just getting "question" type images for now. Edit later
+      const questionFiles = fs.readdirSync(questionImageDir);
+      const currentIndex = questionFiles.findIndex(
+        (file) => file === currentContent
+      );
+      if (currentIndex !== 0)
+        res
+          .set({ "Content-Type": "image/png" })
+          .sendFile(questionImageDir + questionFiles[currentIndex - 1]);
+      else
+        res
+          .set({ "Content-Type": "image/png" })
+          .sendFile(questionImageDir + questionFiles[questionFiles.length - 1]);
+      return;
+    }
+    default: {
+      return;
+    }
+  }
+});
+
+app.get("/getNextContent", (req, res) => {
+  const { contentType, currentContent } = req.query;
+  switch (contentType) {
+    case content_type.IMAGE: {
+      // Just getting "question" type images for now. Edit later
+      const questionFiles = fs.readdirSync(questionImageDir);
+      res
+        .set({ "Content-Type": "image/png" })
+        .sendFile(questionImageDir + questionFiles[0]);
+      return;
+    }
+    default: {
+      return;
+    }
+  }
 });
 
 app.listen(port, () => {
