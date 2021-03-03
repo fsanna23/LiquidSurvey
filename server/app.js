@@ -6,6 +6,7 @@ const port = 9000;
 const imageDir = __dirname + "/images/";
 const questionImageDir = imageDir + "question/";
 const explImageDir = imageDir + "explaination/";
+const surveyDir = __dirname + "/surveys/";
 
 const content_type = {
   QUESTION: "Question",
@@ -29,6 +30,10 @@ const checkImage = (filename, folder) => {
   });
   return found;
 };
+
+app.use(express.urlencoded({ extended: true }));
+
+app.use(express.json());
 
 app.use(cors());
 
@@ -64,6 +69,33 @@ app.get("/getImage", (req, res) => {
     return;
   }
   res.status(500);
+});
+
+app.get("/getSurveys", (req, res) => {
+  const rawData = fs.readFileSync(surveyDir + "surveys.json");
+  const surveys = JSON.parse(rawData);
+  res.json(surveys);
+});
+
+app.post("/insertSurvey", (req, res) => {
+  const newSurvey = req.body;
+  const rawData = fs.readFileSync(surveyDir + "surveys.json");
+  let surveys = JSON.parse(rawData);
+  surveys.push(newSurvey);
+  const newData = JSON.stringify(surveys);
+  fs.writeFileSync(surveyDir + "surveys.json", newData);
+  res.status(200).json({ status: "saved" });
+});
+
+app.delete("/deleteSurvey", (req, res) => {
+  const deleteSurvey = req.body;
+  const rawData = fs.readFileSync(surveyDir + "surveys.json");
+  let surveys = JSON.parse(rawData);
+  surveys = surveys.filter((survey) => survey.title !== deleteSurvey.title);
+  console.log(surveys);
+  const newData = JSON.stringify(surveys);
+  fs.writeFileSync(surveyDir + "surveys.json", newData);
+  res.status(200).json({ status: "saved" });
 });
 
 app.get("/getFirstContent", (req, res) => {

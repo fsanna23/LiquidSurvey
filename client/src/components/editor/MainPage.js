@@ -34,6 +34,16 @@ function MainPage(props) {
     props.setPage(pages.VIEWSURVEY);
   };
 
+  const onEditSurvey = (survey) => {
+    props.selectSurvey(survey);
+    props.setPage(pages.NEWSURVEY);
+  };
+
+  const onDeleteSurvey = (survey) => {
+    props.deleteSurvey(survey);
+    setAnchorEl(null);
+  };
+
   const displaySurveys = () => {
     return props.surveys.map((survey) => {
       return (
@@ -45,7 +55,14 @@ function MainPage(props) {
               </Typography>
             </CardContent>
             <CardActions className={classes.cardActions}>
-              <Button variant="contained" color="default" size="small">
+              <Button
+                variant="contained"
+                color="default"
+                size="small"
+                onClick={() => {
+                  onEditSurvey(survey);
+                }}
+              >
                 Edit
               </Button>
               <Button
@@ -63,6 +80,21 @@ function MainPage(props) {
               </IconButton>
             </CardActions>
           </Card>
+          <Menu
+            id="menu"
+            anchorEl={anchorEl}
+            open={Boolean(anchorEl)}
+            onClose={handleClose}
+          >
+            <MenuItem onClick={handleClose}>Rename</MenuItem>
+            <MenuItem
+              onClick={() => {
+                onDeleteSurvey(survey);
+              }}
+            >
+              Delete
+            </MenuItem>
+          </Menu>
         </Grid>
       );
     });
@@ -99,15 +131,6 @@ function MainPage(props) {
           Create new survey
         </Button>
       </Grid>
-      <Menu
-        id="menu"
-        anchorEl={anchorEl}
-        open={Boolean(anchorEl)}
-        onClose={handleClose}
-      >
-        <MenuItem onClick={handleClose}>Rename</MenuItem>
-        <MenuItem onClick={handleClose}>Delete</MenuItem>
-      </Menu>
     </Box>
   );
 }

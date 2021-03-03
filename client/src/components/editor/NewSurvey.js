@@ -37,29 +37,54 @@ import PlaceholdersContext from "./PlaceholdersContext";
 
 import content_type from "../../contentTypes";
 
+const initialData = [
+  {
+    pageId: 1,
+    contents: [
+      { contentId: 1, type: content_type.QUESTION, data: {} },
+      { contentId: 2, type: content_type.QUESTION, data: {} },
+    ],
+  },
+];
+
 const useStyles = newSurveyStyle;
 
 function NewSurvey(props) {
   const classes = useStyles();
   const [surveyData, setSurveyData] = useState({
-    title: "",
-    description: "",
+    title: props.json ? props.json.title : "",
+    description: props.json ? props.json.description : "",
   });
-  const [sections, setSections] = useState([
-    {
-      pageId: 1,
-      contents: [
-        { contentId: 1, type: content_type.QUESTION, data: {} },
-        { contentId: 2, type: content_type.QUESTION, data: {} },
-      ],
-    },
-  ]);
+  const [sections, setSections] = useState(
+    props.json ? props.json.pages : initialData
+  );
   const [openDialog, setOpenDialog] = useState(false);
-  const [sectionIdCounter, setSectionIdCounter] = useState(2);
+  const [sectionIdCounter, setSectionIdCounter] = useState(
+    props.json ? props.json.pages.length : 2
+  );
   const [contentIdCounter, setContentIdCounter] = useState(3);
   const [randomNumbers, setRandomNumbers] = useState([
     { pageId: 1, placeholders: [] },
   ]);
+
+  const getMaxContentId = () => {
+    let maxContentId = -1;
+    props.json.pages.forEach((page) => {
+      page.contents.forEach((cont) => {
+        if (cont.contentId > maxContentId) maxContentId = cont.contentId;
+      });
+    });
+    return maxContentId;
+  };
+
+  /*Initializes contentId counter*/
+  useEffect(() => {
+    if (props.json) {
+      const maxContent = getMaxContentId();
+      setContentIdCounter(maxContent);
+      updateRandomNumbers(true);
+    }
+  }, []);
 
   /*  Updates the state when the drag ends */
   const onDragEnd = (result) => {
@@ -189,9 +214,11 @@ function NewSurvey(props) {
     return newContentId;
   };
 
-  const updateRandomNumbers = () => {
+  const updateRandomNumbers = (propsBool) => {
     let newRandomNumbers = [];
-    sections.forEach((sec) => {
+    const tempSections =
+      propsBool && propsBool === true ? props.json.pages : sections;
+    tempSections.forEach((sec) => {
       let phs = [];
       sec.contents.forEach((c, cix) => {
         if (c.type === content_type.RANDOM_NUMBER)
@@ -429,11 +456,6 @@ function NewSurvey(props) {
               if (secIx === sectionIndex) {
                 sec.placeholders.forEach((ph) => {
                   if (ph.index < contentIndex) {
-                    console.log(
-                      "Adding placeholder",
-                      ph,
-                      "to available placeholders for "
-                    );
                     previousPhArray.push(ph.name);
                   }
                 });
@@ -465,6 +487,7 @@ function NewSurvey(props) {
                   id={cont.contentId}
                   index={contentIndex}
                   image={cont.data.img}
+                  data={cont.data}
                   removeImage={removeContent}
                   move={move}
                   update={updateContent}
@@ -504,6 +527,7 @@ function NewSurvey(props) {
                 <NewRandomNumber
                   key={cont.contentId}
                   id={cont.contentId}
+                  data={cont.data}
                   index={contentIndex}
                   removeRandomNumber={removeContent}
                   move={move}

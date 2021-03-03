@@ -42,11 +42,17 @@ function NewImage(props) {
   const fileInput = useRef(null);
   const randomNumbersNames = props.randomNumbers;
 
-  const [title, setTitle] = useState("");
-  const [img, setImg] = useState(undefined);
+  const [title, setTitle] = useState(
+    props.data && props.data.title ? props.data.title : ""
+  );
+  const [img, setImg] = useState(
+    props.data && props.data.img ? props.data.img : undefined
+  );
   const [randomize, setRandomize] = useState({
-    randomStatus: false,
-    randomName: "",
+    randomStatus:
+      props.data && props.data.randomStatus ? props.data.randomStatus : false,
+    randomName:
+      props.data && props.data.randomName ? props.data.randomName : "",
   });
 
   useEffect(() => {

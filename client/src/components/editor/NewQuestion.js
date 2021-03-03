@@ -87,12 +87,6 @@ function NewQuestion(props) {
 
   /* Used to send the title, the type and the mandatory value to the parent */
   useEffect(() => {
-    console.log(
-      "Now updating this contentIndex: ",
-      props.index,
-      "in this section index: ",
-      props.section
-    );
     updateQuestion({
       title: question.title,
       type: question.type,

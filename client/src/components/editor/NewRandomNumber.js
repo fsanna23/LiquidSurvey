@@ -21,9 +21,15 @@ import FormControl from "@material-ui/core/FormControl";
 const useStyles = newRandomNumberStyle;
 
 function NewRandomNumber(props) {
-  const [name, setName] = useState("");
-  const [minRange, setMinRange] = useState(0);
-  const [maxRange, setMaxRange] = useState(100);
+  const [name, setName] = useState(
+    props.data && props.data.name ? props.data.name : ""
+  );
+  const [minRange, setMinRange] = useState(
+    props.data && props.data.minRange ? props.data.minRange : 0
+  );
+  const [maxRange, setMaxRange] = useState(
+    props.data && props.data.maxRange ? props.data.maxRange : 100
+  );
 
   useEffect(() => {
     props.update({ name, minRange, maxRange });

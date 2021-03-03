@@ -19,18 +19,15 @@ const surveyz = [mySurvey, mySimpleSurvey];
 
 function App() {
   const classes = useStyles();
-  const [surveys, setSurveys] = useState(surveyz);
+  const [surveys, setSurveys] = useState([]);
   const [page, setPage] = useState(pages.MAIN);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState({});
+  const [selectedSurvey, setSelectedSurvey] = useState(undefined);
 
   useEffect(() => {
-    fetch("http://localhost:9000/getImageList")
+    fetch("http://localhost:9000/getSurveys")
       .then((response) => response.json())
-      .then((data) =>
-        // DO SOMETHING WITH DATA
-        console.log("Fetched data from the server, which is: ", data)
-      );
+      .then((data) => setSurveys(data));
   }, []);
 
   const switchDrawer = (value) => {
@@ -38,7 +35,40 @@ function App() {
   };
 
   const addSurvey = (newSurvey) => {
-    setSurveys([...surveys, newSurvey]);
+    //setSurveys([...surveys, newSurvey]);
+    fetch("http://localhost:9000/insertSurvey", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(newSurvey),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "saved") {
+          fetch("http://localhost:9000/getSurveys")
+            .then((response) => response.json())
+            .then((data) => setSurveys(data));
+        } else console.error("FAILED TO INSERT THE SURVEY");
+      });
+  };
+
+  const deleteSurvey = (survey) => {
+    fetch("http://localhost:9000/deleteSurvey", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(survey),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status === "saved") {
+          fetch("http://localhost:9000/getSurveys")
+            .then((response) => response.json())
+            .then((data) => setSurveys(data));
+        } else console.error("FAILED TO DELETE THE SURVEY");
+      });
   };
 
   const checkPage = () => {
@@ -49,10 +79,17 @@ function App() {
             surveys={surveys}
             setPage={setPage}
             selectSurvey={setSelectedSurvey}
+            deleteSurvey={deleteSurvey}
           />
         );
       case pages.NEWSURVEY:
-        return <NewSurvey setPage={setPage} addSurvey={addSurvey} />;
+        return (
+          <NewSurvey
+            json={selectedSurvey}
+            setPage={setPage}
+            addSurvey={addSurvey}
+          />
+        );
       case pages.VIEWSURVEY:
         return (
           <SelectedSurveyContext.Provider value={selectedSurvey}>
