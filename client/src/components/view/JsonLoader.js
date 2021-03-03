@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
 import { questionStyle } from "../../viewStyles.js";
-
 // Importing Material
 import {
   Box,
@@ -33,29 +32,51 @@ import { Droppable, Draggable, DragDropContext } from "react-beautiful-dnd";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import SelectedSurveyContext from "../../SelectedSurveyContext";
 
+
 const useStyles = questionStyle;
 
 //Componente che si occupa di prelevare i dati dal Json importato, per ogni tipo di domanda prende le informazioni presenti
 //e le formatta in modo che siano pronte alla visualizzazione (che avverrà passando il componente a View)
-function JsonLoader(props) {
-  const [currentPage, setCurrentPage] = useState(0);
 
+function JsonLoader(props) {
+
+  const [currentPage, setCurrentPage] = useState(0);
+  let imageElement = [];
+  let randomElement = [];
+  const [vPages, setVPages] = useState([0]);
+
+  console.log("visitedPages Inizio: ", vPages)
   /*[ES6] action è il parametro passato (indica se l'utente vuole andare alla prossima pagina (1) o quella precedente (0)), 
 	'e' è l'event object ritornato*/
   const handlePaging = (action) => (e) => {
+    let visitedPages = [...vPages]
     if (action) {
+      
       setCurrentPage(currentPage + 1);
-    } else {
-      setCurrentPage(currentPage - 1);
+      
+      if(visitedPages == undefined){
+        visitedPages.push(currentPage)
+      }
+      else if(!visitedPages.includes(currentPage)){
+        visitedPages.push(currentPage)
+      }
     }
+    else {
+
+      setCurrentPage(currentPage - 1);
+      
+      if(visitedPages == undefined){
+        visitedPages.push(currentPage)
+      }
+      else if(!visitedPages.includes(currentPage)){
+        visitedPages.push(currentPage)
+      }
+    }
+    setVPages(visitedPages)
   };
 
   const classes = useStyles();
   const jsonData = useContext(SelectedSurveyContext);
-
-  useEffect(() => {
-    console.log("The json data is", jsonData);
-  }, []);
 
   const [linearScaleSelectedValue, setLinearScaleSelectedValue] = useState("");
   const handleLinearScaleChange = (e) => {
@@ -98,7 +119,7 @@ function JsonLoader(props) {
                     variant="outlined"
                     className={classes.imagePaperContainer}
                   >
-                    {loadImage(img)}
+                    {/*loadImage(img)*/}
                   </Paper>
                 ))}
               </Grid>
@@ -305,38 +326,9 @@ function JsonLoader(props) {
     );
   };
 
-  const loadImage = (image) => {
-    const path = process.env.PUBLIC_URL + "/img/" + image;
-    return <img className={classes.imageFormat} src={path} />;
-  };
-
-  const renderImage = (question) => {
-    return (
-      <Typography component={"span"} color="textPrimary" align="center">
-        <Grid>
-          <Paper
-            variant="outlined"
-            width={400}
-            component="div"
-            className={classes.wrapper}
-          >
-            <Box align="left" className={classes.titleContainer}>
-              {question.data.title}
-            </Box>
-            <Box align="left" className={classes.elementContainer}>
-              {question.data.description}
-            </Box>
-            <div className={classes.singleImageContainer}>
-              {loadImage(question.data.img)}
-            </div>
-          </Paper>
-        </Grid>
-      </Typography>
-    );
-  };
-
   const renderHeader = (item) => {
     return (
+
       <Typography component="div" color="textPrimary" align="center">
         <Grid>
           <Paper
@@ -348,7 +340,6 @@ function JsonLoader(props) {
             <Box align="left" className={classes.questionnaireTitleContainer}>
               {item.title}
             </Box>
-
             <Box align="left" className={classes.elementContainer}>
               {item.description}
             </Box>
@@ -359,6 +350,7 @@ function JsonLoader(props) {
   };
 
   const contentSorter = (item) => {
+
     switch (item.data.type) {
       case "Multiple Choice":
         return renderRadioButtonQuestion(item);
@@ -369,27 +361,203 @@ function JsonLoader(props) {
       case "Ranking":
         return renderRankingQuestion(item);
     }
-    //Smistamento delle Immagini
-    if (item.type === "Image") {
-      return renderImage(item);
+    switch(item.type){
+
+      case "Random Number":
+      //Vengono inseriti nell'array randomElement tutti gli elementi di tipo Random Number
+      if(!randomElement.includes(item.data)){
+
+          randomElement.push(item.data)
+        }
+      break;
+
+      case "Image":
+        //Vengono inseriti nell'array randomElement tutti gli elementi di tipo Image
+        if(!imageElement.includes(item.data)){
+
+          imageElement.push(item.data)
+        }
     }
   };
+  const questionImagesNames = [];
+  const [imagesNames, setImagesNames] = useState([]);
+  var minValue = 0;
+  const nameNumberAssociation = [];
+  const images = [];
+  const [toPrint, setToPrint] = useState([]);
+  var name = null;
+  var assValue = null;
+  let obj = [];
+  
+
+  useEffect(() => {
+
+    if(!vPages.includes(currentPage)){
+    let printP = [...toPrint];
+    let promises = nameNumberAssociation.map((s, i) => {
+          return new Promise((resolve) => {
+          let imgPath = new URL("http://localhost:9000/getImage")
+          imgPath.search = new URLSearchParams({imageName: s.value, folder: "question"})
+          fetch(imgPath)
+          .then((response) => response.blob())
+          .then((data) => {
+            resolve({img: URL.createObjectURL(data),name: s.name});
+          });
+        });
+        });
+
+        Promise.all(promises)
+        .then((results) => {
+          printP.push(...results)
+          setToPrint(printP)
+        })
+    }
+  }, [currentPage])
+
+  const renderImage = () => {
+
+    let printP = [];
+
+    //se esistono Elementi di tipo immagine allora esegue tutto il resto (c'è la stessa condizione a riga 496)
+    if(imageElement && imageElement.length > 0){
+    //se l'array imagesNames è vuoto allora prende dal server i nomi delle immagini (sia question che explaination)
+    //e le mette dentro imagesNames
+    if(imagesNames.length == 0){
+
+      fetch('http://localhost:9000/getImageList')
+      .then(response => response.json())
+      .then(data => {setImagesNames(data)})
+    }
+    //Se esistono le immagini di tipo Question Images allora mette dentro un array tutti i nomi
+    if(imagesNames['Question Images'] && imagesNames['Question Images'].length > 0){
+      
+      //data contiene i nomi delle immagini 'question' e 'explaination', quindi prendo solo le 'question'      
+      imagesNames['Question Images'].map((name) =>{
+
+        if(!questionImagesNames.includes(name)){
+          questionImagesNames.push(name);
+        }
+      })
+
+      //scorre l'array popolato nel case a riga 345 dello switch e per ogni elemento prende un nome di un'immagine casualmente
+      //dall'array che contiene i nomi delle sole immagini di tipo Question Images. infine associa il nome dell'elemento casuale
+      //ad un immagine casuale (nameNumberAssociation avrà tutte le associazioni nome numero casuale)
+      
+
+      randomElement.map((s, i) => {
+        if(nameNumberAssociation[i] === undefined){
+      //Generazione di un numero casuale da associare al randomName
+          var rand = Math.floor(minValue + Math.random() * (questionImagesNames.length - minValue));
+      
+      //Array di oggetti. in ogni oggetto c'è l'associazione (randomName, immagineCasuale)
+          nameNumberAssociation.push({name: `${s.name}`, value: `${questionImagesNames[rand]}`});
+        }else if(nameNumberAssociation[i].name !== s.name){
+
+          var rand = Math.floor(minValue + Math.random() * (questionImagesNames.length - minValue));
+          nameNumberAssociation.push({name: `${s.name}`, value: `${questionImagesNames[rand]}`});
+        }
+      })
+      
+      //QUESTA PARTE L'ABBIAMO VISTA ASSIEME
+      //Recupero delle immagini dal server
+      
+      if(toPrint.length == 0){
+        let promises = nameNumberAssociation.map((s) => {
+          return new Promise((resolve) => {
+          let imgPath = new URL("http://localhost:9000/getImage")
+          imgPath.search = new URLSearchParams({imageName: s.value, folder: "question"})
+          fetch(imgPath)
+          .then((response) => response.blob())
+          .then((data) => {
+            resolve({img: URL.createObjectURL(data),name: s.name});
+          });
+        });
+        });
+
+        Promise.all(promises)
+        .then((results) => {
+          printP.push(...results)
+          setToPrint(printP)
+        })
+        
+
+      }else{
+
+        console.log("toPrint: ", toPrint)
+        //console.log("To Print: ", toPrint)
+        return imagesPrinter();
+      }
+      
+      
+    }
+  }
+  }
+
+  const imagesPrinter = () => {
+    return(
+      <div>
+      {/*
+      ToPrint -> ha le associazioni tra nome del randomNumber e immagine da stampare
+      scorre toPrint e per ogni nome di ogni elemento, controlla se esiste un elemento di tipo Image che ha
+      lo stesso nome, in caso positivo stampa l'immagine associata allo stesso nome che sta dentro toPrint*/}
+      {console.log("toPrint: ", toPrint)}
+      {toPrint.map((tp, i) => (
+        imageElement.map((ie) => (
+        ie && ie.randomName === tp.name ?
+        <Typography component={"span"} color="textPrimary" align="center">
+        <Grid>
+          <Paper
+            variant="outlined"
+            width={400}
+            component="div"
+            className={classes.wrapper}
+          >
+            <Box align="left" className={classes.titleContainer}>
+              {ie.title}
+            </Box>
+            <Box align="left" className={classes.elementContainer}>
+              {ie.description}
+            </Box>
+            <div className={classes.singleImageContainer}>
+
+                <img src={tp.img} width="200px" height="200px" /> 
+               
+                {ie.randomName}
+            </div>
+          </Paper>
+        </Grid>
+      </Typography>
+
+        : ""
+      ))
+      ))}
+      </div>
+    
+    );
+  }
+
 
   return (
     <div>
     {/*Mappa il file .json*/}
-      {console.log("The json data is ", jsonData)}
       {jsonData.map((item) => (
         <div>
           {/*Renders the questionnaire's header*/}
           {renderHeader(item)}
-          
-          {/*Loops over the contents array and for every element calls the contentSorter in order to call the correct function
-          that renders that specific content*/}
+          {/*Mappa tutti i contenuti (contents nel json) della pagina corrente e per ogni contenuto chiama il contentSorter
+          e lo renderizza*/}
           {item.pages[currentPage].contents.map((s) => {
             return <div>{contentSorter(s)}</div>;
+            
+            //if(imageElement && imageElement.length > 0){
+            //}
           })}
-
+          {/*se l'array che contiene elementi immagine casuale chiama il renderImage(). per ogni pagina richiama il renderImage
+          se le condizioni sono vere*/}
+          {imageElement && imageElement.length > 0 ?
+              renderImage()
+            : ""
+          }
           <Box
             display="flex"
             justifyContent="flex-end"
