@@ -19,10 +19,12 @@ const useStyles = mainPageStyle;
 
 function MainPage(props) {
   const [anchorEl, setAnchorEl] = React.useState(null);
+  const [selectedSurvey, setSelectedSurvey] = React.useState(undefined);
   const classes = useStyles();
 
-  const handleClick = (event) => {
+  const handleClick = (event, survey) => {
     setAnchorEl(event.currentTarget);
+    setSelectedSurvey(survey);
   };
 
   const handleClose = () => {
@@ -39,12 +41,14 @@ function MainPage(props) {
     props.setPage(pages.NEWSURVEY);
   };
 
-  const onDeleteSurvey = (survey) => {
-    props.deleteSurvey(survey);
+  const onDeleteSurvey = () => {
+    props.deleteSurvey(selectedSurvey);
     setAnchorEl(null);
   };
 
   const displaySurveys = () => {
+    console.log("The surveys are: ");
+    console.log(props.surveys);
     return props.surveys.map((survey) => {
       return (
         <Grid item key={survey.title}>
@@ -75,26 +79,16 @@ function MainPage(props) {
               >
                 Open
               </Button>
-              <IconButton className={classes.moreButton} onClick={handleClick}>
+              <IconButton
+                className={classes.moreButton}
+                onClick={(e) => {
+                  handleClick(e, survey);
+                }}
+              >
                 <MoreIcon />
               </IconButton>
             </CardActions>
           </Card>
-          <Menu
-            id="menu"
-            anchorEl={anchorEl}
-            open={Boolean(anchorEl)}
-            onClose={handleClose}
-          >
-            <MenuItem onClick={handleClose}>Rename</MenuItem>
-            <MenuItem
-              onClick={() => {
-                onDeleteSurvey(survey);
-              }}
-            >
-              Delete
-            </MenuItem>
-          </Menu>
         </Grid>
       );
     });
@@ -131,6 +125,21 @@ function MainPage(props) {
           Create new survey
         </Button>
       </Grid>
+      <Menu
+        id="menu"
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleClose}
+      >
+        <MenuItem onClick={handleClose}>Rename</MenuItem>
+        <MenuItem
+          onClick={() => {
+            onDeleteSurvey();
+          }}
+        >
+          Delete
+        </MenuItem>
+      </Menu>
     </Box>
   );
 }

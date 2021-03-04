@@ -178,6 +178,8 @@ function NewSurvey(props) {
           }
         });
       });
+      // Restoring sections to their initial state
+      setSections(initialData);
       return json;
     };
 
