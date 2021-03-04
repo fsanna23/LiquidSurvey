@@ -25,32 +25,50 @@ function App() {
   const [selectedSurvey, setSelectedSurvey] = useState(undefined);
 
   useEffect(() => {
-    fetch("http://localhost:9000/getSurveys")
-      .then((response) => response.json())
-      .then((data) => setSurveys(data));
+    getSurveysFromServer();
   }, []);
 
   const switchDrawer = (value) => {
     setShowDrawer(value);
   };
 
-  const addSurvey = (newSurvey) => {
-    //setSurveys([...surveys, newSurvey]);
-    fetch("http://localhost:9000/insertSurvey", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(newSurvey),
-    })
+  const getSurveysFromServer = () => {
+    fetch("http://localhost:9000/getSurveys")
       .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "saved") {
-          fetch("http://localhost:9000/getSurveys")
-            .then((response) => response.json())
-            .then((data) => setSurveys(data));
-        } else console.error("FAILED TO INSERT THE SURVEY");
-      });
+      .then((data) => setSurveys(data));
+  };
+
+  const addSurvey = (newSurvey) => {
+    if (newSurvey.id) {
+      // I'm editing an already existing survey
+      fetch("http://localhost:9000/editSurvey", {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newSurvey),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "saved") {
+            getSurveysFromServer();
+          } else console.error("FAILED TO INSERT THE SURVEY");
+        });
+    } else {
+      fetch("http://localhost:9000/insertSurvey", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newSurvey),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status === "saved") {
+            getSurveysFromServer();
+          } else console.error("FAILED TO INSERT THE SURVEY");
+        });
+    }
   };
 
   const deleteSurvey = (survey) => {

@@ -1,6 +1,7 @@
 const express = require("express");
 const fs = require("fs");
 let cors = require("cors");
+const { nanoid } = require("nanoid");
 const app = express();
 const port = 9000;
 const imageDir = __dirname + "/images/";
@@ -18,6 +19,11 @@ const content_type = {
 
 const removeExtension = (filename) => {
   const splittedString = filename.split(".");
+  return splittedString[0];
+};
+
+const splitNameByUnderscore = (filename) => {
+  const splittedString = filename.split("_");
   return splittedString[0];
 };
 
@@ -56,6 +62,16 @@ app.get("/getImageList", (req, res) => {
   console.log(imgJson);
 });
 
+app.get("/getImageNumbers", (req, res) => {
+  let imageArray = [];
+  fs.readdirSync(questionImageDir).forEach((img) => {
+    const imgName = splitNameByUnderscore(img);
+    if (!imageArray.includes(imgName)) imageArray.push(imgName);
+    res.status(200).json(imageArray);
+    console.log(imageArray);
+  });
+});
+
 app.get("/getImage", (req, res) => {
   const { imageName, folder } = req.query;
   if (folder === "question") {
@@ -78,10 +94,23 @@ app.get("/getSurveys", (req, res) => {
 });
 
 app.post("/insertSurvey", (req, res) => {
-  const newSurvey = req.body;
+  let newSurvey = req.body;
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
   let surveys = JSON.parse(rawData);
+  newSurvey.id = nanoid(); // Generate new random ID
   surveys.push(newSurvey);
+  const newData = JSON.stringify(surveys);
+  fs.writeFileSync(surveyDir + "surveys.json", newData);
+  res.status(200).json({ status: "saved" });
+});
+
+app.put("/editSurvey", (req, res) => {
+  let newSurvey = req.body;
+  const rawData = fs.readFileSync(surveyDir + "surveys.json");
+  let surveys = JSON.parse(rawData);
+  surveys = surveys.map((survey) =>
+    survey.id === newSurvey.id ? newSurvey : survey
+  );
   const newData = JSON.stringify(surveys);
   fs.writeFileSync(surveyDir + "surveys.json", newData);
   res.status(200).json({ status: "saved" });
@@ -91,7 +120,7 @@ app.delete("/deleteSurvey", (req, res) => {
   const deleteSurvey = req.body;
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
   let surveys = JSON.parse(rawData);
-  surveys = surveys.filter((survey) => survey.title !== deleteSurvey.title);
+  surveys = surveys.filter((survey) => survey.id !== deleteSurvey.id);
   console.log(surveys);
   const newData = JSON.stringify(surveys);
   fs.writeFileSync(surveyDir + "surveys.json", newData);

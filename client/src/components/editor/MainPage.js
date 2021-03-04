@@ -95,6 +95,7 @@ function MainPage(props) {
   };
 
   const onCreateSurvey = () => {
+    props.selectSurvey(undefined);
     props.setPage(pages.NEWSURVEY);
   };
 

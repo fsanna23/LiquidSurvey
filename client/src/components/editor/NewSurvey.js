@@ -192,6 +192,7 @@ function NewSurvey(props) {
       pages: sections,
     };
     console.log(finalJSON);
+    if (props.json) finalJSON.id = props.json.id;
     props.addSurvey(changeImages(finalJSON));
     props.setPage(pages.MAIN);
   };
