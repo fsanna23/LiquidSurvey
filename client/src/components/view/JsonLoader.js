@@ -35,26 +35,40 @@ import SelectedSurveyContext from "../../SelectedSurveyContext";
 
 const useStyles = questionStyle;
 
-//Componente che si occupa di prelevare i dati dal Json importato, per ogni tipo di domanda prende le informazioni presenti
-//e le formatta in modo che siano pronte alla visualizzazione (che avverrà passando il componente a View)
+//Componente che si occupa di prelevare i dati dal Json che descrive il questionario e tutti gli elementi di cui è composto,
+//divisi per pagine. per ogni tipo di domanda prende le informazioni presenti e le formatta in modo che siano
+//pronte alla visualizzazione (che avverrà passando il componente a View e usandolo come <JsonLoader />)
 
 function JsonLoader(props) {
 
-  const [currentPage, setCurrentPage] = useState(0);
-  let imageElement = [];
-  let randomElement = [];
-  const [vPages, setVPages] = useState([0]);
+  const MIN_RANGE = 0;
+  const MAX_RANGE = 100;
+  const classes = useStyles();
+  const jsonData = useContext(SelectedSurveyContext);
+  const [currentPage, setCurrentPage] = useState(0); //Stato usato per conoscere la pagina corrente del questionario
+  let imageElement = []; //Array che contiene gli elementi di tipo 'Image' (che hanno un RandomName collegato)
+  let randomElement = []; //Array che contiene gli elementi di tipo 'Random Number'
+  const [vPages, setVPages] = useState([0]); //Stato che tiene traccia di tutte le pagine visitate dall'utente
+  const questionImagesNames = [];
+  const [imagesNames, setImagesNames] = useState([]);
+  var minValue = 0;
+  const nameNumberAssociation = [];
+  const [toPrint, setToPrint] = useState([]);
+  const [linearScaleSelectedValue, setLinearScaleSelectedValue] = useState('');
+  const [value, setValue] = React.useState("");
 
-  console.log("visitedPages Inizio: ", vPages)
+  /*---GESTIONE DELLE PAGINE DEL QUESTIONARIO---*/
   /*[ES6] action è il parametro passato (indica se l'utente vuole andare alla prossima pagina (1) o quella precedente (0)), 
 	'e' è l'event object ritornato*/
   const handlePaging = (action) => (e) => {
-    let visitedPages = [...vPages]
+    
+    let visitedPages = [...vPages] //Array ausiliario usato per settare lo state di vPages
+
+    //In base all'azione scelta (Next o Back) viene settato la pagina corrente
     if (action) {
+       setCurrentPage(currentPage + 1);
       
-      setCurrentPage(currentPage + 1);
-      
-      if(visitedPages == undefined){
+      if(visitedPages == undefined){//se non ci sono pagine visitate allora imposta la pagina 0
         visitedPages.push(currentPage)
       }
       else if(!visitedPages.includes(currentPage)){
@@ -64,7 +78,6 @@ function JsonLoader(props) {
     else {
 
       setCurrentPage(currentPage - 1);
-      
       if(visitedPages == undefined){
         visitedPages.push(currentPage)
       }
@@ -75,29 +88,16 @@ function JsonLoader(props) {
     setVPages(visitedPages)
   };
 
-  const classes = useStyles();
-  const jsonData = useContext(SelectedSurveyContext);
-
-  const [linearScaleSelectedValue, setLinearScaleSelectedValue] = useState("");
+  /*---GESTIONE DELLA SELEZIONE NELLA LINEAR SCALE---*/
   const handleLinearScaleChange = (e) => {
+
     setLinearScaleSelectedValue(e.target.value);
   };
-
-  const [anchorEl, setAnchorEl] = React.useState(null);
-  const handleClick = (event) => {
-    setAnchorEl(event.currentTarget);
-  };
-
-  const handleClose = () => {
-    setAnchorEl(null);
-  };
-
-  const [value, setValue] = React.useState("");
 
   /*BUG: se in due domande diversele possibili risposte
 	dei radio button sono uguali, allora quando si sceglie la risposta in una domanda, verrà in automatico
 	selezionata anche nell'altra.*/
-  const renderRadioButtonQuestion = (question) => {
+  const renderMultipleChoiceQuestion = (question) => {
     return (
       <Typography component={"span"} color="textPrimary" align="center">
         <Grid>
@@ -200,6 +200,7 @@ function JsonLoader(props) {
 
               <DragDropContext
                 onDragEnd={(param) => {
+
                   //Indici dei due elementi da scambiare
                   const srcIndex = param.source.index;
                   const destIndex = param.destination?.index;
@@ -290,27 +291,22 @@ function JsonLoader(props) {
                   value={linearScaleSelectedValue}
                   onChange={handleLinearScaleChange}
                 >
-                    {console.log(question)}
-                  {
-                    //Number converte una stringa in un numero
-
-                    [
-                      ...Array(Number(question.data.maxValue) + 1 - Number(question.data.minValue)
-                      ),
-                    ].map((s, i) => (
+                  {/*Creazione del range della LinearScale dati minValue e maxValue*/}
+                  {//Number converte una stringa in un numero
+                    [...Array(Number(question.data.maxValue) + 1 - Number(question.data.minValue))].map((s, i) => (
                       <FormControlLabel
-                        value={Number(question.data.minValue) + i}
-                        control={
-                          <Radio
-                            checked={
-                              linearScaleSelectedValue ==
-                              Number(question.data.minValue) + i
-                            }
-                            color="primary"
-                          />
-                        }
-                        label={Number(question.data.minValue) + i}
-                        labelPlacement="top"
+                      value={Number(question.data.minValue) + i}
+                      control={
+                        <Radio
+                          checked={
+                            linearScaleSelectedValue ==
+                            Number(question.data.minValue) + i
+                          }
+                          color="primary"
+                        />
+                      }
+                      label={Number(question.data.minValue) + i}
+                      labelPlacement="top"
                       />
                     ))
                   }
@@ -326,6 +322,33 @@ function JsonLoader(props) {
     );
   };
 
+  const renderStaticImage = (question) => {
+
+    return(
+      <Typography component={"span"} color="textPrimary" align="center">
+        <Grid>
+          <Paper
+            variant="outlined"
+            width={400}
+            component="div"
+            className={classes.wrapper}
+          >
+            <Box align="left" className={classes.titleContainer}>
+              {question.title}
+            </Box>
+            <Box align="left" className={classes.elementContainer}>
+              {question.description}
+            </Box>
+            <div className={classes.singleImageContainer}>
+              <img src={question.img} width="200px" height="200px" />
+            </div>
+          </Paper>
+        </Grid>
+    </Typography>
+    );
+  };
+
+  /*---RENDER DELL'HEADER DEL QUESTIONARIO---*/
   const renderHeader = (item) => {
     return (
 
@@ -353,7 +376,7 @@ function JsonLoader(props) {
 
     switch (item.data.type) {
       case "Multiple Choice":
-        return renderRadioButtonQuestion(item);
+        return renderMultipleChoiceQuestion(item);
       case "Short Text":
         return renderTextFieldQuestion(item);
       case "Linear Scale":
@@ -373,50 +396,23 @@ function JsonLoader(props) {
 
       case "Image":
         //Vengono inseriti nell'array randomElement tutti gli elementi di tipo Image
-        if(!imageElement.includes(item.data)){
+        if(item.data.randomStatus){
+          if(!imageElement.includes(item.data)){
 
-          imageElement.push(item.data)
+            imageElement.push(item.data)
+          }
+        }
+        else{
+          console.log("Static Image: ", item.data)
+          return renderStaticImage(item.data)
         }
     }
   };
-  const questionImagesNames = [];
-  const [imagesNames, setImagesNames] = useState([]);
-  var minValue = 0;
-  const nameNumberAssociation = [];
-  const images = [];
-  const [toPrint, setToPrint] = useState([]);
-  var name = null;
-  var assValue = null;
-  let obj = [];
-  
 
-  useEffect(() => {
+  /*---INZIO - GESTIONE DELLE IMMAGINI DINAMICHE---*/
+  const dynamicImageHandler = () => {
 
-    if(!vPages.includes(currentPage)){
-    let printP = [...toPrint];
-    let promises = nameNumberAssociation.map((s, i) => {
-          return new Promise((resolve) => {
-          let imgPath = new URL("http://localhost:9000/getImage")
-          imgPath.search = new URLSearchParams({imageName: s.value, folder: "question"})
-          fetch(imgPath)
-          .then((response) => response.blob())
-          .then((data) => {
-            resolve({img: URL.createObjectURL(data),name: s.name});
-          });
-        });
-        });
-
-        Promise.all(promises)
-        .then((results) => {
-          printP.push(...results)
-          setToPrint(printP)
-        })
-    }
-  }, [currentPage])
-
-  const renderImage = () => {
-
-    let printP = [];
+    let printAux = []; //Array ausiliario che viene popolato per poi settare lo state di toPrint
 
     //se esistono Elementi di tipo immagine allora esegue tutto il resto (c'è la stessa condizione a riga 496)
     if(imageElement && imageElement.length > 0){
@@ -438,32 +434,115 @@ function JsonLoader(props) {
           questionImagesNames.push(name);
         }
       })
+    }
 
-      //scorre l'array popolato nel case a riga 345 dello switch e per ogni elemento prende un nome di un'immagine casualmente
-      //dall'array che contiene i nomi delle sole immagini di tipo Question Images. infine associa il nome dell'elemento casuale
-      //ad un immagine casuale (nameNumberAssociation avrà tutte le associazioni nome numero casuale)
-      
+    /*scorre l'array popolato nel case a riga 345 dello switch e per ogni elemento prende un nome di un'immagine casualmente
+    dall'array che contiene i nomi delle sole immagini di tipo Question Images. infine associa il nome dell'elemento casuale
+    ad un immagine casuale (nameNumberAssociation avrà tutte le associazioni nome numero casuale)*/
+    randomElement.map((s, i) => {
 
-      randomElement.map((s, i) => {
-        if(nameNumberAssociation[i] === undefined){
-      //Generazione di un numero casuale da associare al randomName
-          var rand = Math.floor(minValue + Math.random() * (questionImagesNames.length - minValue));
-      
-      //Array di oggetti. in ogni oggetto c'è l'associazione (randomName, immagineCasuale)
-          nameNumberAssociation.push({name: `${s.name}`, value: `${questionImagesNames[rand]}`});
-        }else if(nameNumberAssociation[i].name !== s.name){
+      /*Se gli elementi di nameNumberAssociation sono 'undefined' allora genera un numero casuale e lo associa al nome
+      dell'elemento di tipo 'Random Name'. Questo avviene per ogni elemento 'Random Name'. Se non viene fatto questo controllo,
+      ogni volta che si aggiorna la pagina o che si scorrono le pagine del questionario, le immagini dinamiche vengono ogni volta
+      randomizzate*/
+      if(nameNumberAssociation[i] === undefined){
+        //Generazione di un numero casuale da associare al randomName
+        var rand = Math.floor(minValue + Math.random() * (questionImagesNames.length - minValue));
+    
+        //In ogni posizione c'è un'associazione: (randomName, immagineCasuale) per ogni elemento 'Random Name'
+        nameNumberAssociation.push({name: `${s.name}`, value: `${questionImagesNames[rand]}`});
 
-          var rand = Math.floor(minValue + Math.random() * (questionImagesNames.length - minValue));
-          nameNumberAssociation.push({name: `${s.name}`, value: `${questionImagesNames[rand]}`});
-        }
-      })
+      /*se non esiste un'associazione con il nome uguale al nome del 'Random Name' corrente, allora crea un'associazione
+      e fa il push dentro nameNumberAssociation*/
+      }else if(nameNumberAssociation[i].name !== s.name){
+
+        var rand = Math.floor(minValue + Math.random() * (questionImagesNames.length - minValue));
+        nameNumberAssociation.push({name: `${s.name}`, value: `${questionImagesNames[rand]}`});
+      }
+    })
       
-      //QUESTA PARTE L'ABBIAMO VISTA ASSIEME
-      //Recupero delle immagini dal server
-      
+      /*--- RECUPERO DELLE IMMAGINI DAL SERVER ---*/
+      /*La prima volta che si entra nel questionario (toPrint.length == 0) recupera le immagini dinamiche di quella pagina.
+      Le immagini delle pagine successive verranno caricate man mano che si accede alle pagine, attraverso la useEffect()*/
       if(toPrint.length == 0){
         let promises = nameNumberAssociation.map((s) => {
           return new Promise((resolve) => {
+            let imgPath = new URL("http://localhost:9000/getImage")
+            imgPath.search = new URLSearchParams({imageName: s.value, folder: "question"})
+            fetch(imgPath)
+            .then((response) => response.blob())
+            .then((data) => {
+              resolve({img: URL.createObjectURL(data),name: s.name});
+            });
+          });
+        });
+
+        Promise.all(promises)
+        .then((results) => {
+          printAux.push(...results)
+          setToPrint(printAux)
+        })
+        
+
+      }else{//Se toPrint ha degli elementi dentro, allora vengono stampate le immagini caricate (salvate in toPrint)
+
+        //console.log("toPrint: ", toPrint)
+        return dynamicImagesPrinter();
+      }
+    }
+  };
+
+  const dynamicImagesPrinter = () => {
+    return(
+      <div>
+      {/*
+      ToPrint -> ha le associazioni tra nome del randomNumber e immagine da stampare.
+      scorre toPrint e per ogni nome, controlla se esiste un elemento di tipo Image che ha lo stesso nome,
+      in caso positivo stampa l'immagine associata allo stesso nome che sta dentro toPrint*/}
+      {toPrint.map((tp, i) => (
+        imageElement.map((ie) => (
+          ie && ie.randomName === tp.name ?
+          <Typography component={"span"} color="textPrimary" align="center">
+          <Grid>
+            <Paper
+              variant="outlined"
+              width={400}
+              component="div"
+              className={classes.wrapper}
+            >
+              <Box align="left" className={classes.titleContainer}>
+                {ie.title}
+              </Box>
+              <Box align="left" className={classes.elementContainer}>
+                {ie.description}
+              </Box>
+              <div className={classes.singleImageContainer}>
+
+                  <img src={tp.img} width="200px" height="200px" /> 
+                 
+                  {ie.randomName}
+              </div>
+            </Paper>
+          </Grid>
+        </Typography>
+
+          : ""
+        ))
+      ))}
+      </div>
+    
+    );
+  };
+
+  useEffect(() => {
+
+    /*Vengono caricate le immagini dinamiche di una pagina solo se questa non è già stata visitata, altrimenti verrebbero
+    caricate più volte le stesse immagini. Questo viene fatto ogni volta che viene cambiata la pagina*/
+    if(!vPages.includes(currentPage)){
+
+      let printAux = [...toPrint];
+      let promises = nameNumberAssociation.map((s, i) => {
+        return new Promise((resolve) => {
           let imgPath = new URL("http://localhost:9000/getImage")
           imgPath.search = new URLSearchParams({imageName: s.value, folder: "question"})
           fetch(imgPath)
@@ -472,69 +551,16 @@ function JsonLoader(props) {
             resolve({img: URL.createObjectURL(data),name: s.name});
           });
         });
-        });
+      });
 
-        Promise.all(promises)
-        .then((results) => {
-          printP.push(...results)
-          setToPrint(printP)
-        })
-        
-
-      }else{
-
-        console.log("toPrint: ", toPrint)
-        //console.log("To Print: ", toPrint)
-        return imagesPrinter();
-      }
-      
-      
+      Promise.all(promises)
+      .then((results) => {
+        printAux.push(...results)
+        setToPrint(printAux)
+      })
     }
-  }
-  }
-
-  const imagesPrinter = () => {
-    return(
-      <div>
-      {/*
-      ToPrint -> ha le associazioni tra nome del randomNumber e immagine da stampare
-      scorre toPrint e per ogni nome di ogni elemento, controlla se esiste un elemento di tipo Image che ha
-      lo stesso nome, in caso positivo stampa l'immagine associata allo stesso nome che sta dentro toPrint*/}
-      {console.log("toPrint: ", toPrint)}
-      {toPrint.map((tp, i) => (
-        imageElement.map((ie) => (
-        ie && ie.randomName === tp.name ?
-        <Typography component={"span"} color="textPrimary" align="center">
-        <Grid>
-          <Paper
-            variant="outlined"
-            width={400}
-            component="div"
-            className={classes.wrapper}
-          >
-            <Box align="left" className={classes.titleContainer}>
-              {ie.title}
-            </Box>
-            <Box align="left" className={classes.elementContainer}>
-              {ie.description}
-            </Box>
-            <div className={classes.singleImageContainer}>
-
-                <img src={tp.img} width="200px" height="200px" /> 
-               
-                {ie.randomName}
-            </div>
-          </Paper>
-        </Grid>
-      </Typography>
-
-        : ""
-      ))
-      ))}
-      </div>
-    
-    );
-  }
+  }, [currentPage]);
+  /*---FINE - GESTIONE DELLE IMMAGINI DINAMICHE---*/
 
 
   return (
@@ -542,20 +568,18 @@ function JsonLoader(props) {
     {/*Mappa il file .json*/}
       {jsonData.map((item) => (
         <div>
-          {/*Renders the questionnaire's header*/}
           {renderHeader(item)}
-          {/*Mappa tutti i contenuti (contents nel json) della pagina corrente e per ogni contenuto chiama il contentSorter
-          e lo renderizza*/}
+
+          {/*Mappa tutti i contenuti (contents:[] nel json) della pagina corrente e per ogni contenuto chiama il contentSorter*/}
           {item.pages[currentPage].contents.map((s) => {
+
             return <div>{contentSorter(s)}</div>;
-            
-            //if(imageElement && imageElement.length > 0){
-            //}
           })}
+
           {/*se l'array che contiene elementi immagine casuale chiama il renderImage(). per ogni pagina richiama il renderImage
           se le condizioni sono vere*/}
           {imageElement && imageElement.length > 0 ?
-              renderImage()
+              dynamicImageHandler()
             : ""
           }
           <Box
@@ -563,21 +587,21 @@ function JsonLoader(props) {
             justifyContent="flex-end"
             className={classes.pagesSwitchButtonContainer}
           >
-            {/*If currentPage is > 0 it shows the "Back" button in order to scroll back one page*/}
+            {/*Se la pagina corrente è successiva alla prima mostra il bottone "Back" per tornare indietro di una pagina*/}
             {currentPage > 0 ? (
               <Button
                 className={classes.pagesSwitchButton}
                 variant="contained"
-                onClick={handlePaging(0)}
+                onClick={handlePaging(false)}
                 color="primary"
               >
                 Back
               </Button>
-            ) : (
-              ""
-            )}
-            {/*If currentPage is equal to the last element of the 'pages' array it shows the 'Save' button that will save the survey,
-          if not, it will shows the 'Next' button until there is a next page (the array index starts from 0)*/}
+            ) :("")}
+
+            {/*Se currentPage è uguale all'ultimo elemento dell'array pages:[] del json, mostra il bottone "Save" che permetterà
+            di salvare il questionario. Se la pagina non è l'ultima viene mostrato il bottone "Next" per andare avanti di una
+            pagina (l'indice dell'array inizia da 0)*/}
             {currentPage === item.pages.length - 1 ? (
               <Button
                 className={classes.pagesSwitchButton}
@@ -590,7 +614,7 @@ function JsonLoader(props) {
               <Button
                 className={classes.pagesSwitchButton}
                 variant="contained"
-                onClick={handlePaging(1)}
+                onClick={handlePaging(true)}
                 color="primary"
               >
                 Next
@@ -599,9 +623,7 @@ function JsonLoader(props) {
           </Box>
         </div>
       ))}
-      
     </div>
-
   );
 }
 
