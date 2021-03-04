@@ -67,9 +67,9 @@ app.get("/getImageNumbers", (req, res) => {
   fs.readdirSync(questionImageDir).forEach((img) => {
     const imgName = splitNameByUnderscore(img);
     if (!imageArray.includes(imgName)) imageArray.push(imgName);
-    res.status(200).json(imageArray);
-    console.log(imageArray);
   });
+  res.status(200).json(imageArray);
+  console.log(imageArray);
 });
 
 app.get("/getImage", (req, res) => {

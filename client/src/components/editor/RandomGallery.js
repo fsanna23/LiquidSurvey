@@ -1,12 +1,15 @@
 import React, { useState, useEffect, Fragment } from "react";
 import { Button, Typography } from "@material-ui/core";
 import content_type from "../../contentTypes";
+import { randomGalleryStyle } from "../../editorStyles";
+const useStyles = randomGalleryStyle;
 
 function RandomGallery(props) {
   const [content, setContent] = useState(undefined);
   const [contentIndex, setContentIndex] = useState(0);
   const [contentList, setContentList] = useState([]);
   const randomType = props.randomType;
+  const classes = useStyles();
 
   useEffect(() => {
     if (content === undefined) {
@@ -85,7 +88,11 @@ function RandomGallery(props) {
     switch (randomType) {
       case content_type.IMAGE: {
         return content !== undefined ? (
-          <img src={URL.createObjectURL(content)} alt="Random image" />
+          <img
+            src={URL.createObjectURL(content)}
+            alt="Random image"
+            className={classes.imgContent}
+          />
         ) : (
           <Fragment />
         );

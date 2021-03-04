@@ -427,3 +427,11 @@ export const linearScaleQuestionStyle = makeStyles((theme) => ({
     marginTop: theme.spacing(1),
   },
 }));
+export const randomGalleryStyle = makeStyles((theme) => ({
+  imgContent: {
+    width: "50%",
+    height: "50%",
+    display: "block",
+    margin: theme.spacing(2),
+  },
+}));
