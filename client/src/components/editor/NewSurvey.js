@@ -74,7 +74,7 @@ function NewSurvey(props) {
         if (cont.contentId > maxContentId) maxContentId = cont.contentId;
       });
     });
-    return maxContentId;
+    return maxContentId + 1;
   };
 
   /*Initializes contentId counter*/

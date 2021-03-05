@@ -17,9 +17,9 @@ function LinearScaleQuestion(props) {
   let minValueLabel = props.minValueLabel;
   let maxValueLabel = props.maxValueLabel;
 
-  useEffect(() => {
+  /*useEffect(() => {
     props.updateAll({ minValue, maxValue, minValueLabel, maxValueLabel });
-  }, []);
+  }, []);*/
 
   const onChangeMinValue = (e) => {
     props.updateMinValue(e.target.value);

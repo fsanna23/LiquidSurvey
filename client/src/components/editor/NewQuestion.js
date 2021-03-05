@@ -105,9 +105,17 @@ function NewQuestion(props) {
   };
 
   const onChangeType = (e) => {
-    setQuestion({ ...question, type: e.target.value });
-    // TODO reset initial data
-    props.update({ type: e.target.value });
+    const newType = e.target.value;
+    setQuestion({ ...question, type: newType });
+    if (newType === questionTypes.LINEAR_SCALE) {
+      props.update({
+        type: newType,
+        minValue: question.minValue,
+        maxValue: question.maxValue,
+        minValueLabel: question.minValueLabel,
+        maxValueLabel: question.maxValueLabel,
+      });
+    } else props.update({ type: newType });
   };
 
   const onToggleDescription = () => {
@@ -224,7 +232,9 @@ function NewQuestion(props) {
         );
       case questionTypes.LINEAR_SCALE:
         const updateAll = (updates) => {
-          props.update(updates);
+          setTimeout(() => {
+            props.update(updates);
+          }, 1000);
         };
 
         /*props.update({
