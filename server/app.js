@@ -115,6 +115,20 @@ app.get("/getTextList", (req, res) => {
   res.json(textArray);
 });
 
+app.get("/getRandomText", (req, res) => {
+  const { textName } = req.query;
+  const rawData = fs.readFileSync(textDir + "text.json");
+  const texts = JSON.parse(rawData);
+  let textArray = [];
+  texts.forEach((image) => {
+    if (image.image.toString() === textName) {
+      textArray = image["texts"];
+    }
+  });
+  const randomText = textArray[Math.floor(Math.random() * textArray.length)];
+  res.json(randomText);
+});
+
 app.get("/getSurveys", (req, res) => {
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
   const surveys = JSON.parse(rawData);
