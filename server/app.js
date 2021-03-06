@@ -7,6 +7,7 @@ const port = 9000;
 const imageDir = __dirname + "/images/";
 const questionImageDir = imageDir + "question/";
 const explImageDir = imageDir + "explaination/";
+const textDir = __dirname + "/textcontent/";
 const surveyDir = __dirname + "/surveys/";
 
 const content_type = {
@@ -102,6 +103,17 @@ app.get("/getRandomImage", (req, res) => {
     .sendFile(questionImageDir + randomImg);
 });
 
+app.get("/getTextList", (req, res) => {
+  const rawData = fs.readFileSync(textDir + "text.json");
+  const texts = JSON.parse(rawData);
+  let textArray = [];
+  texts.forEach((image) => {
+    image["texts"].forEach((txt) => {
+      textArray.push(txt);
+    });
+  });
+  res.json(textArray);
+});
 
 app.get("/getSurveys", (req, res) => {
   const rawData = fs.readFileSync(surveyDir + "surveys.json");

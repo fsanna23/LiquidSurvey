@@ -523,6 +523,8 @@ function NewSurvey(props) {
                   removeTextField={removeContent}
                   move={move}
                   update={updateContent}
+                  data={cont.data}
+                  randomNumbers={previousPlaceholders()}
                 />
               );
             case content_type.RANDOM_NUMBER:
@@ -555,6 +557,7 @@ function NewSurvey(props) {
               ? classes.questionsContainerGridHidden
               : classes.questionsContainerGrid
           }
+          key={"droppablegridcontainer-" + section.pageId}
         >
           {sections.length === 1 ? (
             <Fragment />

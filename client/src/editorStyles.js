@@ -332,6 +332,9 @@ export const newTextFieldStyle = makeStyles((theme) => ({
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
   },
+  randomNameSelector: {
+    margin: theme.spacing(2),
+  },
 }));
 export const newRandomNumberStyle = makeStyles((theme) => ({
   boxCardRoot: {
@@ -433,5 +436,9 @@ export const randomGalleryStyle = makeStyles((theme) => ({
     height: "50%",
     display: "block",
     margin: theme.spacing(2),
+  },
+  textContent: {
+    margin: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
   },
 }));

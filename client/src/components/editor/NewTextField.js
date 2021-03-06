@@ -11,6 +11,8 @@ import {
   Tooltip,
   FormControlLabel,
   Switch,
+  Select,
+  MenuItem,
 } from "@material-ui/core";
 // Draggable
 import { Draggable } from "react-beautiful-dnd";
@@ -23,6 +25,8 @@ import ArrowUpward from "@material-ui/icons/ArrowUpward";
 import ArrowDownward from "@material-ui/icons/ArrowDownward";
 import ShortTextIcon from "@material-ui/icons/ShortText";
 import ImageInputBtn from "./ImageInputBtn";
+import RandomGallery from "./RandomGallery";
+import content_type from "../../contentTypes";
 const useStyles = newTextFieldStyle;
 
 function NewTextField(props) {
@@ -32,6 +36,13 @@ function NewTextField(props) {
     title: "",
     description: "",
   });
+  const [randomize, setRandomize] = useState({
+    randomStatus:
+      props.data && props.data.randomStatus ? props.data.randomStatus : false,
+    randomName:
+      props.data && props.data.randomName ? props.data.randomName : "",
+  });
+  const randomNumbersNames = props.randomNumbers;
 
   const onRemoveContent = () => {
     props.removeTextField(props.index);
@@ -47,6 +58,62 @@ function NewTextField(props) {
     props.update({ description: e.target.value });
   };
 
+  const onChangeRandomStatus = () => {
+    setRandomize({ ...randomize, randomStatus: !randomize.randomStatus });
+    props.update({ randomStatus: !randomize.randomStatus });
+  };
+
+  const onChangeRandomName = (e) => {
+    setRandomize({ ...randomize, randomName: e.target.value });
+    props.update({ randomName: e.target.value });
+  };
+
+  const renderRandomizeSelection = () => {
+    const checkValue = () => {
+      let check = false;
+      if (randomNumbersNames.length !== 0) {
+        randomNumbersNames.forEach((name) => {
+          if (randomize.randomName === name) check = true;
+        });
+      }
+      return check;
+    };
+
+    return (
+      <Fragment>
+        {randomNumbersNames.length !== 0 ? (
+          <Select
+            labelId="demo-simple-select-label"
+            id="demo-simple-select"
+            value={checkValue() === true ? randomize.randomName : ""}
+            className={classes.randomNameSelector}
+            onChange={onChangeRandomName}
+            defaultValue=""
+          >
+            {randomNumbersNames.map((rn) => (
+              <MenuItem key={"selectvalue" + rn} value={rn}>
+                {rn}
+              </MenuItem>
+            ))}
+          </Select>
+        ) : null}
+        <RandomGallery randomType={content_type.TEXT} />
+      </Fragment>
+    );
+  };
+
+  const renderDefault = () => {
+    return (
+      <Input
+        placeholder="Description"
+        inputProps={{ "aria-label": "description" }}
+        className={classes.textDescription}
+        value={state.description}
+        onChange={onChangeDescription}
+      />
+    );
+  };
+
   return (
     <Box width={800} className={classes.boxCardRoot}>
       <Card className={classes.cardRoot} variant="outlined">
@@ -58,13 +125,9 @@ function NewTextField(props) {
             value={state.title}
             onChange={onChangeTitle}
           />
-          <Input
-            placeholder="Description"
-            inputProps={{ "aria-label": "description" }}
-            className={classes.textDescription}
-            value={state.description}
-            onChange={onChangeDescription}
-          />
+          {randomize.randomStatus
+            ? renderRandomizeSelection()
+            : renderDefault()}
         </CardContent>
         <Divider variant="middle" />
         <CardActions className={classes.cardActions}>
@@ -92,6 +155,26 @@ function NewTextField(props) {
             </Tooltip>
           </div>
           <div className={classes.cardActionsRight}>
+            {props.randomNumbers.length !== 0 ? (
+              <Fragment>
+                <FormControlLabel
+                  control={
+                    <Switch
+                      checked={randomize.randomStatus}
+                      onChange={onChangeRandomStatus}
+                      color="primary"
+                    />
+                  }
+                  label="Randomize"
+                  labelPlacement="start"
+                />
+                <Divider
+                  orientation="vertical"
+                  flexItem
+                  className={classes.cardActionsDivider}
+                />
+              </Fragment>
+            ) : null}
             <Tooltip title="Delete question" placement="bottom">
               <IconButton
                 onClick={() => {

@@ -1,0 +1,44 @@
+[
+  {"image":  0,
+    "texts": [
+      "Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
+      "Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.",
+      "Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. "
+    ]
+  },
+  {"image":  1,
+    "texts": [
+      "Cras porttitor semper libero, sed finibus neque sagittis eget.",
+      "Donec porttitor tortor consectetur ante vestibulum convallis.",
+      "In tincidunt lectus et metus tempus suscipit."
+    ]
+  },
+  {"image":  2,
+    "texts": [
+      "Curabitur vitae felis rutrum, fringilla mauris at, hendrerit augue.",
+      "Interdum et malesuada fames ac ante ipsum primis in faucibus",
+      "Vestibulum ante ipsum primis in faucibus orci luctus et ultrices posuere cubilia curae."
+    ]
+  },
+  {"image":  3,
+    "texts": [
+      "Maecenas ac dui quis nunc tincidunt porta.",
+      "Etiam eu posuere erat, eu egestas lorem.",
+      "Donec imperdiet bibendum massa, eu tincidunt ipsum vulputate a."
+    ]
+  },
+  {"image":  4,
+    "texts": [
+      "Morbi non magna tincidunt, tincidunt nibh sed, semper augue.",
+      "Nam ullamcorper luctus libero, eget volutpat neque cursus non.",
+      "Phasellus semper magna et arcu mattis placerat."
+    ]
+  },
+  {"image":  5,
+    "texts": [
+      "Nullam consectetur lacus velit, id mattis est consequat non.",
+      "Etiam nisl mi, vehicula nec libero rutrum, mattis maximus orci. ",
+      "Ut viverra vel metus eu vestibulum. Proin viverra nisl sed mauris ultricies fringilla."
+    ]
+  }
+]
