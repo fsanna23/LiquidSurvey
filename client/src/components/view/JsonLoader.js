@@ -44,8 +44,6 @@ function JsonLoader(props) {
   const classes = useStyles();
   const jsonData = useContext(SelectedSurveyContext);
   const [currentPage, setCurrentPage] = useState(0); //Stato usato per conoscere la pagina corrente del questionario
-  let imageElement = []; //Array che contiene gli elementi di tipo 'Image' (che hanno un RandomName collegato)
-  let randomElement = []; //Array che contiene gli elementi di tipo 'Random Number'
   const [vPages, setVPages] = useState([0]); //Stato che tiene traccia di tutte le pagine visitate dall'utente
   const [randomNames, setRandomNames] = useState([]);
 
@@ -99,10 +97,11 @@ function JsonLoader(props) {
       </Typography>
     );
   };
-  
+
   useEffect(() => {
-    
-    const savedRandomNames = sessionStorage.getItem("randomNames");
+    const savedRandomNames = sessionStorage.getItem(
+      "randomNames" + jsonData.id
+    );
     if (savedRandomNames !== null) {
       const parsedNames = JSON.parse(savedRandomNames);
       setRandomNames(parsedNames);
@@ -110,35 +109,50 @@ function JsonLoader(props) {
       let randomNamesArray = [];
       jsonData.pages.forEach((page) => {
         page.contents.forEach((content) => {
-          if (content.type === "Random Number") randomNamesArray.push(content.data);
+          if (content.type === "Random Number")
+            randomNamesArray.push(content.data);
         });
       });
       if (randomNamesArray.length > 0) {
         let totalNumbers;
         let randomObjs = [];
         fetch("http://localhost:9000/getImageNumbers")
-        .then(response => response.json())
-        .then(data => totalNumbers = data.length - 1)
-        .then(() => {
-          randomNamesArray.forEach(name => {
-            let rand = Math.floor(name.minRange + Math.random() * (name.maxRange - name.minRange));
-            let randInRange = rand % totalNumbers;
-            //if(randomObjs.length)
-            randomObjs.push({randomName: name.name, generatedNumber: randInRange});
-          
-        })})
-        .then(() => {
-          sessionStorage.setItem("randomNames", JSON.stringify(randomObjs));
-          setRandomNames(randomObjs)});
+          .then((response) => response.json())
+          .then((data) => (totalNumbers = data.length - 1))
+          .then(() => {
+            randomNamesArray.forEach((name) => {
+              let rand = Math.floor(
+                name.minRange + Math.random() * (name.maxRange - name.minRange)
+              );
+              let randInRange = rand % totalNumbers;
+              //if(randomObjs.length)
+              randomObjs.push({
+                randomName: name.name,
+                generatedNumber: randInRange,
+              });
+            });
+          })
+          .then(() => {
+            sessionStorage.setItem(
+              "randomNames" + jsonData.id,
+              JSON.stringify(randomObjs)
+            );
+            setRandomNames(randomObjs);
+          });
       }
     }
   }, []);
 
   const renderPages = () => {
     console.log("Rendering the pages, the randomNames are: ", randomNames);
-    return (<RandomNamesContext.Provider value={randomNames}>
-      <Page contents={jsonData.pages[currentPage].contents} randomNames={randomNames} />
-    </RandomNamesContext.Provider>);
+    return (
+      <RandomNamesContext.Provider value={randomNames}>
+        <Page
+          contents={jsonData.pages[currentPage].contents}
+          randomNames={randomNames}
+        />
+      </RandomNamesContext.Provider>
+    );
   };
 
   const newReturn = () => {
