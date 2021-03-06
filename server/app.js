@@ -87,6 +87,22 @@ app.get("/getImage", (req, res) => {
   res.status(500);
 });
 
+app.get("/getRandomImage", (req, res) => {
+  const { imageName } = req.query;
+  // TODO check if folder is question or explaination. For now, just question is used
+  let imgArray = [];
+  fs.readdirSync(questionImageDir).forEach((img) => {
+    if (splitNameByUnderscore(img) === imageName) {
+      imgArray.push(img);
+    }
+  });
+  const randomImg = imgArray[Math.floor(Math.random() * imgArray.length)];
+  res
+    .set({ "Content-Type": "image/png" })
+    .sendFile(questionImageDir + randomImg);
+});
+
+
 app.get("/getSurveys", (req, res) => {
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
   const surveys = JSON.parse(rawData);

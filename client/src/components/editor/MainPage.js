@@ -32,7 +32,7 @@ function MainPage(props) {
   };
 
   const onViewSurvey = (survey) => {
-    props.selectSurvey([survey]);
+    props.selectSurvey(survey);
     props.setPage(pages.VIEWSURVEY);
   };
 
@@ -51,7 +51,7 @@ function MainPage(props) {
     console.log(props.surveys);
     return props.surveys.map((survey) => {
       return (
-        <Grid item key={survey.title}>
+        <Grid item key={survey.id}>
           <Card className={classes.cardRoot} variant="outlined">
             <CardContent className={classes.cardContent}>
               <Typography variant="h6" className={classes.cardTitle}>
