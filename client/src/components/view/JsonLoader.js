@@ -1,10 +1,7 @@
 import React, { useState, useEffect, useContext } from "react";
 import { questionStyle } from "../../viewStyles.js";
 // Importing Material
-import {
-  Box,
-  Button
-} from "@material-ui/core";
+import { Box, Button } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
@@ -85,12 +82,10 @@ function JsonLoader(props) {
   };
 
   const onClickShowAnswers = () => {
-
     setShowAnswers(true);
-  }
+  };
 
-
-/* Funzione di callback per le domande */
+  /* Funzione di callback per le domande */
   const updateAnswer = (sectionIndex, contentIndex, answer) => {
     // Update the answer at sectionIndex and contentIndex
 
@@ -111,31 +106,37 @@ function JsonLoader(props) {
   riguardante i valori random */
   useEffect(() => {
     if (randomNames.length > 0) {
-        console.log("Running useEffect for answer setting");
+      console.log("Running useEffect for answer setting");
       let initialAnswers = [];
-      jsonData.pages.forEach(page => {
+      jsonData.pages.forEach((page) => {
         let pageArray = [];
-        page.contents.forEach(content => {
+        page.contents.forEach((content) => {
           if (content.type === "Question") {
-            pageArray.push({contentType: content.type, answer: null});
+            pageArray.push({ contentType: content.type, answer: null });
           } else {
-            if (content.data.randomStatus && content.data.randomStatus === true) {
+            if (
+              content.data.randomStatus &&
+              content.data.randomStatus === true
+            ) {
               console.log("The item randomName is ", content.data.randomName);
               console.log("The randomNames are ", randomNames);
-              const foundValue = randomNames.find(rn => rn.randomName === content.data.randomName);
+              const foundValue = randomNames.find(
+                (rn) => rn.randomName === content.data.randomName
+              );
               const randomValue = foundValue["generatedNumber"];
-              pageArray.push({contentType: content.type, randomValue});
+              pageArray.push({ contentType: content.type, randomValue });
             } else {
-              pageArray.push({contentType: content.type});
+              pageArray.push({ contentType: content.type });
             }
           }
         });
         initialAnswers.push(pageArray);
       });
       setAnswers(initialAnswers);
+    } else {
+      console.log("Use effect answer: answers length not > 0");
     }
   }, [randomNames]);
-
 
   useEffect(() => {
     const savedRandomNames = sessionStorage.getItem(
@@ -178,6 +179,9 @@ function JsonLoader(props) {
             );
             setRandomNames(randomObjs);
           });
+      } else {
+        const newRandomNames = ["noNames"];
+        setRandomNames(newRandomNames);
       }
     }
   }, []);
@@ -187,10 +191,10 @@ function JsonLoader(props) {
     return (
       <RandomNamesContext.Provider value={randomNames}>
         <DataCollectorContext.Provider value={updateAnswer}>
-        <Page
-          sectionIndex={currentPage}
-          contents={jsonData.pages[currentPage].contents}
-        />
+          <Page
+            sectionIndex={currentPage}
+            contents={jsonData.pages[currentPage].contents}
+          />
         </DataCollectorContext.Provider>
       </RandomNamesContext.Provider>
     );
@@ -226,7 +230,6 @@ function JsonLoader(props) {
               onClick={onClickShowAnswers}
             >
               Save
-              
             </Button>
           ) : (
             <Button
@@ -244,23 +247,20 @@ function JsonLoader(props) {
   };
 
   const showAnswersOnClick = () => {
-
-    return(
-      
+    return (
       <div>
         <AnswersSummary answers={answers} jsonData={jsonData} />
       </div>
     );
-  }
+  };
 
-  switch(showAnswers){
+  switch (showAnswers) {
     case true:
       return showAnswersOnClick();
 
     case false:
       return newReturn();
   }
-  
 }
 
 export default JsonLoader;
