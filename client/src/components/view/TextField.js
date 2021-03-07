@@ -48,7 +48,7 @@ function TextField(props) {
               {props.data.title}
             </Box>
             {/* Create the class descriptionContainer (or change its name) into the style file */}
-            <Box align="left" className={classes.descriptionContainer}>
+            <Box align="left" className={classes.descriptionContainer} className={classes.elementContainer}>
               {text}
             </Box>
           </Paper>

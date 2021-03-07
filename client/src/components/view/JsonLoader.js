@@ -3,36 +3,15 @@ import { questionStyle } from "../../viewStyles.js";
 // Importing Material
 import {
   Box,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  IconButton,
-  Input,
-  ListItemIcon,
-  ListItemText,
-  MenuItem,
-  Menu,
-  Select,
-  Divider,
-  FormControlLabel,
-  Switch,
-  Tooltip,
+  Button
 } from "@material-ui/core";
-import Container from "@material-ui/core/container";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import Radio from "@material-ui/core/Radio";
-import RadioGroup from "@material-ui/core/RadioGroup";
-import FormControl from "@material-ui/core/FormControl";
-import FormLabel from "@material-ui/core/FormLabel";
-import TextField from "@material-ui/core/TextField";
-import { Droppable, Draggable, DragDropContext } from "react-beautiful-dnd";
-import DragHandleIcon from "@material-ui/icons/DragHandle";
 import SelectedSurveyContext from "../../SelectedSurveyContext";
 import Page from "./Page.js";
 import RandomNamesContext from "./RandomNamesContext";
+import DataCollectorContext from "./DataCollectorContext.js";
 
 const useStyles = questionStyle;
 
@@ -46,6 +25,7 @@ function JsonLoader(props) {
   const [currentPage, setCurrentPage] = useState(0); //Stato usato per conoscere la pagina corrente del questionario
   const [vPages, setVPages] = useState([0]); //Stato che tiene traccia di tutte le pagine visitate dall'utente
   const [randomNames, setRandomNames] = useState([]);
+  const [answers, setAnswers] = useState([]);
 
   /*---GESTIONE DELLE PAGINE DEL QUESTIONARIO---*/
   /*[ES6] action è il parametro passato (indica se l'utente vuole andare alla prossima pagina (1) o quella precedente (0)), 
@@ -98,6 +78,45 @@ function JsonLoader(props) {
     );
   };
 
+  const saveSurvey = () => {
+    console.log("The answers are: ", answers);
+  };
+
+
+/* Funzione di callback per le domande */
+  const updateAnswer = (sectionIndex, contentIndex, answer) => {
+    // Update the answer at sectionIndex and contentIndex
+    let newAnswers = [...answers];
+    newAnswers[sectionIndex][contentIndex].answer = answer;
+    setAnswers(newAnswers);
+  };
+
+  /* Usiamo questo useEffect per impostare da subito la struttura delle risposte
+  in base alla struttura del JSON passato dal MainPage.
+  Lo vado a runnare dopo che setto randomNames in modo tale da avere anche le informazioni
+  riguardante i valori random */
+  useEffect(() => {
+    let initialAnswers = [];
+    jsonData.pages.forEach(page => {
+      let pageArray = [];
+      page.contents.forEach(content => {
+        if (content.type === "Question") {
+          pageArray.push({contentType: content.type, answer: null});
+        } else {
+          if (content.data.randomStatus && content.data.randomStatus === true) {
+            let randomValue = randomNames.find(rn => rn.randomName === content.data.randomName)["generatedNumber"];
+            pageArray.push({contentType: content.type, randomValue});
+          } else {
+            pageArray.push({contentType: content.type});
+          }
+        }
+      });
+      initialAnswers.push(pageArray);
+    });
+    setAnswers(initialAnswers);
+  }, [randomNames]);
+
+
   useEffect(() => {
     const savedRandomNames = sessionStorage.getItem(
       "randomNames" + jsonData.id
@@ -147,10 +166,12 @@ function JsonLoader(props) {
     console.log("Rendering the pages, the randomNames are: ", randomNames);
     return (
       <RandomNamesContext.Provider value={randomNames}>
+        <DataCollectorContext.Provider value={updateAnswer}>
         <Page
+          sectionIndex={currentPage}
           contents={jsonData.pages[currentPage].contents}
-          randomNames={randomNames}
         />
+        </DataCollectorContext.Provider>
       </RandomNamesContext.Provider>
     );
   };
@@ -182,6 +203,7 @@ function JsonLoader(props) {
               className={classes.pagesSwitchButton}
               variant="contained"
               color="primary"
+              onClick={saveSurvey}
             >
               Save
             </Button>

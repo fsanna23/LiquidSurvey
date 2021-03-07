@@ -1,3 +1,5 @@
+import { BottomNavigation } from "@material-ui/core";
+import { red } from "@material-ui/core/colors";
 import { makeStyles } from "@material-ui/core/styles";
 
 export const questionStyle = makeStyles((theme) => ({
@@ -29,7 +31,7 @@ titleContainer: {
 	marginTop: theme.spacing(4),
 	marginLeft: theme.spacing(4),
 	marginRight: theme.spacing(4),
-	marginBottom: 40,
+	marginBottom: 10,
 },
 
 elementContainer: {
@@ -44,6 +46,7 @@ choicesContainer: {
 
 	marginLeft: theme.spacing(4),
 	marginRight: theme.spacing(4),
+	
 },
 
 grid: {
@@ -62,10 +65,18 @@ imagePaperContainer: {
 	display: "inline-block"
 },
 
+rankingElement: {
+
+	marginBottom: 30,
+},
+
 singleImageContainer: {
 
+	display: 'flex',
 	marginLeft: theme.spacing(4),
 	marginRight: theme.spacing(4),
+	alignItems: 'center',
+	justifyContent: 'center',
 	width: 500,
 	height: 400,
 },
@@ -73,7 +84,6 @@ singleImageContainer: {
 textField: {
 
 	marginLeft: theme.spacing(-4),
-	marginTop: 10,
 	marginBottom: 30,
 	width: 500,
 },
@@ -140,12 +150,18 @@ labelContainer: {
 	marginLeft: theme.spacing(4),
 	marginRight: theme.spacing(4),
 	paddingTop: '30px',
+	marginBottom: 30,
 },
 
 imageFormat: {
 
 	width: "100%",
 	height: "100%",
+},
+
+spacer: {
+
+	marginBottom: 30,
 }
 
 

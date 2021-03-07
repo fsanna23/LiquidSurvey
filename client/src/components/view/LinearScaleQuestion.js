@@ -34,11 +34,30 @@ import SelectedSurveyContext from "../../SelectedSurveyContext";
 import TextQuestion from "./TextQuestion.js";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion.js";
 import RankingQuestion from "./RankingQuestion.js";
+import DataCollectorContext from "./DataCollectorContext";
+
 const useStyles = questionStyle;
 
 function LinearScaleQuestion(props) {
   const classes = useStyles();
   const [linearScaleSelectedValue, setLinearScaleSelectedValue] = useState("");
+  
+  const [answer, setAnswer] = useState([]);
+  const updateAnswer = useContext(DataCollectorContext);
+
+  const saveAnswer = answer => (e) => {
+
+    console.log("LINEAR ANSW: ", answer)
+    setAnswer(answer);
+  }
+
+  //ogni volta che cambia la risposta, la passa a JsonLoader per salvarla
+  useEffect(() => {
+
+    updateAnswer(answer, props.contentIndex, props.sectionIndex);
+
+  }, [answer])
+
 
   /*---GESTIONE DELLA SELEZIONE NELLA LINEAR SCALE---*/
   const handleLinearScaleChange = (e) => {
@@ -63,8 +82,8 @@ function LinearScaleQuestion(props) {
             fontWeight="fontWeightBold"
             className={classes.elementContainer}
           >
-            {props.data.description}
           </Box>
+          
           <Box display="flex" flexdirection="row">
             <Box className={classes.labelContainer}>
               {props.data.minValueLabel}
@@ -93,6 +112,7 @@ function LinearScaleQuestion(props) {
                         value={Number(props.data.minValue) + i}
                         control={
                           <Radio
+                            onChange={saveAnswer(s + 1)}
                             checked={
                               linearScaleSelectedValue ===
                               (Number(props.data.minValue) + i).toString()

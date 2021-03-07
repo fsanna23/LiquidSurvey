@@ -38,6 +38,9 @@ const useStyles = questionStyle;
 function RankingQuestion(props){
 
   const classes = useStyles();
+
+  const [choices, setChoices] = useState(props.data.choices);
+
   return (
       <Typography component={"span"}>
         <Grid>
@@ -63,12 +66,14 @@ function RankingQuestion(props){
                   const srcIndex = param.source.index;
                   const destIndex = param.destination?.index;
 
-                  const newList = props.data.choices; //Copia dell'array di scelte da ordinare
-                  const [reorderList] = props.data.choices.splice(
+                  let newList = [...choices]; //Copia dell'array di scelte da ordinare
+                  const [reorderList] = newList.splice(
                     srcIndex,
                     1
                   ); //si rimuove l'indice sorgente dal nuovo array
                   newList.splice(destIndex, 0, reorderList); //si riaggiunge l'indice nell'array nella nuova posizione
+                  console.log("The new list is", newList);
+                  setChoices(newList);
                 }}
               >
                 <Droppable droppableId="1">
@@ -78,7 +83,7 @@ function RankingQuestion(props){
                       ref={provided.innerRef}
                       {...provided.droppableProps}
                     >
-                      {props.data.choices.map((item, i) => (
+                      {choices.map((item, i) => (
                         <Draggable
                           key={item + i}
                           index={i}

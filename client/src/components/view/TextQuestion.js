@@ -31,11 +31,22 @@ import TextField from "@material-ui/core/TextField";
 import { Droppable, Draggable, DragDropContext } from "react-beautiful-dnd";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import SelectedSurveyContext from "../../SelectedSurveyContext";
+import DataCollectorContext from "./DataCollectorContext";
+
 const useStyles = questionStyle;
 
 function TextQuestion(props){
 
   const classes = useStyles();
+  const [answer, setAnswer] = useState([]);
+  const updateAnswer = useContext(DataCollectorContext);
+
+  const saveAnswer = (e) => {
+
+    setAnswer(e.target.value);
+    updateAnswer(props.sectionIndex, props.contentIndex, answer);
+  }
+
 
   return (
       <Typography component={"span"} color="textPrimary" align="center">
@@ -61,6 +72,7 @@ function TextQuestion(props){
                 placeholder="Placeholder"
                 multiline
                 rowsMax={3}
+                onChange={saveAnswer}
               />
             </form>
           </Paper>

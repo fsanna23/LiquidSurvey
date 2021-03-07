@@ -50,9 +50,11 @@ function Image(props) {
             component="div"
             className={classes.wrapper}
           >
-            <Box align="left" className={classes.titleContainer}>
-              {props.data.title}
-            </Box>
+            {props.data.title &&
+              <Box align="left" className={classes.titleContainer}>
+                {props.data.title}
+              </Box>
+            }
             <div className={classes.singleImageContainer}>
               <img src={image} width="200px" height="200px" />
             </div>

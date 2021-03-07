@@ -30,7 +30,8 @@ import FormLabel from "@material-ui/core/FormLabel";
 import TextField from "@material-ui/core/TextField";
 import { Droppable, Draggable, DragDropContext } from "react-beautiful-dnd";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
-import SelectedSurveyContext from "../../SelectedSurveyContext";
+import DataCollectorContext from "./DataCollectorContext";
+
 const useStyles = questionStyle;
 
 
@@ -41,6 +42,17 @@ selezionata anche nell'altra.*/
 function MultipleChoiceQuestion(props){
 
 	const classes = useStyles();
+  let tempAnswer = [];
+  const [answer, setAnswer] = useState([]);
+  const updateAnswer = useContext(DataCollectorContext);
+
+  //Salva la risposta data
+  const saveAnswer = answer => (e) => {
+
+    setAnswer(answer);
+    updateAnswer(props.sectionIndex, props.contentIndex, answer);
+  }
+
 
 	return (
       <Typography component={"span"} color="textPrimary" align="center">
@@ -55,36 +67,36 @@ function MultipleChoiceQuestion(props){
               {props.data.title}
             </Box>
 
+            {props.data.images &&
             <Grid className={classes.grid} container spacing={3}>
               <Grid item>
                 {/*Se l'array non è vuoto, allora lo scorre*/}
-                {props.data.images && props.data.images.map((img) => (
+                {props.data.images.map((img) => (
                   <Paper
                     variant="outlined"
                     className={classes.imagePaperContainer}
                     key={props.data}
                   >
-                    {/*loadImage(img)*/}
+                    {/*loadImage(img) - NON STA PASSANDO LE IMMAGINI STATICHE*/}
+                    <img src={props.data.images} width="200px" height="200px" />
                   </Paper>
                 ))}
               </Grid>
             </Grid>
-
-            <Box align="left" className={classes.elementContainer}>
-              {props.data.description}
-            </Box>
-
-            <RadioGroup name="RadioGroup">
-              {props.data.choices.map((s) => (
-                <Box align="left" className={classes.choicesContainer} key={s.value}>
-                  <FormControlLabel
-                    value={s.value}
-                    control={<Radio color="primary" />}
-                    label={s.value}
-                  />
-                </Box>
-              ))}
-            </RadioGroup>
+            }
+            <div className={classes.spacer}>
+              <RadioGroup name="RadioGroup">
+                {props.data.choices.map((s) => (
+                  <Box align="left" className={classes.choicesContainer} key={s.value}>
+                    <FormControlLabel
+                      value={s.value}
+                      control={<Radio color="primary" onChange={saveAnswer(s.value)}/>}
+                      label={s.value}
+                    />
+                  </Box>
+                ))}
+              </RadioGroup>
+            </div>
           </Paper>
         </Grid>
       </Typography>
