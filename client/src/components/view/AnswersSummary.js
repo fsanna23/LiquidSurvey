@@ -23,20 +23,42 @@ function AnswerSummary(props){
     let tempPreparedAnswers = [];
     let tempPreparedQuestions = [];
 
+    console.log("PROPS: ", props.answers)
     const prepareAnswers = () => {
+        let tempRanking = '';
+        console.log("RISPOSTEEEEE: ", props.answers)
 
         props.answers.map((item) =>
             
-            item.map((s) => 
+            item.map((s, i) =>
 
-                s.contentType !== 'Image' && s.contentType !== 'Random Number' ?
+
+                s.answer === null ?
+                    
+                    tempPreparedAnswers.push("NON È STATA FORNITA UNA RISPOSTA")
+                :
+                
+                Array.isArray(s.answer) ?
+                    
+                    s.answer.map((r) => 
+                        tempRanking = tempRanking + " " + r.value
+                    ) &&
+                    tempPreparedAnswers.push(tempRanking)
+                :
+                
+                s.contentType !== 'Image' && s.contentType !== 'Text' && s.contentType !== 'Random Number' ?
                 
                     tempPreparedAnswers.push(s.answer)
                 
+                :
+                s.contentType === 'Image' || s.contentType === 'Text' ?
+
+                    tempPreparedAnswers.push(s)
                 : ""
             )
             
         )
+        console.log("RISPOSTEEE: ", tempPreparedAnswers)
     }
 
     const prepareQuestions = () => {
@@ -49,10 +71,12 @@ function AnswerSummary(props){
                 
                 tempPreparedQuestions.push(s.data.title)
             
-            : ""
+            : s.type === 'Image' || s.type === 'Text' ?
+
+                tempPreparedQuestions.push(s.data.title)
+                : ""
             )
         )
-        console.log("DOMANDE: ", tempPreparedQuestions)
     }
 
     const renderAnswersSummaryHeader = () => {
@@ -84,8 +108,8 @@ function AnswerSummary(props){
             {prepareQuestions()}
             {prepareAnswers()}
             {renderAnswersSummaryHeader()}
-            {tempPreparedQuestions.map((q, i)=>
-
+            {tempPreparedAnswers.map((q, i) =>
+                
                 <div>
                     <Typography key={tempPreparedQuestions.id} component={"span"} color="textPrimary" align="center">
                     <Grid>
@@ -96,12 +120,18 @@ function AnswerSummary(props){
                         className={classes.wrapper}
                     >
                         <Box fontWeight={500} align="left" className={classes.titleContainer}>
-                            {q}
+                            {tempPreparedQuestions[i]}
                         </Box>
                         <Box align="left" className={classes.titleContainer}>
-                         {tempPreparedAnswers[i]}
+                            {typeof q === 'object' && q !== null && q.contentType === 'Image'?
+                                "È stata mostrata all'utente un'immagine con valore: " + q.randomValue
+                                : typeof q === 'object' && q !== null && q.contentType === 'Text'?
+                                "È stato mostrato all'utente un testo associato al valore : " + q.randomValue
+                                : q
+                            }
+                            
                         </Box>
-                           
+                                                   
                     </Paper>
                     </Grid>
                 </Typography>

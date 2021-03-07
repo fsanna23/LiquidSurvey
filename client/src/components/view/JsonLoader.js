@@ -88,7 +88,6 @@ function JsonLoader(props) {
   /* Funzione di callback per le domande */
   const updateAnswer = (sectionIndex, contentIndex, answer) => {
     // Update the answer at sectionIndex and contentIndex
-
     console.log("The section index is ", sectionIndex);
     console.log("The content index is ", contentIndex);
 
