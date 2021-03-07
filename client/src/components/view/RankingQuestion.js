@@ -32,14 +32,23 @@ import { Droppable, Draggable, DragDropContext } from "react-beautiful-dnd";
 import DragHandleIcon from "@material-ui/icons/DragHandle";
 import SelectedSurveyContext from "../../SelectedSurveyContext";
 import TextQuestion from "./TextQuestion.js";
-import MultipleChoiceQuestion from "./MultipleChoiceQuestion.js";
+import MultipleChoiceQuestion from "./MultipleChoiceQuestion.js"
+import DataCollectorContext from "./DataCollectorContext";
+
 const useStyles = questionStyle;
 
 function RankingQuestion(props){
 
   const classes = useStyles();
-
+  const updateAnswer = useContext(DataCollectorContext);
   const [choices, setChoices] = useState(props.data.choices);
+  
+  useEffect(() => {
+    // Sends the answers with their initial state
+    updateAnswer(props.sectionIndex, props.contentIndex, props.data.choices);
+    console.log("CHOICES: ", choices)
+  }, []);
+
 
   return (
       <Typography component={"span"}>
@@ -60,6 +69,7 @@ function RankingQuestion(props){
               </Box>
 
               <DragDropContext
+                
                 onDragEnd={(param) => {
 
                   //Indici dei due elementi da scambiare
@@ -72,9 +82,9 @@ function RankingQuestion(props){
                     1
                   ); //si rimuove l'indice sorgente dal nuovo array
                   newList.splice(destIndex, 0, reorderList); //si riaggiunge l'indice nell'array nella nuova posizione
-                  console.log("The new list is", newList);
                   setChoices(newList);
-                }}
+                  updateAnswer(props.sectionIndex, props.contentIndex, newList);
+                }}   
               >
                 <Droppable droppableId="1">
                   {(provided, _) => (
@@ -85,7 +95,7 @@ function RankingQuestion(props){
                     >
                       {choices.map((item, i) => (
                         <Draggable
-                          key={item + i}
+                          key={"draggable-" + item.id}
                           index={i}
                           draggableId={"draggable-" + item.id}
                         >

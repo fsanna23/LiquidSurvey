@@ -49,14 +49,8 @@ function LinearScaleQuestion(props) {
 
     console.log("LINEAR ANSW: ", answer)
     setAnswer(answer);
+    updateAnswer(props.sectionIndex, props.contentIndex, answer);
   }
-
-  //ogni volta che cambia la risposta, la passa a JsonLoader per salvarla
-  useEffect(() => {
-
-    updateAnswer(answer, props.contentIndex, props.sectionIndex);
-
-  }, [answer])
 
 
   /*---GESTIONE DELLA SELEZIONE NELLA LINEAR SCALE---*/

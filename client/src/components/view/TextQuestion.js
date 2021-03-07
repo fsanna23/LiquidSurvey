@@ -44,7 +44,7 @@ function TextQuestion(props){
   const saveAnswer = (e) => {
 
     setAnswer(e.target.value);
-    updateAnswer(props.sectionIndex, props.contentIndex, answer);
+    updateAnswer(props.sectionIndex, props.contentIndex, e.target.value);
   }
 
 

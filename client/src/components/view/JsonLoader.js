@@ -12,6 +12,7 @@ import SelectedSurveyContext from "../../SelectedSurveyContext";
 import Page from "./Page.js";
 import RandomNamesContext from "./RandomNamesContext";
 import DataCollectorContext from "./DataCollectorContext.js";
+import AnswersSummary from "./AnswersSummary.js";
 
 const useStyles = questionStyle;
 
@@ -26,6 +27,7 @@ function JsonLoader(props) {
   const [vPages, setVPages] = useState([0]); //Stato che tiene traccia di tutte le pagine visitate dall'utente
   const [randomNames, setRandomNames] = useState([]);
   const [answers, setAnswers] = useState([]);
+  const [showAnswers, setShowAnswers] = useState(false);
 
   /*---GESTIONE DELLE PAGINE DEL QUESTIONARIO---*/
   /*[ES6] action è il parametro passato (indica se l'utente vuole andare alla prossima pagina (1) o quella precedente (0)), 
@@ -82,13 +84,25 @@ function JsonLoader(props) {
     console.log("The answers are: ", answers);
   };
 
+  const onClickShowAnswers = () => {
+
+    setShowAnswers(true);
+  }
+
 
 /* Funzione di callback per le domande */
   const updateAnswer = (sectionIndex, contentIndex, answer) => {
     // Update the answer at sectionIndex and contentIndex
-    let newAnswers = [...answers];
-    newAnswers[sectionIndex][contentIndex].answer = answer;
-    setAnswers(newAnswers);
+
+    console.log("The section index is ", sectionIndex);
+    console.log("The content index is ", contentIndex);
+
+    if (answers.length > 0) {
+      let newAnswers = [...answers];
+      newAnswers[sectionIndex][contentIndex].answer = answer;
+      setAnswers(newAnswers);
+      console.log("The answer is ", newAnswers);
+    }
   };
 
   /* Usiamo questo useEffect per impostare da subito la struttura delle risposte
@@ -96,24 +110,30 @@ function JsonLoader(props) {
   Lo vado a runnare dopo che setto randomNames in modo tale da avere anche le informazioni
   riguardante i valori random */
   useEffect(() => {
-    let initialAnswers = [];
-    jsonData.pages.forEach(page => {
-      let pageArray = [];
-      page.contents.forEach(content => {
-        if (content.type === "Question") {
-          pageArray.push({contentType: content.type, answer: null});
-        } else {
-          if (content.data.randomStatus && content.data.randomStatus === true) {
-            let randomValue = randomNames.find(rn => rn.randomName === content.data.randomName)["generatedNumber"];
-            pageArray.push({contentType: content.type, randomValue});
+    if (randomNames.length > 0) {
+        console.log("Running useEffect for answer setting");
+      let initialAnswers = [];
+      jsonData.pages.forEach(page => {
+        let pageArray = [];
+        page.contents.forEach(content => {
+          if (content.type === "Question") {
+            pageArray.push({contentType: content.type, answer: null});
           } else {
-            pageArray.push({contentType: content.type});
+            if (content.data.randomStatus && content.data.randomStatus === true) {
+              console.log("The item randomName is ", content.data.randomName);
+              console.log("The randomNames are ", randomNames);
+              const foundValue = randomNames.find(rn => rn.randomName === content.data.randomName);
+              const randomValue = foundValue["generatedNumber"];
+              pageArray.push({contentType: content.type, randomValue});
+            } else {
+              pageArray.push({contentType: content.type});
+            }
           }
-        }
+        });
+        initialAnswers.push(pageArray);
       });
-      initialAnswers.push(pageArray);
-    });
-    setAnswers(initialAnswers);
+      setAnswers(initialAnswers);
+    }
   }, [randomNames]);
 
 
@@ -203,9 +223,10 @@ function JsonLoader(props) {
               className={classes.pagesSwitchButton}
               variant="contained"
               color="primary"
-              onClick={saveSurvey}
+              onClick={onClickShowAnswers}
             >
               Save
+              
             </Button>
           ) : (
             <Button
@@ -222,7 +243,24 @@ function JsonLoader(props) {
     );
   };
 
-  return newReturn();
+  const showAnswersOnClick = () => {
+
+    return(
+      
+      <div>
+        <AnswersSummary answers={answers} jsonData={jsonData} />
+      </div>
+    );
+  }
+
+  switch(showAnswers){
+    case true:
+      return showAnswersOnClick();
+
+    case false:
+      return newReturn();
+  }
+  
 }
 
 export default JsonLoader;
