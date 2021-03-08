@@ -77,6 +77,10 @@ function JsonLoader(props) {
     );
   };
 
+  const saveSurvey = () => {
+    console.log("The answers are: ", answers);
+  };
+
   const onClickShowAnswers = () => {
     setShowAnswers(true);
   };
@@ -84,46 +88,45 @@ function JsonLoader(props) {
   /* Funzione di callback per le domande */
   const updateAnswer = (sectionIndex, contentIndex, answer) => {
     // Update the answer at sectionIndex and contentIndex
-    let tempAnswers;
-    let tempNames = undefined;
-    if (answers.length === 0) {
-      if (randomNames.length === 0) {
-        tempNames = randomNamesSetter();
-      }
-      tempAnswers = setAnswersStructure(tempNames);
-    } else {
-      tempAnswers = answers;
-    }
     console.log("The section index is ", sectionIndex);
     console.log("The content index is ", contentIndex);
-    let newAnswers = [...tempAnswers];
-    newAnswers[sectionIndex][contentIndex].answer = answer;
-    console.log("The answer is ", newAnswers);
-    setAnswers(newAnswers);
+
+    if (answers.length > 0) {
+      let newAnswers = [...answers];
+      newAnswers[sectionIndex][contentIndex].answer = answer;
+      setAnswers(newAnswers);
+      console.log("The answer is ", newAnswers);
+    }
   };
 
-  const setAnswersStructure = (names) => {
-    /* If the names is not undefined, we calculated the randomNames in an updateAnswer and we have to use that*/
-    console.log("Set answers useEffect running");
-    if (randomNames.length > 0 || names) {
-      let tempNames;
-      if (randomNames.length > 0) tempNames = randomNames;
-      else tempNames = names;
+  /* Usiamo questo useEffect per impostare da subito la struttura delle risposte
+  in base alla struttura del JSON passato dal MainPage.
+  Lo vado a runnare dopo che setto randomNames in modo tale da avere anche le informazioni
+  riguardante i valori random */
+  useEffect(() => {
+    if (randomNames.length > 0) {
       console.log("Running useEffect for answer setting");
       let initialAnswers = [];
       jsonData.pages.forEach((page) => {
         let pageArray = [];
         page.contents.forEach((content) => {
           if (content.type === "Question") {
-            pageArray.push({ contentType: content.type, answer: null });
+            if (content.data.type === "Ranking") {
+              pageArray.push({
+                contentType: content.type,
+                answer: content.data.choices,
+              });
+            } else {
+              pageArray.push({ contentType: content.type, answer: null });
+            }
           } else {
             if (
               content.data.randomStatus &&
               content.data.randomStatus === true
             ) {
               console.log("The item randomName is ", content.data.randomName);
-              console.log("The randomNames are ", tempNames);
-              const foundValue = tempNames.find(
+              console.log("The randomNames are ", randomNames);
+              const foundValue = randomNames.find(
                 (rn) => rn.randomName === content.data.randomName
               );
               const randomValue = foundValue["generatedNumber"];
@@ -135,17 +138,19 @@ function JsonLoader(props) {
         });
         initialAnswers.push(pageArray);
       });
-      return initialAnswers;
+      setAnswers(initialAnswers);
+    } else {
+      console.log("Use effect answer: answers length not > 0");
     }
-  };
+  }, [randomNames]);
 
-  const randomNamesSetter = () => {
-    console.log("Random names useEffect running");
+  useEffect(() => {
     const savedRandomNames = sessionStorage.getItem(
       "randomNames" + jsonData.id
     );
     if (savedRandomNames !== null) {
-      return JSON.parse(savedRandomNames);
+      const parsedNames = JSON.parse(savedRandomNames);
+      setRandomNames(parsedNames);
     } else {
       let randomNamesArray = [];
       jsonData.pages.forEach((page) => {
@@ -178,30 +183,12 @@ function JsonLoader(props) {
               "randomNames" + jsonData.id,
               JSON.stringify(randomObjs)
             );
-            return randomObjs;
+            setRandomNames(randomObjs);
           });
       } else {
-        return ["noNames"];
+        const newRandomNames = ["noNames"];
+        setRandomNames(newRandomNames);
       }
-    }
-  };
-
-  /* Usiamo questo useEffect per impostare da subito la struttura delle risposte
-  in base alla struttura del JSON passato dal MainPage.
-  Lo vado a runnare dopo che setto randomNames in modo tale da avere anche le informazioni
-  riguardante i valori random */
-  /*useEffect(() => {
-    if (answers.length === 0) {
-      console.log("ENTERED USEEFFEFEFEFEFE");
-      const initialStructure = setAnswersStructure();
-      setAnswers(initialStructure);
-    }
-  }, [randomNames]);*/
-
-  useEffect(() => {
-    if (randomNames.length === 0 || randomNames[0] === "noNames") {
-      const names = randomNamesSetter();
-      setRandomNames(names);
     }
   }, []);
 
