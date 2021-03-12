@@ -90,61 +90,18 @@ function JsonLoader(props) {
     // Update the answer at sectionIndex and contentIndex
     console.log("The section index is ", sectionIndex);
     console.log("The content index is ", contentIndex);
+    console.log("The answer is ", answer);
 
     if (answers.length > 0) {
       let newAnswers = [...answers];
       newAnswers[sectionIndex][contentIndex].answer = answer;
       setAnswers(newAnswers);
-      console.log("The answer is ", newAnswers);
+      console.log("The updated answers are ", newAnswers);
     }
   };
 
-  /* Usiamo questo useEffect per impostare da subito la struttura delle risposte
-  in base alla struttura del JSON passato dal MainPage.
-  Lo vado a runnare dopo che setto randomNames in modo tale da avere anche le informazioni
-  riguardante i valori random */
   useEffect(() => {
-    if (randomNames.length > 0) {
-      console.log("Running useEffect for answer setting");
-      let initialAnswers = [];
-      jsonData.pages.forEach((page) => {
-        let pageArray = [];
-        page.contents.forEach((content) => {
-          if (content.type === "Question") {
-            if (content.data.type === "Ranking") {
-              pageArray.push({
-                contentType: content.type,
-                answer: content.data.choices,
-              });
-            } else {
-              pageArray.push({ contentType: content.type, answer: null });
-            }
-          } else {
-            if (
-              content.data.randomStatus &&
-              content.data.randomStatus === true
-            ) {
-              console.log("The item randomName is ", content.data.randomName);
-              console.log("The randomNames are ", randomNames);
-              const foundValue = randomNames.find(
-                (rn) => rn.randomName === content.data.randomName
-              );
-              const randomValue = foundValue["generatedNumber"];
-              pageArray.push({ contentType: content.type, randomValue });
-            } else {
-              pageArray.push({ contentType: content.type });
-            }
-          }
-        });
-        initialAnswers.push(pageArray);
-      });
-      setAnswers(initialAnswers);
-    } else {
-      console.log("Use effect answer: answers length not > 0");
-    }
-  }, [randomNames]);
-
-  useEffect(() => {
+    console.log("Running useEffect for randomNames setting");
     const savedRandomNames = sessionStorage.getItem(
       "randomNames" + jsonData.id
     );
@@ -191,6 +148,57 @@ function JsonLoader(props) {
       }
     }
   }, []);
+
+  /* Usiamo questo useEffect per impostare da subito la struttura delle risposte
+  in base alla struttura del JSON passato dal MainPage.
+  Lo vado a runnare dopo che setto randomNames in modo tale da avere anche le informazioni
+  riguardante i valori random */
+  useEffect(() => {
+    if (randomNames.length > 0) {
+      console.log("Running useEffect for answer setting");
+      let initialAnswers = [];
+      jsonData.pages.forEach((page) => {
+        let pageArray = [];
+        page.contents.forEach((content) => {
+          if (content.type === "Question") {
+            if (content.data.type === "Ranking") {
+              pageArray.push({
+                contentType: content.type,
+                answer: content.data.choices,
+              });
+            } else if (content.data.type === "CheckBox") {
+              pageArray.push({
+                contentType: content.type,
+                answer: content.data.choices,
+              });
+            } else {
+              pageArray.push({ contentType: content.type, answer: null });
+            }
+          } else {
+            if (
+              content.data.randomStatus &&
+              content.data.randomStatus === true
+            ) {
+              console.log("The item randomName is ", content.data.randomName);
+              console.log("The randomNames are ", randomNames);
+              const foundValue = randomNames.find(
+                (rn) => rn.randomName === content.data.randomName
+              );
+              const randomValue = foundValue["generatedNumber"];
+              pageArray.push({ contentType: content.type, randomValue });
+            } else {
+              pageArray.push({ contentType: content.type });
+            }
+          }
+        });
+        initialAnswers.push(pageArray);
+      });
+      console.log("SETTING INITIAL ANSWERS: ", initialAnswers);
+      setAnswers(initialAnswers);
+    } else {
+      console.log("Use effect answer: randomNames length not > 0");
+    }
+  }, [randomNames]);
 
   const renderPages = () => {
     console.log("Rendering the pages, the randomNames are: ", randomNames);
