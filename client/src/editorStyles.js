@@ -11,11 +11,13 @@ export const mainPageStyle = makeStyles((theme) => ({
   },
   cardRoot: {
     minWidth: 275,
-    backgroundColor: "#6b6b6b",
-    borderColor: "black",
+    //backgroundColor: "#6b6b6b",
+    //backgroundColor: "#F5F5F5",
+    backgroundColor: "#E8EEF1",
+    borderColor: "#black",
   },
   cardTitle: {
-    color: "white",
+    color: "#black",
   },
   cardContent: {
     marginLeft: theme.spacing(1),

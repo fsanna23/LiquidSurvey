@@ -78,7 +78,6 @@ singleImageContainer: {
 	alignItems: 'center',
 	justifyContent: 'center',
 	width: 500,
-	height: 400,
 },
 
 textField: {

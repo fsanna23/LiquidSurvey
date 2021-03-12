@@ -67,6 +67,10 @@ function MultipleChoiceQuestion(props){
               {props.data.title}
             </Box>
 
+            <Box align="left" className={classes.elementContainer}>
+              {props.data.description}
+            </Box>
+
             {props.data.images &&
             <Grid className={classes.grid} container spacing={3}>
               <Grid item>
