@@ -92,6 +92,12 @@ function NewQuestion(props) {
       type: question.type,
       isMandatory: mandatory,
     });
+    return () =>
+      setQuestion({
+        title: "",
+        description: "",
+        type: questionTypes.SHORT_TEXT,
+      });
   }, []);
 
   const handleMandatory = () => {
@@ -224,6 +230,13 @@ function NewQuestion(props) {
   const renderQuestion = () => {
     switch (question.type) {
       case questionTypes.MULTIPLE_CHOICE:
+        return (
+          <MultipleChoiceQuestion
+            update={onUpdateChoices}
+            choices={question.choices}
+          />
+        );
+      case questionTypes.CHECKBOX:
         return (
           <MultipleChoiceQuestion
             update={onUpdateChoices}
