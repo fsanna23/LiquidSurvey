@@ -28,7 +28,8 @@ function AnswerSummary(props) {
           ? tempPreparedAnswers.push("NON È STATA FORNITA UNA RISPOSTA")
           : Array.isArray(s.answer)
           ? s.answer.map((r) => (tempRanking = tempRanking + " " + r.value)) &&
-            tempPreparedAnswers.push(tempRanking)
+            tempPreparedAnswers.push(tempRanking)&&
+             tempRanking.length > 0 ? tempRanking = "" : "" //Da migliorare. Soluzione per non far stampare tutte le risposte di rank e checkbox assieme   
           : s.contentType !== "Image" &&
             s.contentType !== "Text" &&
             s.contentType !== "Random Number"

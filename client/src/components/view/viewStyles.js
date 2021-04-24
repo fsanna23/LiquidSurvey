@@ -67,7 +67,6 @@ singleImageContainer: {
 	marginLeft: theme.spacing(4),
 	marginRight: theme.spacing(4),
 	width: 500,
-	height: 400,
 },
 
 textField: {
