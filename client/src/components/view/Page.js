@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 import TextQuestion from "./TextQuestion.js";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion.js";
 import RankingQuestion from "./RankingQuestion.js";

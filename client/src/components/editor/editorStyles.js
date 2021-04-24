@@ -1,9 +1,12 @@
 import { makeStyles } from "@material-ui/core/styles";
+/* Old Classes */
+
 export const appStyle = makeStyles((theme) => ({
   drawer: {
     width: 250,
   },
 }));
+
 export const mainPageStyle = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
@@ -38,6 +41,7 @@ export const mainPageStyle = makeStyles((theme) => ({
     marginTop: theme.spacing(3),
   },
 }));
+
 export const appBarStyle = makeStyles((theme) => ({
   menuButton: {
     marginRight: theme.spacing(2),
@@ -46,41 +50,39 @@ export const appBarStyle = makeStyles((theme) => ({
     flexGrow: 1,
   },
 }));
+
+/* New Classes */
+
 export const newSurveyStyle = makeStyles((theme) => ({
-  surveyGrid: {
+  root: {
+    flexGrow: 1,
+  },
+  titleDescContainer: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
+    justify: "center",
+    alignItems: "center",
   },
-  surveyForm: {
+  boxTitleDescContainer: {
+    width: "auto",
+    paddingLeft: theme.spacing(1),
+    paddingRight: theme.spacing(1),
+  },
+  cardContainer: {
     marginTop: theme.spacing(2),
   },
-  sectionNameContainer: {
-    padding: theme.spacing(1),
-    borderBottom: "2px solid red",
-    borderLeft: "2px solid red",
-    borderRight: "2px solid red",
-    borderBottomLeftRadius: "2px",
-    borderBottomRightRadius: "2px",
-    marginBottom: theme.spacing(1),
+  bottomButton: {
+    marginLeft: theme.spacing(2),
+    marginRight: theme.spacing(2),
   },
-  titleInput: {
-    fontSize: 40,
+  bottomButtonsContainer: {
+    justify: "center",
+    marginTop: theme.spacing(1),
+    marginBottom: theme.spacing(2),
   },
-  titleInputBox: {
-    margin: theme.spacing(0),
-  },
-  descInput: {
-    fontSize: 24,
-    marginTop: theme.spacing(3),
-  },
-  questionsContainerGrid: {
-    marginTop: theme.spacing(2),
-    border: "2px solid red",
-    borderRadius: "10px",
-  },
-  questionsContainerGridHidden: {
-    marginTop: theme.spacing(2),
-  },
+}));
+
+export const sectionManagerStyle = makeStyles((theme) => ({
   manageSurveyBox: {
     border: "0.4px solid black",
     borderRadius: "10px",
@@ -95,64 +97,42 @@ export const newSurveyStyle = makeStyles((theme) => ({
     height: "50px",
     width: "316px",
   },
+}));
+
+/* For both sectionManagerBtn and imageInputBtn */
+export const sectionManagerBtnStyle = makeStyles((theme) => ({
   manageSurveyBoxIcon: {
     margin: "2px",
   },
-  bottomButtonsContainer: {
-    alignItems: "center",
-    justify: "center",
-    marginTop: theme.spacing(4),
+}));
+
+/* For both content and randomizableContent */
+export const contentStyle = makeStyles((theme) => ({
+  sectionDecor: {
+    display: "inline-block",
+    border: "2px solid",
+    borderColor: "#90caf9",
+    marginLeft: theme.spacing(2),
+    marginTop: theme.spacing(2),
+    padding: theme.spacing(1, 1, 1, 1),
+    background: "#90caf9",
+    borderRadius: "10px 10px 0px 0px",
   },
-  bottomButton: {
-    alignSelf: "center",
-    right: "-35%",
+  pageContent: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(4),
+  },
+  innerCardItem: {
+    padding: theme.spacing(2, 2, 1, 1),
     marginLeft: theme.spacing(2),
     marginRight: theme.spacing(2),
-  },
-}));
-export const newQuestionStyle = makeStyles((theme) => ({
-  boxCardRoot: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  questionTitle: {
-    fontSize: 15,
-    width: "50%",
-  },
-  questionDescription: {
-    fontSize: 12,
-    width: "70%",
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
-  questionType: {
-    marginLeft: theme.spacing(10),
-    width: "30%",
-  },
-  questionTypeRenderValue: {
-    paddingLeft: theme.spacing(1),
-  },
-  cardRoot: {
-    minWidth: 275,
-    borderColor: theme.palette.primary.light,
-  },
-  dragHandle: {
-    alignContent: "center",
-    marginTop: -12,
-  },
-  dragHandleIcon: {
-    right: "100%",
-    justifySelf: "center",
-  },
-  cardTitle: {
-    color: "white",
-  },
-  cardContent: {
-    marginLeft: theme.spacing(1),
   },
   cardActions: {
     display: "flex",
   },
+}));
+
+export const contentActionsStyle = makeStyles((theme) => ({
   cardActionsRight: {
     marginLeft: theme.spacing(2),
     justifyContent: "end",
@@ -166,6 +146,31 @@ export const newQuestionStyle = makeStyles((theme) => ({
   cardActionsDivider: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
+  },
+}));
+
+export const pageStyle = makeStyles((theme) => ({
+  cardItem: {
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+    width: "auto",
+    maxWidth: "774px",
+  },
+  sectionManagerContainer: {
+    display: "flex",
+    justifyContent: "center",
+  },
+}));
+
+export const questionStyle = makeStyles((theme) => ({
+  questionDescription: {
+    fontSize: 12,
+    width: "70%",
+    marginTop: theme.spacing(2),
+    marginBottom: theme.spacing(2),
+  },
+  noQuestionBlank: {
+    marginTop: theme.spacing(2),
   },
   imgContainer: {
     display: "flex",
@@ -183,57 +188,38 @@ export const newQuestionStyle = makeStyles((theme) => ({
     justifySelf: "center",
     alignSelf: "center",
   },
-}));
-export const newImageStyle = makeStyles((theme) => ({
-  boxCardRoot: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
+  questionTitle: {
+    width: 500,
+    maxWidth: 500,
+    marginRight: theme.spacing(3),
   },
+  questionSelect: {
+    width: "auto",
+    minWidth: 160,
+    maxWidth: 160,
+  },
+}));
+
+export const questionTypeSelectStyle = makeStyles((theme) => ({
+  questionType: {
+    minWidth: "100%",
+    maxWidth: "50%",
+    marginTop: "-1rem",
+  },
+}));
+
+export const imageStyle = makeStyles((theme) => ({
   imageTitle: {
     fontSize: 15,
-    width: "50%",
     marginTop: theme.spacing(1),
   },
-  cardRoot: {
-    minWidth: 275,
-    borderColor: theme.palette.primary.light,
-  },
-  dragHandle: {
-    alignContent: "center",
-    marginTop: -12,
-  },
-  dragHandleIcon: {
-    right: "100%",
-    justifySelf: "center",
-  },
-  cardTitle: {
-    color: "white",
-  },
-  cardContent: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-  },
-  cardActions: {
+  imgContainer: {
     display: "flex",
-  },
-  cardActionsRight: {
-    marginLeft: theme.spacing(2),
-    justifyContent: "end",
-    display: "flex",
-  },
-  cardActionsLeft: {
-    marginLeft: theme.spacing(2),
-    justifyContent: "flex-end",
-    flex: "1",
-  },
-  cardActionsDivider: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
+    alignItems: "flex-start",
   },
   imgContent: {
-    width: "50%",
-    height: "50%",
-    display: "block",
+    width: "20%",
+
     margin: theme.spacing(2),
   },
   selectAndChangeImgBtn: {
@@ -242,7 +228,17 @@ export const newImageStyle = makeStyles((theme) => ({
   randomNameSelector: {
     margin: theme.spacing(2),
   },
+  flexContainer: {
+    display: "flex",
+    alignItems: "center",
+  },
+  controlRandomSelector: {
+    width: "100%",
+    paddingTop: theme.spacing(1),
+  },
 }));
+
+/* Not used now */
 export const newVideoStyle = makeStyles((theme) => ({
   boxCardRoot: {
     marginTop: theme.spacing(2),
@@ -282,11 +278,8 @@ export const newVideoStyle = makeStyles((theme) => ({
     margin: theme.spacing(2),
   },
 }));
-export const newTextFieldStyle = makeStyles((theme) => ({
-  boxCardRoot: {
-    marginTop: theme.spacing(2),
-    marginBottom: theme.spacing(2),
-  },
+
+export const textStyle = makeStyles((theme) => ({
   textTitle: {
     fontSize: 15,
     width: "50%",
@@ -296,47 +289,12 @@ export const newTextFieldStyle = makeStyles((theme) => ({
     width: "70%",
     marginTop: theme.spacing(2),
   },
-  cardRoot: {
-    minWidth: 275,
-    borderColor: theme.palette.primary.light,
-  },
-  dragHandle: {
-    alignContent: "center",
-    marginTop: -12,
-  },
-  dragHandleIcon: {
-    right: "100%",
-    justifySelf: "center",
-  },
-  cardTitle: {
-    color: "white",
-  },
-  cardContent: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-  },
-  cardActions: {
-    display: "flex",
-  },
-  cardActionsRight: {
-    marginLeft: theme.spacing(2),
-    justifyContent: "end",
-    display: "flex",
-  },
-  cardActionsLeft: {
-    marginLeft: theme.spacing(2),
-    justifyContent: "flex-end",
-    flex: "1",
-  },
-  cardActionsDivider: {
-    marginLeft: theme.spacing(1),
-    marginRight: theme.spacing(1),
-  },
   randomNameSelector: {
     margin: theme.spacing(2),
   },
 }));
-export const newRandomNumberStyle = makeStyles((theme) => ({
+
+export const randomNumberStyle = makeStyles((theme) => ({
   boxCardRoot: {
     marginTop: theme.spacing(2),
     marginBottom: theme.spacing(2),
@@ -388,6 +346,7 @@ export const newRandomNumberStyle = makeStyles((theme) => ({
     marginRight: theme.spacing(1),
   },
 }));
+
 export const multipleChoiceQuestionStyle = makeStyles((theme) => ({
   fieldContainer: {
     marginTop: theme.spacing(1),
@@ -404,6 +363,7 @@ export const multipleChoiceQuestionStyle = makeStyles((theme) => ({
     color: "red",
   },
 }));
+
 export const linearScaleQuestionStyle = makeStyles((theme) => ({
   fieldContainer: {
     marginTop: theme.spacing(1),
@@ -429,16 +389,8 @@ export const linearScaleQuestionStyle = makeStyles((theme) => ({
     display: "block",
     marginTop: theme.spacing(1),
   },
-}));
-export const randomGalleryStyle = makeStyles((theme) => ({
-  imgContent: {
-    width: "50%",
-    height: "50%",
-    display: "block",
-    margin: theme.spacing(2),
-  },
-  textContent: {
-    margin: theme.spacing(2),
-    paddingLeft: theme.spacing(2),
+  gridContainer: {
+    marginTop: theme.spacing(6),
+    marginBottom: theme.spacing(2),
   },
 }));

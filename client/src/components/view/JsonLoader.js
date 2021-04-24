@@ -1,15 +1,17 @@
 import React, { useState, useEffect, useContext } from "react";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 // Importing Material
 import { Box, Button } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
 import Grid from "@material-ui/core/Grid";
 import Paper from "@material-ui/core/Paper";
-import SelectedSurveyContext from "../../SelectedSurveyContext";
 import Page from "./Page.js";
 import RandomNamesContext from "./RandomNamesContext";
 import DataCollectorContext from "./DataCollectorContext.js";
 import AnswersSummary from "./AnswersSummary.js";
+
+// UPDATE APRIL
+import { useStateValue } from "../../StateProvider";
 
 const useStyles = questionStyle;
 
@@ -19,12 +21,15 @@ const useStyles = questionStyle;
 
 function JsonLoader(props) {
   const classes = useStyles();
-  const jsonData = useContext(SelectedSurveyContext);
+  // const jsonData = useContext(SelectedSurveyContext);
   const [currentPage, setCurrentPage] = useState(0); //Stato usato per conoscere la pagina corrente del questionario
   const [vPages, setVPages] = useState([0]); //Stato che tiene traccia di tutte le pagine visitate dall'utente
   const [randomNames, setRandomNames] = useState([]);
   const [answers, setAnswers] = useState([]);
   const [showAnswers, setShowAnswers] = useState(false);
+
+  // UPDATE APRIL
+  const [{ selectedSurvey: jsonData }, dispatch] = useStateValue();
 
   /*---GESTIONE DELLE PAGINE DEL QUESTIONARIO---*/
   /*[ES6] action è il parametro passato (indica se l'utente vuole andare alla prossima pagina (1) o quella precedente (0)), 

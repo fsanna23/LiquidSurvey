@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 import RandomNamesContext from "./RandomNamesContext";
 import { Box, Typography, Grid, Paper } from "@material-ui/core";
 
@@ -48,7 +48,11 @@ function TextField(props) {
               {props.data.title}
             </Box>
             {/* Create the class descriptionContainer (or change its name) into the style file */}
-            <Box align="left" className={classes.descriptionContainer} className={classes.elementContainer}>
+            <Box
+              align="left"
+              className={classes.descriptionContainer}
+              className={classes.elementContainer}
+            >
               {text}
             </Box>
           </Paper>

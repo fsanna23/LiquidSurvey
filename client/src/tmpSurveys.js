@@ -35,115 +35,38 @@ let mySurvey = {
   description: "RandomDesc",
   pages: [
     {
-        "pageId" : "1",
-        "contents": [
-          {
-            "type": "Question",
-            "data": {
-              "type": "Multiple Choice",
-              "title": "The AI must decide: Is 40% or more of the nutrients on then plate fat?",
-              "description": "What will the AI decide?",
-              "choices": [
-                {
-                  "id" : "1",
-                  "value": "No, 30% of the nutrients on this plate is not fat."
-                },
-                {
-                  "id" : "2",
-                  "value": "Yes, 30% of the nutrients on this plate is not fat."
-                }
-              ],
-              "images": ["image01.png", "image02.png"]
-            }
-          },
-          {
-            "type": "Question",
-            "data": {
-              "type": "Short Text",
-              "title": "The AI generated its prediction giving this motivation: it is represented as two curved lines",
-              "description": "What is your decision?"
-            }
-          },
-          {
-            "type": "Question",
-            "data": {
-              "type": "Ranking",
-              "title": "Employee Performance review",
-              "description": "Rank these elements sorting them by importance to you",
-              "choices": [
-                {
-                  "id": "1",
-                  "value": "Job Knowledge"
-                },
-                {
-                  "id": "2",
-                  "value": "Work Quality"
-                },
-                {
-                  "id": "3",
-                  "value": "Attendance/punctuality"
-                },
-                {
-                  "id": "4",
-                  "value": "Productivity"
-                },
-                {
-                  "id": "5",
-                  "value": "Communication Skills"
-                }
-              ]
-            }
-          },
-        ],
-      },
-      {
-        pageId: 2,
-        contents: [
-          {
-            contentId: 1,
-            type: "Image",
-            data: {
-              title: "ImagetitleProva",
-              randomName: "Pippo",
-              randomStatus: true,
-            },
-          },
-          {
-            contentId: 2,
-            type: "Random Number",
-            data: { name: "Pippo", minRange: 0, maxRange: 100 },
-          },
-          {
-            contentId: 3,
-            type: "Random Number",
-            data: { name: "Gatto", minRange: 0, maxRange: 100 },
-          },        
-        ],
-      },
-    {
-      pageId: 3,
+      pageId: 1,
       contents: [
-        
         {
           contentId: 1,
+          type: "Random Number",
+          data: { name: "Pippo", minRange: 0, maxRange: 100 },
+        },
+        {
+          contentId: 2,
           type: "Image",
           data: {
             title: "ImagetitleProva",
-            randomName: "Cane",
+            randomName: "Pippo",
             randomStatus: true,
           },
         },
         {
-          contentId: 2,
-          type: "Random Number",
-          data: { name: "Cane", minRange: 0, maxRange: 100 },
-        }, 
-        {
           contentId: 3,
+          type: "Random Number",
+          data: { name: "Pluto", minRange: 0, maxRange: 100 },
+        },
+        {
+          contentId: 4,
+          type: "Random Number",
+          data: { name: "Prova", minRange: 0, maxRange: 100 },
+        },
+        {
+          contentId: 5,
           type: "Image",
           data: {
-            title: "ImagetitleProva",
-            randomName: "Gatto",
+            title: "ImagetitleProva2",
+            randomName: "Prova",
             randomStatus: true,
           },
         },

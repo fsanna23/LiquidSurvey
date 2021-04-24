@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 // Importing Material
 import { Box } from "@material-ui/core";
 import Typography from "@material-ui/core/Typography";
@@ -50,11 +50,11 @@ function Image(props) {
             component="div"
             className={classes.wrapper}
           >
-            {props.data.title &&
+            {props.data.title && (
               <Box align="left" className={classes.titleContainer}>
                 {props.data.title}
               </Box>
-            }
+            )}
             <div className={classes.singleImageContainer}>
               <img src={image} width="200px" height="200px" />
             </div>

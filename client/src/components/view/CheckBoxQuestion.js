@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 // Importing Material
 import {
   Box,

@@ -1,40 +1,155 @@
-import React, { useEffect } from "react";
-import { linearScaleQuestionStyle } from "../../editorStyles";
+import React, { useEffect, useState, useContext } from "react";
+import { linearScaleQuestionStyle } from "./editorStyles";
 import {
   Typography,
-  FormControl,
   Select,
   MenuItem,
   Box,
   TextField,
+  Grid,
+  Switch,
+  FormControl,
 } from "@material-ui/core";
+//Context
+import { NewSurveyDispatcherContext, action_types } from "./NewSurveyContext";
+
 const useStyles = linearScaleQuestionStyle;
 
-function LinearScaleQuestion(props) {
+function LinearScaleQuestion({
+  sectionIndex,
+  contentIndex,
+  minValue,
+  maxValue,
+  minValueLabel,
+  maxValueLabel,
+  continuousSwitch,
+  radioBtnSwitch,
+  horizontalSwitch,
+}) {
   const classes = useStyles();
-  let minValue = props.minValue;
-  let maxValue = props.maxValue;
-  let minValueLabel = props.minValueLabel;
-  let maxValueLabel = props.maxValueLabel;
+  const dispatch = useContext(NewSurveyDispatcherContext);
 
-  /*useEffect(() => {
-    props.updateAll({ minValue, maxValue, minValueLabel, maxValueLabel });
-  }, []);*/
+  useEffect(() => {
+    /* INITIAL VALUES:
+    minValue: 1,
+    maxValue: 5,
+    minValueLabel: "",
+    maxValueLabel: "", */
+    const updates = {
+      minValue: 1,
+      maxValue: 5,
+      minValueLabel: "",
+      maxValueLabel: "",
+      continuousSwitch: false,
+      radioBtnSwitch: false,
+      horizontalSwitch: false,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
+  }, []);
 
   const onChangeMinValue = (e) => {
-    props.updateMinValue(e.target.value);
+    const updates = {
+      minValue: e.target.value,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
   };
 
   const onChangeMaxValue = (e) => {
-    props.updateMaxValue(e.target.value);
+    const updates = {
+      maxValue: e.target.value,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
   };
 
   const onChangeMinValueLabel = (e) => {
-    props.updateMinValueLabel(e.target.value);
+    const updates = {
+      minValueLabel: e.target.value,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
   };
 
   const onChangeMaxValueLabel = (e) => {
-    props.updateMaxValueLabel(e.target.value);
+    const updates = {
+      maxValueLabel: e.target.value,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
+  };
+
+  const onChangeContinuousSwitch = () => {
+    const updates = {
+      continuousSwitch: !continuousSwitch,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
+  };
+
+  const onChangeRadioBtnSwitch = () => {
+    const updates = {
+      radioBtnSwitch: !radioBtnSwitch,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
+  };
+
+  const onChangeHorizontalSwitch = () => {
+    const updates = {
+      horizontalSwitch: !horizontalSwitch,
+    };
+    dispatch({
+      type: action_types.UPDATE_CONTENT,
+      payload: {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      },
+    });
   };
 
   return (
@@ -44,7 +159,10 @@ function LinearScaleQuestion(props) {
           Da{" "}
         </Typography>
         <FormControl className={classes.rangeSelectItem}>
-          <Select value={minValue} onChange={onChangeMinValue}>
+          <Select
+            value={minValue !== undefined ? minValue : 0}
+            onChange={onChangeMinValue}
+          >
             <MenuItem value={0}>0</MenuItem>
             <MenuItem value={1}>1</MenuItem>
           </Select>
@@ -54,37 +172,130 @@ function LinearScaleQuestion(props) {
           a{" "}
         </Typography>
         <FormControl className={classes.rangeSelectItem}>
-          <Select value={maxValue} onChange={onChangeMaxValue}>
-            <MenuItem value={2}>2</MenuItem>
-            <MenuItem value={3}>3</MenuItem>
-            <MenuItem value={4}>4</MenuItem>
-            <MenuItem value={5}>5</MenuItem>
-            <MenuItem value={6}>6</MenuItem>
-            <MenuItem value={7}>7</MenuItem>
-            <MenuItem value={8}>8</MenuItem>
-            <MenuItem value={9}>9</MenuItem>
-            <MenuItem value={10}>10</MenuItem>
+          <Select
+            value={maxValue !== undefined ? maxValue : 5}
+            onChange={onChangeMaxValue}
+          >
+            {[...Array(9).keys()].map((value) => (
+              <MenuItem value={value + 2} key={value}>
+                {value + 2}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
       </Box>
-      <Box component="div">
-        <FormControl className={classes.labelChangeContainer}>
-          <TextField
-            label={"Minimum value label"}
-            value={minValueLabel}
-            className={classes.textField && classes.labelChangeItem}
-            onChange={onChangeMinValueLabel}
-          />
-          <TextField
-            label={"Maximum value label"}
-            value={maxValueLabel}
-            className={classes.textField && classes.labelChangeItem}
-            onChange={onChangeMaxValueLabel}
-          />
-        </FormControl>
+      {/* Grid container for labels - switches */}
+      <Box component="div" className={classes.gridContainer}>
+        <Grid container alignItems="center" className={classes.gridContainer}>
+          {/* Grid item for labels */}
+          <Grid item lg={6}>
+            <Box component="div">
+              <FormControl className={classes.labelChangeContainer}>
+                <TextField
+                  label={"Minimum value label"}
+                  value={minValueLabel !== undefined ? minValueLabel : ""}
+                  className={classes.textField && classes.labelChangeItem}
+                  onChange={onChangeMinValueLabel}
+                />
+                <TextField
+                  label={"Maximum value label"}
+                  value={maxValueLabel !== undefined ? maxValueLabel : ""}
+                  className={classes.textField && classes.labelChangeItem}
+                  onChange={onChangeMaxValueLabel}
+                />
+              </FormControl>
+            </Box>
+          </Grid>
+          {/* Grid item for switches */}
+          <Grid item lg={6}>
+            <Box component="div">
+              <Grid
+                component="label"
+                container
+                alignItems="center"
+                // justify="flex-end"
+                justify="center"
+                spacing={1}
+              >
+                <Grid item>
+                  <Typography>Continuous</Typography>
+                </Grid>
+                <Grid item>
+                  <Switch
+                    checked={
+                      continuousSwitch !== undefined ? continuousSwitch : false
+                    }
+                    onChange={onChangeContinuousSwitch}
+                    color="primary"
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography>Discrete</Typography>
+                </Grid>
+              </Grid>
+              {/* {continuousSwitch === true ? (
+                
+              ) : null} */}
+              <Grid
+                component="label"
+                container
+                alignItems="center"
+                // justify="flex-end"
+                justify="center"
+                spacing={1}
+              >
+                <Grid item>
+                  <Typography>Slider</Typography>
+                </Grid>
+                <Grid item>
+                  <Switch
+                    checked={
+                      radioBtnSwitch !== undefined ? radioBtnSwitch : false
+                    }
+                    onChange={onChangeRadioBtnSwitch}
+                    disabled={continuousSwitch === true ? false : true}
+                    color="primary"
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography>Radio buttons</Typography>
+                </Grid>
+              </Grid>
+              {/* {radioBtnSwitch === true ? (
+                
+              ) : null} */}
+              <Grid
+                component="label"
+                container
+                alignItems="center"
+                // justify="flex-end"
+                justify="center"
+                spacing={1}
+              >
+                <Grid item>
+                  <Typography>Horizontal ordering</Typography>
+                </Grid>
+                <Grid item>
+                  <Switch
+                    checked={
+                      horizontalSwitch !== undefined ? horizontalSwitch : false
+                    }
+                    onChange={onChangeHorizontalSwitch}
+                    disabled={radioBtnSwitch === true ? false : true}
+                    color="primary"
+                  />
+                </Grid>
+                <Grid item>
+                  <Typography>Vertical ordering</Typography>
+                </Grid>
+              </Grid>
+            </Box>
+          </Grid>
+        </Grid>
       </Box>
     </div>
   );
 }
 
+// export default React.memo(LinearScaleQuestion);
 export default LinearScaleQuestion;

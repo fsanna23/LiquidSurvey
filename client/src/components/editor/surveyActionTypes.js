@@ -1,0 +1,8 @@
+export const surveyActionTypes = {
+  QUESTION: "QUESTION",
+  IMAGE: "IMAGE",
+  TEXT: "TEXT",
+  RANDOM_NUMBER: "RANDOM_NUMBER",
+  ADD_SECTION: "ADD SECTION",
+  REMOVE_SECTION: "REMOVE SECTION",
+};

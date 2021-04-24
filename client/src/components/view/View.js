@@ -1,6 +1,6 @@
 import React from "react";
 import JsonLoader from "./JsonLoader.js";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 
 const useStyles = questionStyle;
 

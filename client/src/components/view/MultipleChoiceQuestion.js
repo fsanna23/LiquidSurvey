@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { questionStyle } from "../../viewStyles.js";
+import { questionStyle } from "./viewStyles.js";
 // Importing Material
 import {
   Box,
@@ -34,40 +34,36 @@ import DataCollectorContext from "./DataCollectorContext";
 
 const useStyles = questionStyle;
 
-
 /*BUG: se in due domande diversele possibili risposte
 dei radio button sono uguali, allora quando si sceglie la risposta in una domanda, verrà in automatico
 selezionata anche nell'altra.*/
 
-function MultipleChoiceQuestion(props){
-
-	const classes = useStyles();
+function MultipleChoiceQuestion(props) {
+  const classes = useStyles();
   let tempAnswer = [];
   const [answer, setAnswer] = useState([]);
   const updateAnswer = useContext(DataCollectorContext);
 
   //Salva la risposta data
-  const saveAnswer = answer => (e) => {
-
+  const saveAnswer = (answer) => (e) => {
     setAnswer(answer);
     updateAnswer(props.sectionIndex, props.contentIndex, answer);
-  }
+  };
 
+  return (
+    <Typography component={"span"} color="textPrimary" align="center">
+      <Grid>
+        <Paper
+          variant="outlined"
+          width={400}
+          component="div"
+          className={classes.wrapper}
+        >
+          <Box align="left" className={classes.titleContainer}>
+            {props.data.title}
+          </Box>
 
-	return (
-      <Typography component={"span"} color="textPrimary" align="center">
-        <Grid>
-          <Paper
-            variant="outlined"
-            width={400}
-            component="div"
-            className={classes.wrapper}
-          >
-            <Box align="left" className={classes.titleContainer}>
-              {props.data.title}
-            </Box>
-
-            {props.data.images &&
+          {props.data.images && (
             <Grid className={classes.grid} container spacing={3}>
               <Grid item>
                 {/*Se l'array non è vuoto, allora lo scorre*/}
@@ -83,24 +79,30 @@ function MultipleChoiceQuestion(props){
                 ))}
               </Grid>
             </Grid>
-            }
-            <div className={classes.spacer}>
-              <RadioGroup name="RadioGroup">
-                {props.data.choices.map((s) => (
-                  <Box align="left" className={classes.choicesContainer} key={s.value}>
-                    <FormControlLabel
-                      value={s.value}
-                      control={<Radio color="primary" onChange={saveAnswer(s.value)}/>}
-                      label={s.value}
-                    />
-                  </Box>
-                ))}
-              </RadioGroup>
-            </div>
-          </Paper>
-        </Grid>
-      </Typography>
-    );
+          )}
+          <div className={classes.spacer}>
+            <RadioGroup name="RadioGroup">
+              {props.data.choices.map((s) => (
+                <Box
+                  align="left"
+                  className={classes.choicesContainer}
+                  key={s.value}
+                >
+                  <FormControlLabel
+                    value={s.value}
+                    control={
+                      <Radio color="primary" onChange={saveAnswer(s.value)} />
+                    }
+                    label={s.value}
+                  />
+                </Box>
+              ))}
+            </RadioGroup>
+          </div>
+        </Paper>
+      </Grid>
+    </Typography>
+  );
 }
 
 export default MultipleChoiceQuestion;

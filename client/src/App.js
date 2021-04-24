@@ -1,16 +1,21 @@
 import React, { useState, useEffect } from "react";
-import NavBar from "./components/editor/NavBar";
-import MainPage from "./components/editor/MainPage";
+import NavBar from "./components/NavBar";
+import MainPage from "./components/MainPage";
 import NewSurvey from "./components/editor/NewSurvey";
 import View from "./components/view/View";
 import pages from "./components/pages";
-import Drawer from "@material-ui/core/Drawer";
-import { List, ListItem, ListItemIcon, ListItemText } from "@material-ui/core";
-import { appStyle } from "./editorStyles";
+import {
+  Drawer,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@material-ui/core";
+import { appStyle } from "./components/editor/editorStyles";
 import TrendingUpIcon from "@material-ui/icons/TrendingUp";
 import DescriptionIcon from "@material-ui/icons/Description";
 import { mySimpleSurvey, mySurvey } from "./tmpSurveys";
-import SelectedSurveyContext from "./SelectedSurveyContext";
+import SelectedSurveyContext from "./components/SelectedSurveyContext";
 
 const useStyles = appStyle;
 
@@ -19,12 +24,17 @@ const surveyz = [mySurvey, mySimpleSurvey];
 
 function App() {
   const classes = useStyles();
-  const [surveys, setSurveys] = useState([]);
+  const [surveys, setSurveys] = useState(surveyz);
   const [page, setPage] = useState(pages.MAIN);
   const [showDrawer, setShowDrawer] = useState(false);
-  const [selectedSurvey, setSelectedSurvey] = useState(undefined);
+  const [selectedSurvey, setSelectedSurvey] = useState({});
 
   useEffect(() => {
+    const getSurveysFromServer = () => {
+      fetch("http://localhost:9000/getSurveys")
+        .then((response) => response.json())
+        .then((data) => setSurveys(data));
+    };
     getSurveysFromServer();
   }, []);
 
@@ -32,61 +42,8 @@ function App() {
     setShowDrawer(value);
   };
 
-  const getSurveysFromServer = () => {
-    fetch("http://localhost:9000/getSurveys")
-      .then((response) => response.json())
-      .then((data) => setSurveys(data));
-  };
-
   const addSurvey = (newSurvey) => {
-    if (newSurvey.id) {
-      // I'm editing an already existing survey
-      fetch("http://localhost:9000/editSurvey", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newSurvey),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === "saved") {
-            getSurveysFromServer();
-          } else console.error("FAILED TO INSERT THE SURVEY");
-        });
-    } else {
-      fetch("http://localhost:9000/insertSurvey", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(newSurvey),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status === "saved") {
-            getSurveysFromServer();
-          } else console.error("FAILED TO INSERT THE SURVEY");
-        });
-    }
-  };
-
-  const deleteSurvey = (survey) => {
-    fetch("http://localhost:9000/deleteSurvey", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(survey),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status === "saved") {
-          fetch("http://localhost:9000/getSurveys")
-            .then((response) => response.json())
-            .then((data) => setSurveys(data));
-        } else console.error("FAILED TO DELETE THE SURVEY");
-      });
+    setSurveys([...surveys, newSurvey]);
   };
 
   const checkPage = () => {
@@ -97,17 +54,10 @@ function App() {
             surveys={surveys}
             setPage={setPage}
             selectSurvey={setSelectedSurvey}
-            deleteSurvey={deleteSurvey}
           />
         );
       case pages.NEWSURVEY:
-        return (
-          <NewSurvey
-            json={selectedSurvey}
-            setPage={setPage}
-            addSurvey={addSurvey}
-          />
-        );
+        return <NewSurvey setPage={setPage} addSurvey={addSurvey} />;
       case pages.VIEWSURVEY:
         return (
           <SelectedSurveyContext.Provider value={selectedSurvey}>
@@ -155,6 +105,8 @@ function App() {
       </div>
     );
   };
+
+  console.log("Rendering App.js");
 
   return (
     <div>
