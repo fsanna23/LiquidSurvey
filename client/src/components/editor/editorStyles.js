@@ -219,7 +219,6 @@ export const imageStyle = makeStyles((theme) => ({
   },
   imgContent: {
     width: "20%",
-
     margin: theme.spacing(2),
   },
   selectAndChangeImgBtn: {
@@ -344,6 +343,16 @@ export const randomNumberStyle = makeStyles((theme) => ({
   cardActionsDivider: {
     marginLeft: theme.spacing(1),
     marginRight: theme.spacing(1),
+  },
+}));
+
+export const randomGalleryStyle = makeStyles((theme) => ({
+  randomImage: {
+    width: 250,
+  },
+  textContent: {
+    margin: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
   },
 }));
 

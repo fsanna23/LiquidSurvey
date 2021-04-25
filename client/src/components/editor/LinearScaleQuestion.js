@@ -35,23 +35,25 @@ function LinearScaleQuestion({
     maxValue: 5,
     minValueLabel: "",
     maxValueLabel: "", */
-    const updates = {
-      minValue: 1,
-      maxValue: 5,
-      minValueLabel: "",
-      maxValueLabel: "",
-      continuousSwitch: false,
-      radioBtnSwitch: false,
-      horizontalSwitch: false,
-    };
-    dispatch({
-      type: action_types.UPDATE_CONTENT,
-      payload: {
-        sectionIndex: sectionIndex,
-        contentIndex: contentIndex,
-        updates,
-      },
-    });
+    if (minValue === undefined) {
+      const updates = {
+        minValue: 1,
+        maxValue: 5,
+        minValueLabel: "",
+        maxValueLabel: "",
+        continuousSwitch: false,
+        radioBtnSwitch: false,
+        horizontalSwitch: false,
+      };
+      dispatch({
+        type: action_types.UPDATE_CONTENT,
+        payload: {
+          sectionIndex: sectionIndex,
+          contentIndex: contentIndex,
+          updates,
+        },
+      });
+    }
   }, []);
 
   const onChangeMinValue = (e) => {
@@ -253,7 +255,7 @@ function LinearScaleQuestion({
                       radioBtnSwitch !== undefined ? radioBtnSwitch : false
                     }
                     onChange={onChangeRadioBtnSwitch}
-                    disabled={continuousSwitch === true ? false : true}
+                    disabled={continuousSwitch !== true}
                     color="primary"
                   />
                 </Grid>
@@ -281,7 +283,7 @@ function LinearScaleQuestion({
                       horizontalSwitch !== undefined ? horizontalSwitch : false
                     }
                     onChange={onChangeHorizontalSwitch}
-                    disabled={radioBtnSwitch === true ? false : true}
+                    disabled={radioBtnSwitch !== true}
                     color="primary"
                   />
                 </Grid>

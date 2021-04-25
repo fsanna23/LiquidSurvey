@@ -9,12 +9,15 @@ import RandomNamesContext from "./RandomNamesContext";
 
 const useStyles = questionStyle;
 
+const imagePath = "http://localhost:9000/images/";
+
 function Image(props) {
   const classes = useStyles();
   const [image, setImage] = useState("");
   const randomNames = useContext(RandomNamesContext);
 
-  useEffect(() => {
+  /*  Old useEffect with http request for random image. */
+  /*useEffect(() => {
     let tempGeneratedNumber = undefined;
     if (props.data.randomStatus) {
       randomNames.forEach((r) => {
@@ -31,8 +34,31 @@ function Image(props) {
       fetch(imgPath)
         .then((response) => response.blob())
         .then((data) => {
-          console.log("BLOB: ", URL.createObjectURL(data));
           setImage(URL.createObjectURL(data));
+        });
+    } else {
+      setImage(URL.createObjectURL(props.data.img));
+    }
+  }, [randomNames]);*/
+
+  /*  New useEffect with static images. */
+  useEffect(() => {
+    let tempGeneratedNumber = undefined;
+    if (props.data.randomStatus) {
+      randomNames.forEach((r) => {
+        if (r.randomName === props.data.randomName) {
+          tempGeneratedNumber = r.generatedNumber;
+        }
+      });
+      if (tempGeneratedNumber === undefined) return;
+      let imgPath = new URL("http://localhost:9000/newGetRandomImage");
+      imgPath.search = new URLSearchParams({
+        imageName: tempGeneratedNumber,
+      });
+      fetch(imgPath)
+        .then((response) => response.json())
+        .then((data) => {
+          setImage(imagePath + data.image);
         });
     } else {
       setImage(URL.createObjectURL(props.data.img));
@@ -56,7 +82,12 @@ function Image(props) {
               </Box>
             )}
             <div className={classes.singleImageContainer}>
-              <img src={image} width="200px" height="200px" />
+              <img
+                src={image}
+                width="200px"
+                height="200px"
+                alt="Random image"
+              />
             </div>
           </Paper>
         </Grid>
