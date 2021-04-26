@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import {
   Box,
   Button,
@@ -15,7 +15,7 @@ import MoreIcon from "@material-ui/icons/MoreVert";
 import { mainPageStyle } from "./editor/editorStyles";
 
 // React Router
-import { useHistory, Link } from "react-router-dom";
+import { Link } from "react-router-dom";
 
 // App Context
 import { useStateValue } from "../StateProvider";
@@ -28,16 +28,29 @@ function MainPage() {
   const classes = useStyles();
 
   // App Context
-  const [{ surveys, selectedSurvey }, dispatch] = useStateValue();
+  const [{ surveys, templates, selectedSurvey }, dispatch] = useStateValue();
 
-  // Router
-  // const history = useHistory();
+  useEffect(() => {
+    /*fetch("http://localhost:9000/getTemplates")
+      .then((response) => response.json())
+      .then((data) => {
+        dispatch({ type: actionTypes.SET_TEMPLATES, templates: data });
+      });
+    fetch("http://localhost:9000/getSurveys")
+      .then((response) => response.json())
+      .then((data) =>
+        dispatch({ type: actionTypes.SET_SURVEYS, surveys: data })
+      );*/
+  }, [templates]);
 
   /* Menu anchor functions */
 
   const onSurveyMenuOpen = (event, survey) => {
     console.log("Opening menu for survey: ", survey);
-    dispatch({ type: actionTypes.SELECT_SURVEY, survey: survey });
+    dispatch({
+      type: actionTypes.SELECT_SURVEY,
+      survey: { survey: survey, useTemplate: false },
+    });
     setAnchorEl(event.currentTarget);
   };
 
@@ -49,49 +62,97 @@ function MainPage() {
   /* Click functions */
 
   const onCreateSurvey = () => {
-    /* Remove selected survey from state (if it stays
-      the app will think it's editing something) */
-    dispatch({ type: actionTypes.SELECT_SURVEY, survey: null });
-    // history.push("/createSurvey");
+    dispatch({
+      type: actionTypes.SELECT_SURVEY,
+      survey: { survey: null, useTemplate: false },
+    });
+  };
+
+  const onUseTemplate = (survey) => {
+    /*  This line creates a new object that contains all the values from the parameter
+        obj. If I don't do this, both the new survey and the old one are changed. */
+    const tempSurvey = JSON.parse(JSON.stringify(survey));
+    dispatch({
+      type: actionTypes.SELECT_SURVEY,
+      survey: { survey: tempSurvey, useTemplate: true },
+    });
   };
 
   const onViewSurvey = (survey) => {
-    dispatch({ type: actionTypes.SELECT_SURVEY, survey });
-    // history.push("/viewSurvey");
+    dispatch({
+      type: actionTypes.SELECT_SURVEY,
+      survey: { survey: survey, useTemplate: false },
+    });
   };
 
   const onEditSurvey = (survey) => {
-    dispatch({ type: actionTypes.SELECT_SURVEY, survey });
-    // history.push("/createSurvey");
+    /*  This line creates a new object that contains all the values from the parameter
+        obj. If I don't do this, both the new survey and the old one are changed. */
+    const tempSurvey = JSON.parse(JSON.stringify(survey));
+    dispatch({
+      type: actionTypes.SELECT_SURVEY,
+      survey: { survey: tempSurvey, useTemplate: false },
+    });
   };
 
   const onDeleteSurvey = () => {
-    console.log("Deleting survey: ", selectedSurvey);
+    console.log("Deleting survey: ", selectedSurvey.survey);
     setAnchorEl(null);
-    dispatch({ type: actionTypes.DELETE_SURVEY, id: selectedSurvey.id });
-    fetch("http://localhost:9000/deleteSurvey", {
-      method: "DELETE",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(selectedSurvey),
-    })
-      .then((response) => response.json())
-      .then((data) => {
-        if (data.status !== "saved") {
-          console.error("FAILED TO DELETE THE SURVEY");
-        } else {
-          console.log("DELETED!!!!");
-        }
+
+    if (selectedSurvey.survey.isTemplate) {
+      dispatch({
+        type: actionTypes.DELETE_TEMPLATE,
+        id: selectedSurvey.survey.id,
       });
+      fetch("http://localhost:9000/deleteTemplate", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedSurvey.survey),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status !== "saved") {
+            console.error("FAILED TO DELETE THE SURVEY");
+          } else {
+            console.log("DELETED!!!!");
+          }
+        });
+    } else {
+      dispatch({
+        type: actionTypes.DELETE_SURVEY,
+        id: selectedSurvey.survey.id,
+      });
+      fetch("http://localhost:9000/deleteSurvey", {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(selectedSurvey.survey),
+      })
+        .then((response) => response.json())
+        .then((data) => {
+          if (data.status !== "saved") {
+            console.error("FAILED TO DELETE THE SURVEY");
+          } else {
+            console.log("DELETED!!!!");
+          }
+        });
+    }
   };
+
+  console.log("The templates are: ", templates);
 
   /* Render functions */
 
-  const displaySurveys = (surveysPar) => {
-    return surveysPar.map((survey) => {
+  const displaySurveys = (surveysPar, isTemplate) => {
+    return surveysPar.map((survey, index) => {
       return (
-        <Grid item key={survey.title}>
+        <Grid
+          item
+          key={survey.id !== undefined ? survey.id : "survey-" + index}
+        >
           <Card className={classes.cardRoot} variant="outlined">
             <CardContent className={classes.cardContent}>
               <Typography variant="h6" className={classes.cardTitle}>
@@ -111,18 +172,33 @@ function MainPage() {
                   Edit
                 </Button>
               </Link>
-              <Link to="/viewSurvey">
-                <Button
-                  variant="contained"
-                  color="default"
-                  size="small"
-                  onClick={() => {
-                    onViewSurvey(survey);
-                  }}
-                >
-                  Open
-                </Button>
-              </Link>
+              {isTemplate === false ? (
+                <Link to="/viewSurvey">
+                  <Button
+                    variant="contained"
+                    color="default"
+                    size="small"
+                    onClick={() => {
+                      onViewSurvey(survey);
+                    }}
+                  >
+                    Open
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/createSurvey">
+                  <Button
+                    variant="contained"
+                    color="default"
+                    size="small"
+                    onClick={() => {
+                      onUseTemplate(survey);
+                    }}
+                  >
+                    Use
+                  </Button>
+                </Link>
+              )}
 
               <IconButton
                 className={classes.moreButton}
@@ -154,7 +230,7 @@ function MainPage() {
             spacing={5}
             className={classes.cardDeck}
           >
-            {displaySurveys(surveys)}
+            {displaySurveys(surveys, false)}
           </Grid>
         </Grid>
         <Link to="/createSurvey">
@@ -167,6 +243,22 @@ function MainPage() {
             Create new survey
           </Button>
         </Link>
+      </Grid>
+      {/* Templates */}
+      <Grid container direction="column" justify="center" alignItems="center">
+        <Typography variant="h4" className={classes.surveyTitle}>
+          Your Templates
+        </Typography>
+        <Grid item xs={10}>
+          <Grid
+            container
+            direction="row"
+            spacing={5}
+            className={classes.cardDeck}
+          >
+            {displaySurveys(templates, true)}
+          </Grid>
+        </Grid>
       </Grid>
       <Menu
         id="menu"

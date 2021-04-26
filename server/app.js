@@ -121,7 +121,7 @@ app.get("/getRandomImage", (req, res) => {
     .sendFile(questionImageDir + randomImg);
 });
 
-/*  Updated version -> it sends a json with the filename instead of the file itself as blob. */
+/* Updated version -> it sends a json with the filename instead of the file itself as blob. */
 app.get("/newGetRandomImage", (req, res) => {
   const { imageName } = req.query;
   // TODO check if folder is question or explanation. For now, just question is used
@@ -173,6 +173,12 @@ app.get("/getSurveys", (req, res) => {
   res.json(surveys);
 });
 
+app.get("/getTemplates", (req, res) => {
+  const rawData = fs.readFileSync(surveyDir + "templates.json");
+  const templates = JSON.parse(rawData);
+  res.json(templates);
+});
+
 app.post("/insertSurvey", (req, res) => {
   let newSurvey = req.body;
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
@@ -181,6 +187,17 @@ app.post("/insertSurvey", (req, res) => {
   surveys.push(newSurvey);
   const newData = JSON.stringify(surveys);
   fs.writeFileSync(surveyDir + "surveys.json", newData);
+  res.status(200).json({ status: "saved" });
+});
+
+app.post("/insertTemplate", (req, res) => {
+  let newTemplate = req.body;
+  const rawData = fs.readFileSync(surveyDir + "templates.json");
+  let templates = JSON.parse(rawData);
+  newTemplate.id = nanoid(); // Generate new random ID
+  templates.push(newTemplate);
+  const newData = JSON.stringify(templates);
+  fs.writeFileSync(surveyDir + "templates.json", newData);
   res.status(200).json({ status: "saved" });
 });
 
@@ -196,6 +213,18 @@ app.put("/editSurvey", (req, res) => {
   res.status(200).json({ status: "saved" });
 });
 
+app.put("/editTemplate", (req, res) => {
+  let newTemplate = req.body;
+  const rawData = fs.readFileSync(surveyDir + "templates.json");
+  let templates = JSON.parse(rawData);
+  templates = templates.map((template) =>
+    template.id === newTemplate.id ? newTemplate : template
+  );
+  const newData = JSON.stringify(templates);
+  fs.writeFileSync(surveyDir + "templates.json", newData);
+  res.status(200).json({ status: "saved" });
+});
+
 app.delete("/deleteSurvey", (req, res) => {
   const deleteSurvey = req.body;
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
@@ -206,6 +235,19 @@ app.delete("/deleteSurvey", (req, res) => {
   console.log("\n Survey deleted! \n");
   const newData = JSON.stringify(surveys);
   fs.writeFileSync(surveyDir + "surveys.json", newData);
+  res.status(200).json({ status: "saved" });
+});
+
+app.delete("/deleteTemplate", (req, res) => {
+  const deleteTemplate = req.body;
+  const rawData = fs.readFileSync(surveyDir + "templates.json");
+  let templates = JSON.parse(rawData);
+  templates = templates.filter((template) => template.id !== deleteTemplate.id);
+  console.log(templates);
+  console.log("The ID template for deleting was: ", deleteTemplate.id);
+  console.log("\n Template deleted! \n");
+  const newData = JSON.stringify(templates);
+  fs.writeFileSync(surveyDir + "templates.json", newData);
   res.status(200).json({ status: "saved" });
 });
 

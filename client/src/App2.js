@@ -8,7 +8,7 @@ import {
   ListItemText,
 } from "@material-ui/core";
 // Classes
-import { mainPageStyle } from "./components/editor/editorStyles";
+import { appStyle } from "./components/editor/editorStyles";
 // Router
 import { BrowserRouter as Router, Switch, Route, Link } from "react-router-dom";
 // Components
@@ -23,7 +23,7 @@ import DescriptionIcon from "@material-ui/icons/Description";
 import { useStateValue } from "./StateProvider";
 import { actionTypes } from "./stateReducer";
 
-const useStyles = mainPageStyle;
+const useStyles = appStyle;
 
 function App() {
   const classes = useStyles();
@@ -39,7 +39,15 @@ function App() {
           dispatch({ type: actionTypes.SET_SURVEYS, surveys: data })
         );
     };
+    const getTemplatesFromServer = () => {
+      fetch("http://localhost:9000/getTemplates")
+        .then((response) => response.json())
+        .then((data) =>
+          dispatch({ type: actionTypes.SET_TEMPLATES, templates: data })
+        );
+    };
     getSurveysFromServer();
+    getTemplatesFromServer();
   }, [dispatch]);
 
   const switchDrawer = (value) => {

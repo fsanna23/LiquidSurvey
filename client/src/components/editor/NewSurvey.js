@@ -20,7 +20,7 @@ import { Link } from "react-router-dom";
 import content_type from "../contentTypes";
 
 // App Context
-import { actionTypes as appActionTypes } from "../../stateReducer";
+import { actionTypes, actionTypes as appActionTypes } from "../../stateReducer";
 import { useStateValue } from "../../StateProvider";
 
 const useStyles = newSurveyStyle;
@@ -34,21 +34,24 @@ function NewSurvey() {
   // Survey context
   const [state, dispatch] = useReducer(reducer, initialData);
   // App Context
-  const [{ selectedSurvey }, appDispatch] = useStateValue();
+  const [{ templates, selectedSurvey }, appDispatch] = useStateValue();
 
   /* If the selectedSurvey in the context is not null, then we are editing
   an already existing survey, else we are creating a new one.
   -> NOTE: check if selectedSurvey is needed as dependency */
   useEffect(() => {
-    if (selectedSurvey) {
+    if (selectedSurvey.survey) {
       console.log(
         "The selected survey in useEffect NewSurvye is: ",
         selectedSurvey
       );
-      dispatch({ type: action_types.SET_SURVEY, survey: selectedSurvey });
+      dispatch({
+        type: action_types.SET_SURVEY,
+        survey: selectedSurvey.survey,
+      });
       setSurveyData({
-        title: selectedSurvey.title,
-        description: selectedSurvey.description,
+        title: selectedSurvey.survey.title,
+        description: selectedSurvey.survey.description,
       });
     } else {
       console.log("No Selected Survey, setting initial data");
@@ -57,7 +60,7 @@ function NewSurvey() {
   }, [selectedSurvey]);
 
   useEffect(() => {
-    console.log("USEEFFECT -> The new State is: ", state);
+    console.log("The state is changed, checking templates: ", templates);
   }, [state]);
 
   /* Router functions (save and exit) */
@@ -89,14 +92,6 @@ function NewSurvey() {
 
     console.log("The content is");
     console.log(state.sections);
-    // let finalJSON = {
-    //   title: surveyData.title,
-    //   description: surveyData.description,
-    //   pages: state.sections,
-    // };
-    // console.log(finalJSON);
-    // props.addSurvey(changeImages(finalJSON));
-    // props.setPage(pages.MAIN);
 
     let finalJSON = {
       title: surveyData.title,
@@ -105,23 +100,66 @@ function NewSurvey() {
     };
     let finalSurvey = changeImages(finalJSON);
 
-    if (selectedSurvey) {
-      finalSurvey.id = selectedSurvey.id;
-      appDispatch({ type: appActionTypes.EDIT_SURVEY, survey: finalSurvey });
-      fetch("http://localhost:9000/editSurvey", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(finalSurvey),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data.status !== "saved") {
-            console.error("FAILED TO DELETE THE SURVEY");
-          }
+    if (selectedSurvey.survey) {
+      if (selectedSurvey.survey.isTemplate && !selectedSurvey.useTemplate) {
+        finalSurvey.id = selectedSurvey.id;
+        finalSurvey.isTemplate = true;
+        appDispatch({
+          type: appActionTypes.EDIT_TEMPLATE,
+          template: finalSurvey,
         });
+        fetch("http://localhost:9000/editTemplate", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalSurvey),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status !== "saved") {
+              console.error("FAILED TO EDIT THE TEMPLATE");
+            }
+          });
+      } else if (
+        selectedSurvey.survey.isTemplate &&
+        selectedSurvey.useTemplate
+      ) {
+        // We are creating a new survey
+        appDispatch({ type: appActionTypes.ADD_SURVEY, survey: finalSurvey });
+        fetch("http://localhost:9000/insertSurvey", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalSurvey),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status !== "saved") {
+              console.error("FAILED TO INSERT THE SURVEY");
+            }
+          });
+      } else {
+        // The survey was not a template but we are editing it
+        finalSurvey.id = selectedSurvey.id;
+        appDispatch({ type: appActionTypes.EDIT_SURVEY, survey: finalSurvey });
+        fetch("http://localhost:9000/editSurvey", {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(finalSurvey),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data.status !== "saved") {
+              console.error("FAILED TO EDIT THE SURVEY");
+            }
+          });
+      }
     } else {
+      // We are creating a new survey
       appDispatch({ type: appActionTypes.ADD_SURVEY, survey: finalSurvey });
       fetch("http://localhost:9000/insertSurvey", {
         method: "POST",
@@ -140,7 +178,27 @@ function NewSurvey() {
   };
 
   const onSaveAsTemplate = () => {
-    /* TODO: save as template */
+    let finalSurvey = {
+      title: surveyData.title,
+      description: surveyData.description,
+      pages: state.sections,
+      isTemplate: true,
+    };
+
+    appDispatch({ type: appActionTypes.ADD_TEMPLATE, template: finalSurvey });
+    fetch("http://localhost:9000/insertTemplate", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(finalSurvey),
+    })
+      .then((response) => response.json())
+      .then((data) => {
+        if (data.status !== "saved") {
+          console.error("FAILED TO INSERT THE TEMPLATE");
+        }
+      });
   };
 
   const onBackToMainPage = () => {
@@ -237,22 +295,33 @@ function NewSurvey() {
               className={classes.bottomButton}
               onClick={onSaveSurvey}
             >
-              Save survey
+              Save{" "}
+              {!selectedSurvey?.useTemplate === false ||
+              (!selectedSurvey?.useTemplate === true &&
+                !selectedSurvey?.survey?.isTemplate)
+                ? "survey"
+                : "template"}
             </Button>
           </Link>
         </Grid>
-        <Grid item>
-          <Link to="/">
-            <Button
-              variant="contained"
-              color="primary"
-              className={classes.bottomButton}
-              onClick={onSaveAsTemplate}
-            >
-              Save as template
-            </Button>
-          </Link>
-        </Grid>
+        {!(
+          selectedSurvey.survey !== null &&
+          selectedSurvey.useTemplate === false &&
+          selectedSurvey?.survey?.isTemplate === true
+        ) && (
+          <Grid item>
+            <Link to="/">
+              <Button
+                variant="contained"
+                color="primary"
+                className={classes.bottomButton}
+                onClick={onSaveAsTemplate}
+              >
+                Save as template
+              </Button>
+            </Link>
+          </Grid>
+        )}
       </Grid>
     </Box>
   );

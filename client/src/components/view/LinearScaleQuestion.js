@@ -125,7 +125,43 @@ function LinearScaleQuestion(props) {
   };
 
   const renderVerticalRadioButtons = () => {
-    return <Typography>Rendering vertical radio buttons</Typography>;
+    return (
+      <Box align="left" className={classes.titleContainer}>
+        <Box marginBottom={"10px"}>{props.data.minValueLabel}</Box>
+        <FormControl component="fieldset">
+          <RadioGroup
+            name="LinearScale"
+            value={linearScaleSelectedValue}
+            onChange={handleLinearScaleChange}
+          >
+            {[
+              ...Array(
+                Number(props.data.maxValue) + 1 - Number(props.data.minValue)
+              ).keys(),
+            ].map((s, i) => {
+              return (
+                <FormControlLabel
+                  value={Number(props.data.minValue) + i}
+                  control={
+                    <Radio
+                      onChange={saveAnswer(s + 1)}
+                      checked={
+                        linearScaleSelectedValue ===
+                        (Number(props.data.minValue) + i).toString()
+                      }
+                      color="primary"
+                    />
+                  }
+                  label={Number(props.data.minValue) + i}
+                  key={s}
+                />
+              );
+            })}
+          </RadioGroup>
+        </FormControl>
+        <Box marginTop={"10px"}>{props.data.maxValueLabel}</Box>
+      </Box>
+    );
   };
 
   return (

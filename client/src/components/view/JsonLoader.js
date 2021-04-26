@@ -29,7 +29,8 @@ function JsonLoader(props) {
   const [showAnswers, setShowAnswers] = useState(false);
 
   // UPDATE APRIL
-  const [{ selectedSurvey: jsonData }, dispatch] = useStateValue();
+  const [{ selectedSurvey }, dispatch] = useStateValue();
+  const jsonData = selectedSurvey.survey;
 
   /*---GESTIONE DELLE PAGINE DEL QUESTIONARIO---*/
   /*[ES6] action è il parametro passato (indica se l'utente vuole andare alla prossima pagina (1) o quella precedente (0)), 

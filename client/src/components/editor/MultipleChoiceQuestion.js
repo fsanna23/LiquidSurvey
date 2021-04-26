@@ -12,20 +12,22 @@ function MultipleChoiceQuestion({ choices, sectionIndex, contentIndex }) {
 
   useEffect(() => {
     // Send initial values
-    const updates = {
-      choices: [
-        { id: 1, value: "" },
-        { id: 2, value: "" },
-      ],
-    };
-    dispatch({
-      type: action_types.UPDATE_CONTENT,
-      payload: {
-        sectionIndex: sectionIndex,
-        contentIndex: contentIndex,
-        updates,
-      },
-    });
+    if (choices === undefined) {
+      const updates = {
+        choices: [
+          { id: 1, value: "" },
+          { id: 2, value: "" },
+        ],
+      };
+      dispatch({
+        type: action_types.UPDATE_CONTENT,
+        payload: {
+          sectionIndex: sectionIndex,
+          contentIndex: contentIndex,
+          updates,
+        },
+      });
+    }
   }, []);
 
   const onChangeValue = (e, index) => {
