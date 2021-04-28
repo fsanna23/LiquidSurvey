@@ -42,6 +42,7 @@ function LinearScaleQuestion(props) {
 
   const handleSlider = (e, newValue) => {
     setSliderValue(newValue);
+    updateAnswer(props.sectionIndex, props.contentIndex, newValue);
   };
 
   const renderSlider = (continuous) => {

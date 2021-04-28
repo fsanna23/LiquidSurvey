@@ -177,6 +177,12 @@ function JsonLoader(props) {
                 contentType: content.type,
                 answer: content.data.choices,
               });
+            } else if (
+              content.data.type === "Linear Scale" &&
+              (content.data.continuousSwitch === false ||
+                content.data.radioBtnSwitch === true)
+            ) {
+              pageArray.push({ contentType: content.type, answer: 0 });
             } else {
               pageArray.push({ contentType: content.type, answer: null });
             }

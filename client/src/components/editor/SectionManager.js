@@ -92,13 +92,10 @@ function SectionManager({ id, sectionIndex }) {
 
   return (
     <Box
-      component="span"
-      id={"managesurveybox-" + id}
-      className={
-        sectionsLength === 1
-          ? classes.manageSurveyBox
-          : classes.manageSurveyBoxSection
-      }
+      display="flex"
+      className={classes.manageSurveyBox}
+      height="auto"
+      width="fit-content"
     >
       <SectionManagerBtn
         title="Add question"

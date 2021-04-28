@@ -84,25 +84,16 @@ export const newSurveyStyle = makeStyles((theme) => ({
 
 export const sectionManagerStyle = makeStyles((theme) => ({
   manageSurveyBox: {
-    border: "0.4px solid black",
-    borderRadius: "10px",
+    border: "3px solid " + theme.palette.primary.light,
+    borderRadius: "30px",
     marginBottom: theme.spacing(2),
-    height: "50px",
-    width: "263px",
-  },
-  manageSurveyBoxSection: {
-    border: "0.4px solid black",
-    borderRadius: "10px",
-    marginBottom: theme.spacing(2),
-    height: "50px",
-    width: "316px",
   },
 }));
 
 /* For both sectionManagerBtn and imageInputBtn */
 export const sectionManagerBtnStyle = makeStyles((theme) => ({
   manageSurveyBoxIcon: {
-    margin: "2px",
+    margin: "7px 10px",
   },
 }));
 
