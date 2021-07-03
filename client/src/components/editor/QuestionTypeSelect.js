@@ -25,19 +25,21 @@ function QuestionTypeSelect({ sectionIndex, contentIndex, type }) {
   console.log("The type is: ", type);
 
   useEffect(() => {
-    // Send initial data
-    const updates = {
-      type: questionTypes.SHORT_TEXT,
-    };
-    const payload = {
-      sectionIndex: sectionIndex,
-      contentIndex: contentIndex,
-      updates,
-    };
-    dispatch({
-      type: action_types.UPDATE_CONTENT,
-      payload,
-    });
+    if (type === undefined) {
+      // Send initial data
+      const updates = {
+        type: questionTypes.SHORT_TEXT,
+      };
+      const payload = {
+        sectionIndex: sectionIndex,
+        contentIndex: contentIndex,
+        updates,
+      };
+      dispatch({
+        type: action_types.UPDATE_CONTENT,
+        payload,
+      });
+    }
   }, []);
 
   const onChangeType = (e) => {

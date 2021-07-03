@@ -3,8 +3,10 @@ import {
   Box,
   Button,
   Card,
+  CardActionArea,
   CardActions,
   CardContent,
+  CardMedia,
   Grid,
   IconButton,
   Menu,
@@ -88,10 +90,9 @@ function MainPage() {
   const onEditSurvey = (survey) => {
     /*  This line creates a new object that contains all the values from the parameter
         obj. If I don't do this, both the new survey and the old one are changed. */
-    const tempSurvey = JSON.parse(JSON.stringify(survey));
     dispatch({
       type: actionTypes.SELECT_SURVEY,
-      survey: { survey: tempSurvey, useTemplate: false },
+      survey: { survey: survey, useTemplate: false },
     });
   };
 
@@ -162,7 +163,7 @@ function MainPage() {
             <CardActions className={classes.cardActions}>
               <Link to="/createSurvey">
                 <Button
-                  variant="contained"
+                  variant="text"
                   color="default"
                   size="small"
                   onClick={() => {
@@ -175,7 +176,7 @@ function MainPage() {
               {isTemplate === false ? (
                 <Link to="/viewSurvey">
                   <Button
-                    variant="contained"
+                    variant="text"
                     color="default"
                     size="small"
                     onClick={() => {
@@ -215,6 +216,81 @@ function MainPage() {
     });
   };
 
+  const newDisplaySurveys = (surveysPar, isTemplate) => {
+    return surveysPar.map((survey, index) => {
+      return (
+        <Grid
+          item
+          key={survey.id !== undefined ? survey.id : "survey-" + index}
+        >
+          <Card className={classes.newCardRoot}>
+            <Link to={isTemplate === false ? "/viewSurvey" : "/createSurvey"}>
+              <CardActionArea
+                onClick={() => {
+                  isTemplate === false
+                    ? onViewSurvey(survey)
+                    : onUseTemplate(survey);
+                }}
+                className={classes.cardActionArea}
+              >
+                <CardMedia
+                  className={classes.cardMedia}
+                  image={
+                    isTemplate === false
+                      ? "https://d1c2gz5q23tkk0.cloudfront.net/assets/uploads/3072103/asset/abd0e62e-4793-4221-86c1-3da766d0fe98-Survey2.jpg?1616766958"
+                      : "https://images.unsplash.com/photo-1560574188-6a6774965120?ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8Z2VhcnxlbnwwfHwwfHw%3D&ixlib=rb-1.2.1&w=1000&q=80"
+                  }
+                />
+                <CardContent>
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="h2"
+                    className={classes.cardText}
+                  >
+                    {survey.title}
+                  </Typography>
+                  <Typography
+                    variant="body2"
+                    color="textSecondary"
+                    component="p"
+                    className={classes.ext}
+                  >
+                    {survey.description}
+                  </Typography>
+                </CardContent>
+              </CardActionArea>
+            </Link>
+            <CardActions classes={{ root: classes.newCardActions }}>
+              <Box display="flex" justifyContent="flex-start">
+                <Link to="/createSurvey">
+                  <Button
+                    size="small"
+                    color="primary"
+                    onClick={() => {
+                      onEditSurvey(survey);
+                    }}
+                  >
+                    Edit
+                  </Button>
+                </Link>
+              </Box>
+              <Box display="flex" flex={1} justifyContent="flex-end">
+                <IconButton
+                  onClick={(e) => {
+                    onSurveyMenuOpen(e, survey);
+                  }}
+                >
+                  <MoreIcon />
+                </IconButton>
+              </Box>
+            </CardActions>
+          </Card>
+        </Grid>
+      );
+    });
+  };
+
   console.log("Rendering MainPage.js");
 
   return (
@@ -229,8 +305,9 @@ function MainPage() {
             direction="row"
             spacing={5}
             className={classes.cardDeck}
+            justify="space-evenly"
           >
-            {displaySurveys(surveys, false)}
+            {newDisplaySurveys(surveys, false)}
           </Grid>
         </Grid>
         <Link to="/createSurvey">
@@ -255,8 +332,9 @@ function MainPage() {
             direction="row"
             spacing={5}
             className={classes.cardDeck}
+            justify="space-evenly"
           >
-            {displaySurveys(templates, true)}
+            {newDisplaySurveys(templates, true)}
           </Grid>
         </Grid>
       </Grid>

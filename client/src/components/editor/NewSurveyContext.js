@@ -12,6 +12,7 @@ export const action_types = {
   UPDATE_CONTENT: "UPDATE CONTENT",
   ADD_CONTENT: "ADD CONTENT",
   REMOVE_CONTENT: "REMOVE CONTENT",
+  DUPLICATE_CONTENT: "DUPLICATE CONTENT",
   ADD_PAGE: "ADD PAGE",
   REMOVE_PAGE: "REMOVE PAGE",
   SET_SURVEY: "SET SURVEY",
@@ -41,6 +42,7 @@ const removeSection = (sections, sectionIndex) => {
 
 const updateRandomNumbers = (sections) => {
   let newRandomNumbers = [];
+
   sections.forEach((sec, sectionIndex) => {
     sec.contents.forEach((c, contentIndex) => {
       if (c.type === content_type.RANDOM_NUMBER)
@@ -155,7 +157,7 @@ export function reducer(state, action) {
       let newContent = section.contents.filter(
         (item, itemIndex) => contentIndex !== itemIndex
       );
-      let newSections;
+      let newSections = state.sections;
       if (newContent.length === 0) {
         newSections = removeSection(newSections, sectionIndex);
         if (state.randomNumbers.some((el) => el.sectionIndex > sectionIndex)) {
@@ -208,6 +210,20 @@ export function reducer(state, action) {
           sections: newSections,
         };
       }
+    }
+
+    case action_types.DUPLICATE_CONTENT: {
+      const { contentIndex, sectionIndex } = action.payload;
+      let newContents = [...state.sections[sectionIndex].contents];
+      let newContent = {
+        ...state.sections[sectionIndex].contents[contentIndex],
+      };
+      newContents.splice(contentIndex, 0, newContent);
+      const newCounter = state.contentIdCounter + 1;
+      newContent.contentId = newCounter;
+      let newSections = [...state.sections];
+      newSections[sectionIndex].contents = newContents;
+      return { ...state, contentIdCounter: newCounter, sections: newSections };
     }
 
     case action_types.MOVE_CONTENT_UP: {
@@ -285,7 +301,7 @@ export function reducer(state, action) {
           let newSections = [...state.sections];
           newSections[sectionIndex].contents = section.contents;
           newSections[sectionIndex + 1].contents = destContent;
-          updateRandomNumbers();
+          // updateRandomNumbers();
           if (section.contents.length === 0) {
             newSections = removeSection(newSections, sectionIndex);
           }

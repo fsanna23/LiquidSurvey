@@ -14,8 +14,9 @@ export const mainPageStyle = makeStyles((theme) => ({
   },
   cardRoot: {
     minWidth: 275,
-    backgroundColor: "#6b6b6b",
-    borderColor: "black",
+    backgroundColor: "rgba(68,122,236,0.65)",
+    borderColor: "white",
+    borderRadius: "15px 5px",
   },
   cardTitle: {
     color: "white",
@@ -39,6 +40,26 @@ export const mainPageStyle = makeStyles((theme) => ({
   },
   cardDeck: {
     marginTop: theme.spacing(3),
+  },
+
+  /*  New styles  */
+  newCardRoot: {
+    width: 280,
+    height: 250,
+  },
+  cardActionArea: {
+    height: 190,
+  },
+  cardText: {
+    textOverflow: "ellipsis",
+    overflow: "hidden",
+    whiteSpace: "nowrap",
+  },
+  cardMedia: {
+    height: 100,
+  },
+  newCardActions: {
+    display: "flex",
   },
 }));
 

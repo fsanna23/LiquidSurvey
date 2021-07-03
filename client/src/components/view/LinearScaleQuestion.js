@@ -59,7 +59,7 @@ function LinearScaleQuestion(props) {
 
     return (
       <Container>
-        <Box component="div">
+        <Box component="div" className={classes.linearScaleSliderContainer}>
           <Slider
             value={sliderValue}
             onChange={handleSlider}
@@ -67,6 +67,9 @@ function LinearScaleQuestion(props) {
             min={Number(props.data.minValue)}
             max={Number(props.data.maxValue)}
             marks={marks}
+            /*classes={{
+              root: classes.linearScaleSliderRoot,
+            }}*/
           />
         </Box>
         <Box component="div">
@@ -114,6 +117,7 @@ function LinearScaleQuestion(props) {
                     label={Number(props.data.minValue) + i}
                     labelPlacement="top"
                     key={s}
+                    className={classes.linearScaleRadioField}
                   />
                 );
               })
@@ -176,6 +180,9 @@ function LinearScaleQuestion(props) {
         >
           <Box align="left" className={classes.titleContainer}>
             {props.data.title}
+          </Box>
+          <Box align="left" className={classes.descriptionContainer}>
+            {props.data.description}
           </Box>
 
           {(continuousSwitch === false || continuousSwitch === undefined) &&

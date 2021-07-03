@@ -29,9 +29,9 @@ function NavBar(props) {
           <MenuIcon />
         </IconButton>
         <Typography variant="h6" className={classes.title}>
-          User Tests
+          LiquidSurvey
         </Typography>
-        <Button color="inherit">Login</Button>
+        {/*<Button color="inherit">Login</Button>*/}
       </Toolbar>
     </AppBar>
   );

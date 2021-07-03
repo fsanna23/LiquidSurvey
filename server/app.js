@@ -202,9 +202,11 @@ app.post("/insertTemplate", (req, res) => {
 });
 
 app.put("/editSurvey", (req, res) => {
+  console.log("Editing survey");
   let newSurvey = req.body;
   const rawData = fs.readFileSync(surveyDir + "surveys.json");
   let surveys = JSON.parse(rawData);
+  console.log(newSurvey.id);
   surveys = surveys.map((survey) =>
     survey.id === newSurvey.id ? newSurvey : survey
   );
@@ -315,6 +317,32 @@ app.get("/getNextContent", (req, res) => {
   }
 });
 
+/*  Survey answers methods  */
+
+app.post("/saveSurveyAnswers", (req, res) => {
+  let surveyAnswers = req.body;
+  const rawData = fs.readFileSync(surveyDir + "answers.json");
+  let answers = JSON.parse(rawData);
+  surveyAnswers.id = nanoid(); // Generate new random ID for the answer. The survey id is saved in "surveyId"
+  answers.push(surveyAnswers);
+  const newData = JSON.stringify(answers);
+  fs.writeFileSync(surveyDir + "answers.json", newData);
+  res.status(200).json({ status: "saved" });
+});
+
+app.get("/getSurveyAnswers", (req, res) => {
+  const surveyId = req.query;
+  const rawData = fs.readFileSync(surveyDir + "answers.json");
+  const answers = JSON.parse(rawData);
+  const surveyAnswers = answers.filter((el) => el.surveyId === surveyId);
+  if (surveyAnswers.length > 0) {
+    res.status(200).json({ answers: surveyAnswers, status: "found" });
+  } else {
+    res.status(500).json({ status: "not found" });
+  }
+});
+
+/*  The server is launched at port ${port} */
 app.listen(port, () => {
   console.log(`Example app listening at http://localhost:${port}`);
 });

@@ -1,6 +1,7 @@
 import React, { useState, Fragment, useContext, useEffect } from "react";
 import contentTypes from "../contentTypes";
 import ImageInputBtn from "./ImageInputBtn";
+import FileCopyIcon from "@material-ui/icons/FileCopy";
 import RandomContentActions from "./RandomContentActions";
 
 // Material
@@ -54,6 +55,14 @@ function ContentActions({
       contentIndex: contentIndex,
     };
     dispatch({ type: action_types.MOVE_CONTENT_DOWN, payload });
+  };
+
+  const onDuplicateContent = () => {
+    const payload = {
+      sectionIndex: sectionIndex,
+      contentIndex: contentIndex,
+    };
+    dispatch({ type: action_types.DUPLICATE_CONTENT, payload });
   };
 
   const onRemoveContent = () => {
@@ -170,6 +179,11 @@ function ContentActions({
       <div className={classes.cardActionsRight}>
         {renderQuestionActions()}
         {renderRandomActions()}
+        <Tooltip title="Duplicate content" placement="bottom">
+          <IconButton onClick={onDuplicateContent}>
+            <FileCopyIcon />
+          </IconButton>
+        </Tooltip>
         <Tooltip title="Delete content" placement="bottom">
           <IconButton onClick={onRemoveContent}>
             <DeleteIcon />

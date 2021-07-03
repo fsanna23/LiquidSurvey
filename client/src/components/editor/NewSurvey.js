@@ -102,6 +102,8 @@ function NewSurvey() {
 
     if (selectedSurvey.survey) {
       if (selectedSurvey.survey.isTemplate && !selectedSurvey.useTemplate) {
+        // Editing a survey
+        console.log("Editing survey");
         finalSurvey.id = selectedSurvey.id;
         finalSurvey.isTemplate = true;
         appDispatch({
@@ -142,7 +144,8 @@ function NewSurvey() {
           });
       } else {
         // The survey was not a template but we are editing it
-        finalSurvey.id = selectedSurvey.id;
+        finalSurvey.id = selectedSurvey.survey.id;
+        console.log("ENWENW The final survey is", finalSurvey);
         appDispatch({ type: appActionTypes.EDIT_SURVEY, survey: finalSurvey });
         fetch("http://localhost:9000/editSurvey", {
           method: "PUT",

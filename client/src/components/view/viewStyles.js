@@ -27,6 +27,13 @@ export const questionStyle = makeStyles((theme) => ({
     marginBottom: 40,
   },
 
+  descriptionContainer: {
+    marginLeft: theme.spacing(4),
+    marginRight: theme.spacing(4),
+    marginBottom: theme.spacing(2),
+    fontStyle: "italic",
+  },
+
   elementContainer: {
     paddingTop: theme.spacing(2),
     marginLeft: theme.spacing(4),
@@ -64,6 +71,25 @@ export const questionStyle = makeStyles((theme) => ({
     marginTop: 10,
     marginBottom: 30,
     width: 500,
+  },
+
+  linearScaleSliderContainer: {
+    padding: "0px 14px",
+  },
+
+  linearScaleSliderRoot: {
+    paddingRight: theme.spacing(2),
+    paddingLeft: theme.spacing(2),
+  },
+
+  linearScaleSliderLabel: {
+    paddingLeft: theme.spacing(5),
+    paddingRight: theme.spacing(5),
+  },
+
+  linearScaleRadioField: {
+    marginLeft: theme.spacing(0.35),
+    marginRight: theme.spacing(0.35),
   },
 
   rankingContainer: {

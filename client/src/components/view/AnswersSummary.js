@@ -28,8 +28,10 @@ function AnswerSummary(props) {
           ? tempPreparedAnswers.push("NON È STATA FORNITA UNA RISPOSTA")
           : Array.isArray(s.answer)
           ? s.answer.map((r) => (tempRanking = tempRanking + " " + r.value)) &&
-            tempPreparedAnswers.push(tempRanking)&&
-             tempRanking.length > 0 ? tempRanking = "" : "" //Da migliorare. Soluzione per non far stampare tutte le risposte di rank e checkbox assieme   
+            tempPreparedAnswers.push(tempRanking) &&
+            tempRanking.length > 0
+            ? (tempRanking = "")
+            : "" //Da migliorare. Soluzione per non far stampare tutte le risposte di rank e checkbox assieme
           : s.contentType !== "Image" &&
             s.contentType !== "Text" &&
             s.contentType !== "Random Number"
@@ -103,16 +105,21 @@ function AnswerSummary(props) {
                   {tempPreparedQuestions[i]}
                 </Box>
                 <Box align="left" className={classes.titleContainer}>
+                  {console.log(q)}
                   {typeof q === "object" &&
                   q !== null &&
                   q.contentType === "Image"
-                    ? "È stata mostrata all'utente un'immagine con valore: " +
-                      q.randomValue
+                    ? q.randomValue
+                      ? "È stata mostrata all'utente un'immagine con valore: " +
+                        q.randomValue
+                      : ""
                     : typeof q === "object" &&
                       q !== null &&
                       q.contentType === "Text"
-                    ? "È stato mostrato all'utente un testo associato al valore : " +
-                      q.randomValue
+                    ? q.randomValue
+                      ? "È stato mostrato all'utente un testo associato al valore : " +
+                        q.randomValue
+                      : ""
                     : q}
                 </Box>
               </Paper>

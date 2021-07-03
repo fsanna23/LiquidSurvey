@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext } from "react";
+import React from "react";
 import { questionStyle } from "./viewStyles.js";
 import TextQuestion from "./TextQuestion.js";
 import MultipleChoiceQuestion from "./MultipleChoiceQuestion.js";
@@ -12,7 +12,7 @@ const useStyles = questionStyle;
 function Page(props) {
   const classes = useStyles();
 
-  const newContentSorter = (item, i) => {
+  const contentSorter = (item, i) => {
     switch (item.data.type) {
       case "Multiple Choice":
         return (
@@ -65,9 +65,8 @@ function Page(props) {
 
   return (
     <div>
-      {/*Mappa tutti i contenuti (contents:[] nel json) della pagina corrente e per ogni contenuto chiama il contentSorter*/}
       {props.contents.map((s, i) => {
-        return <div key={s.contentId + i}>{newContentSorter(s, i)}</div>;
+        return <div key={s.contentId + i}>{contentSorter(s, i)}</div>;
       })}
     </div>
   );

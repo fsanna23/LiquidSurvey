@@ -136,6 +136,7 @@ function Question({ sectionIndex, contentIndex, data }) {
   const renderQuestion = () => {
     switch (type) {
       case questionTypes.MULTIPLE_CHOICE:
+      case questionTypes.CHECKBOX:
       case questionTypes.RANKING:
         return (
           <MultipleChoiceQuestion
